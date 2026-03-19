@@ -1,0 +1,25 @@
+{
+  "name": "vision-realized-capstone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/te84/vision-realized-capstone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/te84/vision-realized-capstone/issues"
+  },
+  "homepage": "https://github.com/te84/vision-realized-capstone#readme",
+  "devDependencies": {
+    "vite": "^8.0.1"
+  }
+}
