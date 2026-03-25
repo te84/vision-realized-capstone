@@ -7,7 +7,6 @@ Within the root folder, follow the commands below depending on whether you are u
 ## Prerequisites
 
 - Python 3.x  
-- Node.js (v20+ or v22 recommended)  
 - npm  
 
 ## Backend Setup
