@@ -1,24 +1,20 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
+import psycopg2
+import psycopg2.extras
 import hashlib
 import jwt
 import datetime
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-# Secret key for JWT
-SECRET_KEY = 'your-secret-key-here'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Database connection
 def get_db():
-    return mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='',  # Change this to your MySQL password
-        database='vision_realized'
-    )
+    return psycopg2.connect(DATABASE_URL)
 
 # Simple password hashing (for demo purposes)
 def hash_password(password):
@@ -34,19 +30,17 @@ def login():
         if not username or not password:
             return jsonify({'message': 'Username and password required'}), 400
         
-        # Connect to database
         db = get_db()
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # Simple query to get user
         cursor.execute("""
-            SELECT u.*, 
+            SELECT u.*,
                    COALESCE(o.firstname, c.firstname) as firstname,
                    COALESCE(o.lastname, c.lastname) as lastname,
                    COALESCE(o.email, c.email) as email
-            FROM Users u
-            LEFT JOIN Owner o ON u.user_id = o.user_id
-            LEFT JOIN Client c ON u.user_id = c.user_id
+            FROM users u
+            LEFT JOIN owner o ON u.user_id = o.user_id
+            LEFT JOIN client c ON u.user_id = c.user_id
             WHERE u.username = %s
         """, (username,))
         
@@ -57,12 +51,9 @@ def login():
         if not user:
             return jsonify({'message': 'Invalid username or password'}), 401
         
-        # Check password (using SHA256 for simplicity)
-        hashed_input = hash_password(password)
-        if hashed_input != user['password']:
+        if hash_password(password) != user['password']:
             return jsonify({'message': 'Invalid username or password'}), 401
-        
-        # Create simple token
+
         token = jwt.encode({
             'user_id': user['user_id'],
             'username': user['username'],
@@ -70,14 +61,10 @@ def login():
             'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         }, SECRET_KEY)
         
-        # Return user info (without password)
+        user = dict(user)
         user.pop('password', None)
-        
-        return jsonify({
-            'success': True,
-            'token': token,
-            'user': user
-        })
+
+        return jsonify({'success': True, 'token': token, 'user': user})
         
     except Exception as e:
         print('Error:', str(e))
@@ -85,11 +72,10 @@ def login():
 
 @app.route('/test-db', methods=['GET'])
 def test_db():
-    """Simple endpoint to test database connection"""
     try:
         db = get_db()
         cursor = db.cursor()
-        cursor.execute('SELECT COUNT(*) FROM Users')
+        cursor.execute('SELECT COUNT(*) FROM users')
         count = cursor.fetchone()[0]
         cursor.close()
         db.close()
@@ -99,5 +85,4 @@ def test_db():
 
 if __name__ == '__main__':
     print('Server starting on http://localhost:5000')
-    print('Test database: http://localhost:5000/test-db')
     app.run(debug=True, port=5000)
