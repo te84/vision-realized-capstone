@@ -1,0 +1,13 @@
+# Environment
+flaskr/.env
+
+# Python
+__pycache__/
+*.pyc
+flaskr/.venv/
+
+# Frontend
+frontend/node_modules/
+
+# macOS
+.DS_Store

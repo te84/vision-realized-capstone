@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f7f3ee;
+  color: #1e1e2a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-nav {
+  background: white;
+  border-bottom: 1px solid #efe6dc;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.dash-nav .logo h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2c2b2e 0%, #4a3b2c 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.dash-nav .logo p {
+  font-size: 0.7rem;
+  color: #7b6e5d;
+}
+
+.dash-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dash-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dash-avatar {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #b87c4f, #4a3b2c);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.dash-user-info {
+  line-height: 1.2;
+}
+.dash-user-info .name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e1e2a;
+}
+.dash-user-info .role-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.role-badge.client {
+  background: #fef3e2;
+  color: #b87c4f;
+}
+.role-badge.owner {
+  background: #e8f4f0;
+  color: #2a7a5e;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1.5px solid #e0d4c8;
+  color: #5b4e3e;
+  padding: 7px 16px;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-logout:hover {
+  background: #1e1e2a;
+  color: white;
+  border-color: #1e1e2a;
+}
+
+.dash-body {
+  flex: 1;
+  padding: 48px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.dash-greeting {
+  margin-bottom: 40px;
+}
+.dash-greeting h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f1b16;
+  letter-spacing: -0.3px;
+}
+.dash-greeting p {
+  color: #6b5e4e;
+  margin-top: 6px;
+  font-size: 1rem;
+}
+
+.dash-empty {
+  background: white;
+  border: 2px dashed #e8ddd4;
+  border-radius: 28px;
+  padding: 80px 40px;
+  text-align: center;
+  color: #9b8a78;
+}
+.dash-empty .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+.dash-empty h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #4a3b2c;
+  margin-bottom: 8px;
+}
+.dash-empty p {
+  font-size: 0.95rem;
+  max-width: 360px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .dash-nav { padding: 0 20px; }
+  .dash-body { padding: 32px 20px; }
+  .dash-user-info { display: none; }
+}

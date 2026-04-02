@@ -1,5 +1,6 @@
 import os
-import mysql.connector
+import psycopg2
+import psycopg2.extras
 from dotenv import load_dotenv
 from models.user import User
 
@@ -8,14 +9,9 @@ load_dotenv()
 
 def get_db_connection():
     try:
-        conn = mysql.connector.connect(
-            host     = os.getenv('DB_HOST', 'localhost'),
-            user     = os.getenv('DB_USER', 'root'),
-            password = os.getenv('DB_PASSWORD', ''),
-            database = os.getenv('DB_NAME', 'vision_realized')
-        )
+        conn = psycopg2.connect(os.getenv('DATABASE_URL'))
         return conn
-    except mysql.connector.Error as e:
+    except Exception as e:
         print(f'[DB] Connection error: {e}')
         return None
 
@@ -26,7 +22,7 @@ def get_user_by_username(username):
         return None, 'Database connection failed'
 
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute(
             'SELECT user_id, username, password, role FROM Users WHERE username = %s',
             (username,)
@@ -46,7 +42,7 @@ def get_profile(user_id, role):
         return {}, 'Database connection failed'
 
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         if role == 'Client':
             cursor.execute(
                 'SELECT client_id, firstname, lastname, email FROM Client WHERE user_id = %s',

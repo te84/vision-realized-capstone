@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard | Vision Realized</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+  <nav class="dash-nav">
+    <div class="logo">
+      <h1>Vision Realized</h1>
+      <p>Turning ideas into reality</p>
+    </div>
+    <div class="dash-nav-right">
+      <div class="dash-user-badge">
+        <div class="dash-avatar" id="dashAvatar">?</div>
+        <div class="dash-user-info">
+          <div class="name" id="dashUserName">Loading...</div>
+          <span class="role-badge" id="dashRoleBadge">Owner</span>
+        </div>
+      </div>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </div>
+  </nav>
+
+  <div class="dash-body">
+
+    <div class="dash-greeting">
+      <h2>Welcome back, <span id="greetingName">there</span> 👋</h2>
+      <p>Here's your owner overview. Manage events, clients, and bookings from this dashboard.</p>
+    </div>
+
+    <div class="dash-empty">
+      <div class="empty-icon">🏢</div>
+      <h3>Owner dashboard is ready</h3>
+      <p>Your event management tools and client lists</p>
+    </div>
+
+  </div>
+
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

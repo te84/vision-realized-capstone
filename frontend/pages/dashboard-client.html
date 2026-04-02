@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard | Vision Realized</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+  <nav class="dash-nav">
+    <div class="logo">
+      <h1>Vision Realized</h1>
+      <p>Turning ideas into reality</p>
+    </div>
+    <div class="dash-nav-right">
+      <div class="dash-user-badge">
+        <div class="dash-avatar" id="dashAvatar">?</div>
+        <div class="dash-user-info">
+          <div class="name" id="dashUserName">Loading...</div>
+          <span class="role-badge" id="dashRoleBadge">Client</span>
+        </div>
+      </div>
+      <button class="btn-logout" id="logoutBtn">Log out</button>
+    </div>
+  </nav>
+
+  <div class="dash-body">
+
+    <div class="dash-greeting">
+      <h2>Hello, <span id="greetingName">there</span> 👋</h2>
+      <p>Welcome to your client dashboard. Your events and bookings will appear here.</p>
+    </div>
+
+    <div class="dash-empty">
+      <div class="empty-icon">🎉</div>
+      <h3>Dashboard is ready</h3>
+      <p>This is where your upcoming events, bookings, and messages will live. Check back soon!</p>
+    </div>
+
+  </div>
+
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

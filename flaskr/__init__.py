@@ -12,7 +12,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config['JWT_SECRET_KEY']            = os.getenv('JWT_SECRET_KEY', 'fallback-secret')
-    app.config['JWT_ACCESS_TOKEN_EXPIRES']  = timedelta(hours=2)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES']  = timedelta(minutes=2)
 
     jwt.init_app(app)
     cors.init_app(app, resources={r"/api/*": {"origins": "*"}})

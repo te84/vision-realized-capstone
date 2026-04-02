@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Vision Realized</title>
+  <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+
+  <div class="login-topbar">
+    <a href="../index.html">
+      <div class="logo">
+        <h1>Vision Realized</h1>
+        <p>Turning ideas into reality</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h2>Welcome back</h2>
+      <p class="login-sub">Sign in to your account to continue</p>
+
+      <div class="error-msg" id="errorMsg" role="alert"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter your username"
+            autocomplete="username"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-login" id="submitBtn">
+          <span class="btn-text">Sign In</span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+
+      <p class="login-footer-note">
+        Need help? Contact us at
+        <a href="mailto:hello@visionrealizedevents.com" style="color:#b87c4f; font-weight:600;">hello@visionrealizedevents.com</a>
+      </p>
+    </div>
+  </div>
+
+  <footer class="login-page-footer">
+    © 2025 Vision Realized LLC — All rights reserved.
+  </footer>
+
+  <script src="../js/login.js"></script>
+</body>
+</html>
