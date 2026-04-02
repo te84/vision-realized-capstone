@@ -1,0 +1,552 @@
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+import psycopg2
+import psycopg2.extras
+import hashlib
+import jwt
+import datetime
+import os
+
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'vision-realized-login')
+
+app = Flask(__name__, static_folder=FRONTEND_DIR)
+CORS(app)
+
+@app.route('/')
+def home():
+    return send_from_directory(FRONTEND_DIR, 'index.html')
+
+@app.route('/<path:filename>')
+def serve_file(filename):
+    return send_from_directory(FRONTEND_DIR, filename)
+
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://vision_realized_user:UuFB5OCPR9MvGnixWrBYlLCiVkYAW3Yx@dpg-d72kntkg9agc739ajt4g-a.oregon-postgres.render.com/vision_realized')
+
+def get_db():
+    return psycopg2.connect(DATABASE_URL)
+
+def hash_password(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+try:
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""CREATE TABLE IF NOT EXISTS events (
+        id SERIAL PRIMARY KEY, client_id INT NOT NULL, event_name VARCHAR(200),
+        event_date DATE, location VARCHAR(200), guests VARCHAR(50),
+        status VARCHAR(50) DEFAULT 'Quote Submitted', planner VARCHAR(100),
+        event_type VARCHAR(100), created_at TIMESTAMP DEFAULT NOW())""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS tasks (
+        id SERIAL PRIMARY KEY, event_id INT NOT NULL, title VARCHAR(300),
+        due_date DATE, completed BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT NOW())""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS client_messages (
+        id SERIAL PRIMARY KEY, event_id INT NOT NULL, sender VARCHAR(100),
+        text TEXT, read BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT NOW())""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS documents (
+        id SERIAL PRIMARY KEY, event_id INT NOT NULL, name VARCHAR(300),
+        file_type VARCHAR(50), status VARCHAR(50) DEFAULT 'Uploaded', created_at TIMESTAMP DEFAULT NOW())""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS security_questions (
+        id SERIAL PRIMARY KEY, user_id INT NOT NULL UNIQUE, question VARCHAR(300),
+        answer VARCHAR(300), created_at TIMESTAMP DEFAULT NOW())""")
+    db.commit()
+    cur.close()
+    db.close()
+    print('tables ok')
+except Exception as e:
+    print('table error:', e)
+
+
+def verify_token():
+    auth = request.headers.get('Authorization')
+    if not auth:
+        return None
+    parts = auth.split(' ')
+    if len(parts) != 2:
+        return None
+    try:
+        return jwt.decode(parts[1], SECRET_KEY, algorithms=['HS256'])
+    except:
+        return None
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    uname = data.get('username')
+    pw = data.get('password')
+    if not uname or not pw:
+        return jsonify({'message': 'Username and password required'}), 400
+
+    try:
+        db = get_db()
+        cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("""SELECT u.*, COALESCE(o.firstname, c.firstname) as firstname,
+            COALESCE(o.lastname, c.lastname) as lastname,
+            COALESCE(o.email, c.email) as email
+            FROM users u LEFT JOIN owner o ON u.user_id = o.user_id
+            LEFT JOIN client c ON u.user_id = c.user_id
+            WHERE u.username = %s""", (uname,))
+        user = cur.fetchone()
+        cur.close()
+        db.close()
+
+        if not user:
+            return jsonify({'message': 'Invalid username or password'}), 401
+        if hash_password(pw) != user['password']:
+            return jsonify({'message': 'Invalid username or password'}), 401
+
+        tok = jwt.encode({
+            'user_id': user['user_id'], 'username': user['username'],
+            'role': user['role'],
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        }, SECRET_KEY)
+
+        user = dict(user)
+        user.pop('password', None)
+        return jsonify({'success': True, 'token': tok, 'user': user})
+    except Exception as e:
+        print('login error:', e)
+        return jsonify({'message': 'Server error'}), 500
+
+
+@app.route('/test-db', methods=['GET'])
+def test_db():
+    try:
+        db = get_db()
+        cur = db.cursor()
+        cur.execute('SELECT COUNT(*) FROM users')
+        cnt = cur.fetchone()[0]
+        cur.close()
+        db.close()
+        return jsonify({'message': f'Connected. {cnt} users.'})
+    except Exception as e:
+        return jsonify({'message': f'DB error: {e}'}), 500
+
+
+@app.route('/submit-quote', methods=['POST'])
+def submit_quote():
+    data = request.get_json()
+    fname = data.get('first_name', '')
+    lname = data.get('last_name', '')
+    email = data.get('email', '')
+    phone = data.get('phone', '')
+    pw = data.get('password', '')
+
+    try:
+        db = get_db()
+        cur = db.cursor()
+
+        cur.execute("INSERT INTO quotes (first_name, last_name, email, phone, source, event_type, event_date, guests, location, budget) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            (fname, lname, email, phone, data.get('source',''), data.get('event_type',''),
+             data.get('event_date',''), data.get('guests',''), data.get('location',''), data.get('budget','')))
+
+        user_id = None
+        if email and pw:
+            cur.execute("SELECT user_id FROM users WHERE username = %s", (email,))
+            existing = cur.fetchone()
+
+            if not existing:
+                hashed = hash_password(pw)
+                cur.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, 'Client') RETURNING user_id", (email, hashed))
+                user_id = cur.fetchone()[0]
+
+                cur.execute("INSERT INTO client (user_id, firstname, lastname, email, phone_number) VALUES (%s,%s,%s,%s,%s) RETURNING client_id",
+                    (user_id, fname, lname, email, phone))
+                client_id = cur.fetchone()[0]
+
+                sq = data.get('security_question', '')
+                sa = data.get('security_answer', '')
+                if sq and sa:
+                    cur.execute("INSERT INTO security_questions (user_id, question, answer) VALUES (%s,%s,%s)",
+                        (user_id, sq, sa.lower().strip()))
+
+                ev_name = fname + "'s " + data.get('event_type', 'Event')
+                ev_date = data.get('event_date', None) or None
+                cur.execute("""INSERT INTO events (client_id, event_name, event_date, location, guests, status, planner, event_type)
+                    VALUES (%s,%s,%s,%s,%s,'Quote Submitted','TBD',%s)""",
+                    (client_id, ev_name, ev_date, data.get('location',''), data.get('guests',''), data.get('event_type','')))
+            else:
+                user_id = existing[0]
+                cur.execute("SELECT client_id FROM client WHERE user_id = %s", (user_id,))
+                row = cur.fetchone()
+                if row:
+                    client_id = row[0]
+                    ev_name = fname + "'s " + data.get('event_type', 'Event')
+                    ev_date = data.get('event_date', None) or None
+                    cur.execute("""INSERT INTO events (client_id, event_name, event_date, location, guests, status, planner, event_type)
+                        VALUES (%s,%s,%s,%s,%s,'Quote Submitted','TBD',%s)""",
+                        (client_id, ev_name, ev_date, data.get('location',''), data.get('guests',''), data.get('event_type','')))
+
+        db.commit()
+        cur.close()
+        db.close()
+        return jsonify({'success': True, 'message': 'Quote submitted and account created'})
+    except Exception as e:
+        print('quote error:', e)
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+
+@app.route('/reset-password/verify-email', methods=['POST'])
+def reset_verify_email():
+    data = request.get_json()
+    email = data.get('email', '').strip()
+    if not email:
+        return jsonify({'success': False, 'message': 'Email required'}), 400
+    try:
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT user_id FROM users WHERE username = %s", (email,))
+        user = cur.fetchone()
+        if not user:
+            cur.close(); db.close()
+            return jsonify({'success': False, 'message': 'No account found with that email.'}), 404
+
+        uid = user[0]
+        cur.execute("SELECT question FROM security_questions WHERE user_id = %s", (uid,))
+        sq = cur.fetchone()
+        cur.close(); db.close()
+
+        if not sq:
+            return jsonify({'success': False, 'message': 'No security question set for this account. Contact support.'}), 400
+        return jsonify({'success': True, 'question': sq[0]})
+    except Exception as e:
+        print('reset error:', e)
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+@app.route('/reset-password/verify-answer', methods=['POST'])
+def reset_verify_answer():
+    data = request.get_json()
+    email = data.get('email', '').strip()
+    answer = data.get('answer', '').strip().lower()
+    if not email or not answer:
+        return jsonify({'success': False, 'message': 'Email and answer required'}), 400
+    try:
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT user_id FROM users WHERE username = %s", (email,))
+        user = cur.fetchone()
+        if not user:
+            cur.close(); db.close()
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+
+        uid = user[0]
+        cur.execute("SELECT answer FROM security_questions WHERE user_id = %s", (uid,))
+        sq = cur.fetchone()
+        cur.close(); db.close()
+
+        if not sq or sq[0] != answer:
+            return jsonify({'success': False, 'message': 'Incorrect answer. Please try again.'}), 401
+
+        reset_tok = jwt.encode({
+            'user_id': uid, 'purpose': 'reset',
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+        }, SECRET_KEY)
+        return jsonify({'success': True, 'reset_token': reset_tok})
+    except Exception as e:
+        print('reset error:', e)
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+@app.route('/reset-password/update', methods=['POST'])
+def reset_update_password():
+    data = request.get_json()
+    email = data.get('email', '').strip()
+    reset_tok = data.get('reset_token', '')
+    new_pw = data.get('new_password', '')
+
+    if not email or not reset_tok or not new_pw:
+        return jsonify({'success': False, 'message': 'All fields required'}), 400
+
+    try:
+        decoded = jwt.decode(reset_tok, SECRET_KEY, algorithms=['HS256'])
+        if decoded.get('purpose') != 'reset':
+            return jsonify({'success': False, 'message': 'Invalid reset token'}), 401
+    except:
+        return jsonify({'success': False, 'message': 'Reset link expired. Please start over.'}), 401
+
+    try:
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("UPDATE users SET password = %s WHERE username = %s", (hash_password(new_pw), email))
+        db.commit()
+        cur.close(); db.close()
+        return jsonify({'success': True, 'message': 'Password updated'})
+    except Exception as e:
+        print('reset error:', e)
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+
+@app.route('/client/dashboard', methods=['GET'])
+def client_dashboard():
+    tok = verify_token()
+    if not tok:
+        return jsonify({'message': 'Not authorized'}), 401
+
+    uid = tok['user_id']
+    try:
+        db = get_db()
+        cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        cur.execute("SELECT client_id, firstname, lastname, email FROM client WHERE user_id = %s", (uid,))
+        client = cur.fetchone()
+        if not client:
+            cur.close(); db.close()
+            return jsonify({'message': 'Client profile not found'}), 404
+
+        cid = client['client_id']
+
+        cur.execute("SELECT * FROM events WHERE client_id = %s ORDER BY created_at DESC LIMIT 1", (cid,))
+        event = cur.fetchone()
+
+        ev_data = None
+        eid = None
+        if event:
+            eid = event['id']
+            ev_data = {
+                'id': event['id'], 'name': event['event_name'],
+                'date': str(event['event_date']) if event['event_date'] else None,
+                'location': event['location'], 'guests': event['guests'],
+                'planner': event['planner'], 'status': event['status'],
+                'event_type': event['event_type']
+            }
+
+        tasks = []
+        if eid:
+            cur.execute("SELECT * FROM tasks WHERE event_id = %s ORDER BY created_at", (eid,))
+            for t in cur.fetchall():
+                tasks.append({'id': t['id'], 'title': t['title'],
+                    'due_date': str(t['due_date']) if t['due_date'] else None,
+                    'completed': t['completed']})
+
+        messages = []
+        if eid:
+            cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at DESC", (eid,))
+            for m in cur.fetchall():
+                messages.append({'id': m['id'], 'sender': m['sender'], 'text': m['text'],
+                    'date': str(m['created_at']), 'read': m['read']})
+
+        docs = []
+        if eid:
+            cur.execute("SELECT * FROM documents WHERE event_id = %s ORDER BY created_at DESC", (eid,))
+            for d in cur.fetchall():
+                docs.append({'id': d['id'], 'name': d['name'], 'type': d['file_type'],
+                    'date': str(d['created_at']), 'status': d['status']})
+
+        journey = []
+        if ev_data:
+            steps = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed']
+            cur_status = ev_data['status'] or 'Quote Submitted'
+            idx = 0
+            for i in range(len(steps)):
+                if steps[i] == cur_status:
+                    idx = i
+                    break
+            for i in range(len(steps)):
+                if i < idx: st = 'done'
+                elif i == idx: st = 'current'
+                else: st = 'pending'
+                journey.append({'step': i+1, 'name': steps[i], 'status': st})
+
+        cur.close(); db.close()
+
+        return jsonify({
+            'user': {'firstname': client['firstname'], 'lastname': client['lastname'], 'email': client['email']},
+            'event': ev_data, 'tasks': tasks, 'messages': messages, 'documents': docs, 'journey': journey
+        })
+    except Exception as e:
+        print('dashboard error:', e)
+        return jsonify({'message': 'Server error'}), 500
+
+
+@app.route('/contact', methods=['POST'])
+def contact():
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    msg = data.get('message')
+    if not name or not email or not msg:
+        return jsonify({'success': False, 'message': 'All fields required'}), 400
+    try:
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("INSERT INTO contact_messages (name, email, message) VALUES (%s,%s,%s)", (name, email, msg))
+        db.commit(); cur.close(); db.close()
+        return jsonify({'success': True, 'message': 'Message received'})
+    except Exception as e:
+        print('contact error:', e)
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+@app.route('/quotes', methods=['GET'])
+def get_quotes():
+    db = get_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM quotes ORDER BY created_at DESC")
+    rows = cur.fetchall()
+    cur.close(); db.close()
+    return jsonify({'success': True, 'quotes': [dict(r) for r in rows]})
+
+@app.route('/messages', methods=['GET'])
+def get_messages():
+    db = get_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM contact_messages ORDER BY created_at DESC")
+    rows = cur.fetchall()
+    cur.close(); db.close()
+    return jsonify({'success': True, 'messages': [dict(r) for r in rows]})
+
+@app.route('/owner/events', methods=['GET'])
+def owner_events():
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    try:
+        db = get_db()
+        cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("""SELECT e.*, c.firstname, c.lastname, c.email, c.phone_number
+            FROM events e JOIN client c ON e.client_id = c.client_id ORDER BY e.created_at DESC""")
+        evts = [dict(r) for r in cur.fetchall()]
+        for ev in evts:
+            if ev.get('event_date'): ev['event_date'] = str(ev['event_date'])
+            if ev.get('created_at'): ev['created_at'] = str(ev['created_at'])
+        cur.close(); db.close()
+        return jsonify({'success': True, 'events': evts})
+    except Exception as e:
+        print('error:', e)
+        return jsonify({'success': False, 'message': 'Server error'}), 500
+
+@app.route('/owner/events/<int:event_id>', methods=['PUT'])
+def update_event(event_id):
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    data = request.get_json()
+    db = get_db()
+    cur = db.cursor()
+    fields = []
+    vals = []
+    for k in ['status','planner','event_name','event_date','location','guests']:
+        if k in data:
+            fields.append(k + ' = %s')
+            vals.append(data[k])
+    if fields:
+        vals.append(event_id)
+        cur.execute("UPDATE events SET " + ', '.join(fields) + " WHERE id = %s", vals)
+        db.commit()
+    cur.close(); db.close()
+    return jsonify({'success': True, 'message': 'Event updated'})
+
+@app.route('/owner/tasks', methods=['POST'])
+def add_task():
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    data = request.get_json()
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO tasks (event_id, title, due_date) VALUES (%s,%s,%s)",
+        (data['event_id'], data['title'], data.get('due_date')))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True, 'message': 'Task added'})
+
+@app.route('/owner/messages', methods=['POST'])
+def send_message():
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    data = request.get_json()
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
+        (data['event_id'], data.get('sender', 'Vision Realized'), data['text']))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True, 'message': 'Message sent'})
+
+@app.route('/owner/documents', methods=['POST'])
+def add_document():
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    data = request.get_json()
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("INSERT INTO documents (event_id, name, file_type, status) VALUES (%s,%s,%s,%s)",
+        (data['event_id'], data['name'], data.get('file_type','PDF'), data.get('status','Uploaded')))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True, 'message': 'Document added'})
+
+@app.route('/owner/event-detail/<int:event_id>', methods=['GET'])
+def event_detail(event_id):
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    db = get_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT * FROM tasks WHERE event_id = %s ORDER BY created_at", (event_id,))
+    tasks = [dict(t) for t in cur.fetchall()]
+    for t in tasks:
+        if t.get('due_date'): t['due_date'] = str(t['due_date'])
+        if t.get('created_at'): t['created_at'] = str(t['created_at'])
+    cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at DESC", (event_id,))
+    msgs = [dict(m) for m in cur.fetchall()]
+    for m in msgs:
+        if m.get('created_at'): m['created_at'] = str(m['created_at'])
+    cur.execute("SELECT * FROM documents WHERE event_id = %s ORDER BY created_at DESC", (event_id,))
+    docs = [dict(d) for d in cur.fetchall()]
+    for d in docs:
+        if d.get('created_at'): d['created_at'] = str(d['created_at'])
+    cur.close(); db.close()
+    return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs})
+
+@app.route('/owner/tasks/<int:task_id>', methods=['PUT'])
+def toggle_task_owner(task_id):
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("UPDATE tasks SET completed = NOT completed WHERE id = %s", (task_id,))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True})
+
+@app.route('/owner/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    tok = verify_token()
+    if not tok or tok.get('role') != 'Owner':
+        return jsonify({'message': 'Not authorized'}), 401
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True})
+
+@app.route('/client/tasks/<int:task_id>/complete', methods=['PUT'])
+def client_complete_task(task_id):
+    tok = verify_token()
+    if not tok:
+        return jsonify({'message': 'Not authorized'}), 401
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("UPDATE tasks SET completed = TRUE WHERE id = %s", (task_id,))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True})
+
+@app.route('/client/messages', methods=['POST'])
+def client_send_message():
+    tok = verify_token()
+    if not tok:
+        return jsonify({'message': 'Not authorized'}), 401
+    data = request.get_json()
+    uid = tok['user_id']
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("SELECT firstname, lastname FROM client WHERE user_id = %s", (uid,))
+    row = cur.fetchone()
+    sender = row[0] + ' ' + row[1] if row else 'Client'
+    cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
+        (data['event_id'], sender, data['text']))
+    db.commit(); cur.close(); db.close()
+    return jsonify({'success': True})
+
+if __name__ == '__main__':
+    print('starting server on http://localhost:5001')
+    app.run(debug=True, port=5001)
