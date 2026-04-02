@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vision Realized | Client Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
 
 <nav>
   <div class="nav-links">
-    <a href="index.html">Home</a>
+    <a href="../index.html">Home</a>
     <a href="about.html">About Us</a>
     <a href="services.html">Services</a>
     <a href="contact.html">Contact Us</a>
@@ -34,7 +34,7 @@
       <div class="portal-nav-item" onclick="switchTab(this,'tab-messages')"><span class="portal-nav-icon">--</span> Messages <span id="msg-badge" style="display:none;margin-left:auto;background:#6B3FA0;color:white;font-size:0.65rem;padding:1px 7px;border-radius:10px;font-weight:600;">0</span></div>
       <div class="portal-nav-item" onclick="switchTab(this,'tab-after')"><span class="portal-nav-icon">--</span> After Event</div>
       <div style="margin-top:auto;padding-bottom:16px;">
-        <a href="index.html" class="portal-nav-item"><span class="portal-nav-icon">&larr;</span> Back to Site</a>
+        <a href="../index.html" class="portal-nav-item"><span class="portal-nav-icon">&larr;</span> Back to Site</a>
         <div class="portal-nav-item" onclick="logout()"><span class="portal-nav-icon">&times;</span> Sign Out</div>
       </div>
     </div>
@@ -237,3 +237,171 @@
     } else {
       jEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
     }
+
+    var dashTasks = document.getElementById('dash-tasks');
+    if (tasks.length > 0) {
+      var html = '';
+      for (var i = 0; i < tasks.length; i++) {
+        var t = tasks[i];
+        var cls = t.completed ? ' done' : '';
+        var chk = t.completed ? '✓' : '';
+        var due = '';
+        if (t.due_date && !t.completed) due = ' <span style="color:#4A2772;font-size:0.72rem;">Due ' + fmtDate(t.due_date) + '</span>';
+        var click = t.completed ? '' : ' onclick="completeTask(' + t.id + ')" style="cursor:pointer;" title="Click to mark complete"';
+        html += '<div class="check-item' + cls + '"><div class="check-box"' + click + '>' + chk + '</div><span class="check-text">' + t.title + due + '</span></div>';
+      }
+      dashTasks.innerHTML = html;
+    } else {
+      dashTasks.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
+    }
+
+    var dashMsgs = document.getElementById('dash-messages');
+    if (msgs.length > 0) {
+      var html = '';
+      var cnt = msgs.length > 3 ? 3 : msgs.length;
+      for (var i = 0; i < cnt; i++) {
+        var m = msgs[i];
+        var unread = !m.read ? ' msg-unread' : '';
+        var ini = m.sender ? m.sender.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2) : '??';
+        var prev = m.text.length > 60 ? m.text.substring(0,60) + '...' : m.text;
+        html += '<div class="msg-item' + unread + '"><div class="msg-avatar">' + ini + '</div><div><div class="msg-name">' + m.sender + '</div><div class="msg-preview">' + prev + '</div></div><div class="msg-time">' + fmtDate(m.date) + '</div></div>';
+      }
+      dashMsgs.innerHTML = html;
+    } else {
+      dashMsgs.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
+    }
+
+    var unread = 0;
+    for (var i = 0; i < msgs.length; i++) { if (!msgs[i].read) unread++; }
+    if (unread > 0) {
+      document.getElementById('msg-badge').textContent = unread;
+      document.getElementById('msg-badge').style.display = 'inline';
+    }
+
+    var progEl = document.getElementById('progress-steps');
+    if (journey.length > 0) {
+      var html = '';
+      for (var i = 0; i < journey.length; i++) {
+        var s = journey[i];
+        if (s.status === 'done') {
+          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:rgba(74,39,114,0.06);border:1px solid rgba(74,39,114,0.2);border-radius:4px;">';
+          html += '<span style="color:#4A2772;font-weight:500;">✓</span>';
+          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#4A2772;opacity:0.7;">Completed</div>';
+          html += '<div style="font-size:1.05rem;font-weight:500;color:#2E1547;">' + s.name + '</div></div></div>';
+        } else if (s.status === 'current') {
+          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#4A2772;border-radius:4px;">';
+          html += '<span style="color:white;">→</span>';
+          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">In Progress</div>';
+          html += '<div style="font-size:1.05rem;font-weight:500;color:white;">' + s.name + '</div></div></div>';
+        } else {
+          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
+          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">Upcoming</div>';
+          html += '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' + s.name + '</div></div></div>';
+        }
+      }
+      progEl.innerHTML = html;
+    } else {
+      progEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No progress data yet. Submit a quote to get started.</p>';
+    }
+
+    var tasksFull = document.getElementById('tasks-full');
+    if (tasks.length > 0) {
+      var done = 0; var remaining = 0;
+      for (var i = 0; i < tasks.length; i++) { if (tasks[i].completed) done++; else remaining++; }
+
+      var html = '<div style="display:flex;gap:10px;margin-bottom:24px;">';
+      html += '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' + done + ' Completed</div>';
+      html += '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' + remaining + ' Remaining</div></div>';
+      html += '<div class="checklist" style="gap:16px;">';
+      for (var i = 0; i < tasks.length; i++) {
+        var t = tasks[i];
+        var cls = t.completed ? ' done' : '';
+        var chk = t.completed ? '✓' : '';
+        var dateInfo = '';
+        if (t.due_date) {
+          dateInfo = t.completed
+            ? '<div style="font-size:0.72rem;color:#7A6E5E;margin-top:2px;">Completed</div>'
+            : '<div style="font-size:0.72rem;color:#4A2772;font-weight:500;margin-top:2px;">Due ' + fmtDate(t.due_date) + '</div>';
+        }
+        var click2 = t.completed ? '' : ' onclick="completeTask(' + t.id + ')" style="cursor:pointer;" title="Click to complete"';
+        html += '<div class="check-item' + cls + '" style="padding:14px 0;"><div class="check-box"' + click2 + '>' + chk + '</div><div><span class="check-text">' + t.title + '</span>' + dateInfo + '</div></div>';
+      }
+      html += '</div>';
+      tasksFull.innerHTML = html;
+    } else {
+      tasksFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;">No tasks assigned yet. Your planner will add tasks as your event progresses.</p>';
+    }
+
+    var docsEl = document.getElementById('docs-list');
+    if (docs.length > 0) {
+      var html = '';
+      for (var i = 0; i < docs.length; i++) {
+        var d = docs[i];
+        var ftype = (d.type || 'FILE').toUpperCase();
+        html += '<div class="doc-item">';
+        html += '<div style="width:32px;height:32px;background:#F3EEF9;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#4A2772;flex-shrink:0;">' + ftype + '</div>';
+        html += '<div><div class="doc-name">' + d.name + '</div><div class="doc-meta">' + ftype + ' · ' + fmtDate(d.date) + '</div></div>';
+        html += '<div style="font-size:0.75rem;color:#4A2772;">' + (d.status || '') + '</div>';
+        html += '</div>';
+      }
+      docsEl.innerHTML = html;
+    } else {
+      docsEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No documents uploaded yet. Your planner will upload contracts and files here.</p>';
+    }
+
+    var msgsFull = document.getElementById('messages-full');
+    if (msgs.length > 0) {
+      var html = '';
+      for (var i = 0; i < msgs.length; i++) {
+        var m = msgs[i];
+        var ini = m.sender ? m.sender.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2) : '??';
+        var bdr = !m.read ? 'border-left:4px solid #4A2772;' : '';
+        var badge = !m.read ? '<div style="margin-left:auto;font-size:0.68rem;background:#6B3FA0;color:white;padding:2px 10px;border-radius:10px;font-weight:600;">New</div>' : '';
+        var opa = m.read ? 'opacity:0.7;' : '';
+        html += '<div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);' + bdr + 'border-radius:4px;padding:20px 24px;' + opa + '">';
+        html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">';
+        html += '<div class="msg-avatar">' + ini + '</div>';
+        html += '<div><div style="font-size:0.9rem;font-weight:500;color:#2E1547;">' + m.sender + '</div>';
+        html += '<div style="font-size:0.72rem;color:#7A6E5E;">' + fmtDate(m.date) + '</div></div>';
+        html += badge + '</div>';
+        html += '<p style="font-size:0.88rem;color:#1A1208;line-height:1.7;">' + m.text + '</p></div>';
+      }
+      msgsFull.innerHTML = html;
+    } else {
+      msgsFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No messages yet. Your planner will reach out here once your event is being planned.</p>';
+    }
+
+    var replyBox = document.getElementById('reply-box');
+    if (currentEventId) replyBox.style.display = 'flex';
+  }
+
+  var currentEventId = null;
+
+  function completeTask(tid) {
+    fetch(API + '/client/tasks/' + tid + '/complete', {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token }
+    }).then(function(r) { return r.json(); })
+    .then(function() { loadDashboard(); });
+  }
+
+  function sendReply() {
+    var txt = document.getElementById('reply-input').value;
+    if (!txt || !currentEventId) return;
+    fetch(API + '/client/messages', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_id: currentEventId, text: txt })
+    }).then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) {
+        document.getElementById('reply-input').value = '';
+        loadDashboard();
+      }
+    });
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
