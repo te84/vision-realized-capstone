@@ -69,6 +69,41 @@
             <div class="label">Total Clients</div>
           </div>
         </div>
+        <div id="tab-events" class="tab-content active">
+          <h2
+            style="
+              font-family: &quot;Cormorant Garamond&quot;, serif;
+              font-size: 1.6rem;
+              color: #2e1547;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
+            Client Events
+          </h2>
+
+          <div style="overflow-x: auto; margin-bottom: 24px">
+            <table class="owner-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Event</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="events-tbody">
+                <tr>
+                  <td colspan="6" style="color:#7A6E5E;">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="event-detail"></div>
+        </div>
 
         <div id="tab-inbox" class="tab-content">
           <h2
@@ -113,6 +148,16 @@
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "../index.html";
+      }
+
+      function badgeClass(status) {
+        if (status === "Quote Submitted") return "pending";
+        if (status === "Consultation") return "progress";
+        if (status === "Planning") return "progress";
+        if (status === "Vendors Set") return "progress";
+        if (status === "Event Day") return "active";
+        if (status === "Completed") return "done";
+        return "pending";
       }
 
       var allEvents = [];
