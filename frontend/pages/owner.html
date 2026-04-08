@@ -105,6 +105,21 @@
           <div id="event-detail"></div>
         </div>
 
+        <div id="tab-quotes" class="tab-content">
+          <h2
+            style="
+              font-family: &quot;Cormorant Garamond&quot;, serif;
+              font-size: 1.6rem;
+              color: #2e1547;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
+            Quote Requests
+          </h2>
+          <div id="quotes-list"><p style="color: #7a6e5e">Loading...</p></div>
+        </div>
+
         <div id="tab-inbox" class="tab-content">
           <h2
             style="
@@ -213,6 +228,171 @@
             tbody.innerHTML = html;
           });
       }
+      function openEvent(eventId) {
+        fetch(API + "/owner/event-detail/" + eventId, {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+
+            var eventBox = document.getElementById("event-detail");
+            var html = "";
+
+            html +=
+              '<div style="margin-top:24px;padding:24px;border:1px solid #E6DFD6;background:#fff;">';
+            html +=
+              '<h3 style="font-family:&quot;Cormorant Garamond&quot;, serif;font-size:1.5rem;color:#2e1547;font-style:italic;margin-bottom:16px;">Event Details</h3>';
+
+            html +=
+              '<div style="margin-bottom:24px;"><h4 style="margin-bottom:12px;color:#2e1547;">Tasks</h4>';
+            if (data.tasks.length === 0) {
+              html += '<p style="color:#7A6E5E;">No tasks yet.</p>';
+            } else {
+              for (var i = 0; i < data.tasks.length; i++) {
+                var t = data.tasks[i];
+                html +=
+                  '<div style="padding:10px 0;border-bottom:1px solid #eee;">' +
+                  '<strong>' +
+                  t.title +
+                  "</strong>" +
+                  (t.due_date ? ' - <span style="color:#7A6E5E;">' + t.due_date + "</span>" : "") +
+                  (t.completed ? ' <span style="color:#2e1547;">(Completed)</span>' : "") +
+                  "</div>";
+              }
+            }
+            html += "</div>";
+
+            html +=
+              '<div style="margin-bottom:24px;"><h4 style="margin-bottom:12px;color:#2e1547;">Messages</h4>';
+            if (data.messages.length === 0) {
+              html += '<p style="color:#7A6E5E;">No messages yet.</p>';
+            } else {
+              for (var i = 0; i < data.messages.length; i++) {
+                var m = data.messages[i];
+                html +=
+                  '<div style="padding:10px 0;border-bottom:1px solid #eee;">' +
+                  '<strong>' +
+                  m.sender +
+                  "</strong>" +
+                  ' <span style="color:#7A6E5E;">' +
+                  (m.created_at || "") +
+                  "</span>" +
+                  "<div>" +
+                  m.text +
+                  "</div>" +
+                  "</div>";
+              }
+            }
+            html += "</div>";
+
+            html +=
+              '<div style="margin-bottom:24px;"><h4 style="margin-bottom:12px;color:#2e1547;">Documents</h4>';
+            if (data.documents.length === 0) {
+              html += '<p style="color:#7A6E5E;">No documents yet.</p>';
+            } else {
+              for (var i = 0; i < data.documents.length; i++) {
+                var d = data.documents[i];
+                html +=
+                  '<div style="padding:10px 0;border-bottom:1px solid #eee;">' +
+                  '<strong>' +
+                  d.name +
+                  "</strong>" +
+                  ' <span style="color:#7A6E5E;">' +
+                  (d.file_type || "") +
+                  " - " +
+                  (d.status || "") +
+                  "</span>" +
+                  "</div>";
+              }
+            }
+            html += "</div>";
+
+            eventBox.innerHTML = html;
+          });
+      }
+
+      function loadQuotes() {
+        fetch(API + "/quotes")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            document.getElementById("stat-quotes").textContent = data.quotes.length;
+
+            var box = document.getElementById("quotes-list");
+            if (data.quotes.length === 0) {
+              box.innerHTML = '<p style="color:#7A6E5E;">No quote requests yet.</p>';
+              return;
+            }
+
+            var html = "";
+            for (var i = 0; i < data.quotes.length; i++) {
+              var q = data.quotes[i];
+              html +=
+                '<div style="padding:16px 0;border-bottom:1px solid #eee;">' +
+                '<strong>' +
+                (q.first_name || "") +
+                " " +
+                (q.last_name || "") +
+                "</strong>" +
+                '<div style="color:#7A6E5E;">' +
+                (q.email || "") +
+                (q.phone ? " | " + q.phone : "") +
+                "</div>" +
+                '<div>' +
+                (q.event_type || "Event") +
+                (q.event_date ? " - " + q.event_date : "") +
+                "</div>" +
+                '<div style="color:#7A6E5E;">' +
+                (q.location || "") +
+                "</div>" +
+                "</div>";
+            }
+            box.innerHTML = html;
+          });
+      }
+
+      function loadInbox() {
+        fetch(API + "/messages")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            document.getElementById("stat-messages").textContent = data.messages.length;
+
+            var box = document.getElementById("inbox-list");
+            if (data.messages.length === 0) {
+              box.innerHTML = '<p style="color:#7A6E5E;">No contact messages yet.</p>';
+              return;
+            }
+
+            var html = "";
+            for (var i = 0; i < data.messages.length; i++) {
+              var m = data.messages[i];
+              html +=
+                '<div style="padding:16px 0;border-bottom:1px solid #eee;">' +
+                '<strong>' +
+                (m.name || "") +
+                "</strong>" +
+                '<div style="color:#7A6E5E;">' +
+                (m.email || "") +
+                "</div>" +
+                '<div>' +
+                (m.message || "") +
+                "</div>" +
+                "</div>";
+            }
+            box.innerHTML = html;
+          });
+      }
+
+      loadQuotes();
+      loadInbox();
       loadEvents();
     </script>
   </body>

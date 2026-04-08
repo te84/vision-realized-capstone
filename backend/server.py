@@ -5,6 +5,7 @@ from db import create_tables
 from routes.auth import register_auth_routes
 from routes.events import register_owner_events_routes
 from routes.event_details import register_owner_event_detail_routes
+from routes.inbox import register_inbox_routes
 
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend')
 
@@ -22,9 +23,10 @@ def serve_file(filename):
 register_auth_routes(app)
 register_owner_events_routes(app)
 register_owner_event_detail_routes(app)
+register_inbox_routes(app)
 
 create_tables()
 
 if __name__ == '__main__':
     print('starting server on http://localhost:5001')
-    app.run(debug=True, use_reloader=False, port=5001)
+    app.run(debug=True, port=5001)
