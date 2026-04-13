@@ -69,6 +69,7 @@
             <div class="label">Total Clients</div>
           </div>
         </div>
+
         <div id="tab-events" class="tab-content active">
           <h2
             style="
@@ -83,7 +84,7 @@
           </h2>
 
           <div style="overflow-x: auto; margin-bottom: 24px">
-            <table class="owner-table">
+            <table class="events-table">
               <thead>
                 <tr>
                   <th>Client</th>
@@ -96,7 +97,7 @@
               </thead>
               <tbody id="events-tbody">
                 <tr>
-                  <td colspan="6" style="color:#7A6E5E;">Loading...</td>
+                  <td colspan="6" style="color: #7a6e5e">Loading...</td>
                 </tr>
               </tbody>
             </table>
@@ -166,13 +167,13 @@
       }
 
       function badgeClass(status) {
-        if (status === "Quote Submitted") return "pending";
-        if (status === "Consultation") return "progress";
-        if (status === "Planning") return "progress";
-        if (status === "Vendors Set") return "progress";
-        if (status === "Event Day") return "active";
-        if (status === "Completed") return "done";
-        return "pending";
+        if (status === "Quote Submitted") return "badge-qs";
+        if (status === "Consultation") return "badge-co";
+        if (status === "Planning") return "badge-pl";
+        if (status === "Vendors Set") return "badge-vs";
+        if (status === "Event Day") return "badge-ed";
+        if (status === "Completed") return "badge-cm";
+        return "badge-qs";
       }
 
       var allEvents = [];
@@ -198,6 +199,7 @@
                 '<tr><td colspan="6" style="color:#7A6E5E;">No events yet.</td></tr>';
               return;
             }
+
             var html = "";
             for (var i = 0; i < allEvents.length; i++) {
               var ev = allEvents[i];
@@ -207,7 +209,8 @@
                 ev.firstname +
                 " " +
                 ev.lastname +
-                '</strong><br><span style="font-size:0.75rem;color:#7A6E5E;">' +
+                "</strong>" +
+                '<br><span style="font-size:0.75rem;color:#7A6E5E;">' +
                 (ev.email || "") +
                 "</span></td>";
               html += "<td>" + (ev.event_name || "-") + "</td>";
@@ -228,6 +231,7 @@
             tbody.innerHTML = html;
           });
       }
+
       function openEvent(eventId) {
         fetch(API + "/owner/event-detail/" + eventId, {
           headers: { Authorization: "Bearer " + token },
@@ -241,73 +245,69 @@
             var eventBox = document.getElementById("event-detail");
             var html = "";
 
-            html +=
-              '<div style="margin-top:24px;padding:24px;border:1px solid #E6DFD6;background:#fff;">';
-            html +=
-              '<h3 style="font-family:&quot;Cormorant Garamond&quot;, serif;font-size:1.5rem;color:#2e1547;font-style:italic;margin-bottom:16px;">Event Details</h3>';
+            html += '<div class="panel">';
+            html += "<h3>Event Details</h3>";
 
-            html +=
-              '<div style="margin-bottom:24px;"><h4 style="margin-bottom:12px;color:#2e1547;">Tasks</h4>';
+            html += "<h4>Tasks</h4>";
             if (data.tasks.length === 0) {
               html += '<p style="color:#7A6E5E;">No tasks yet.</p>';
             } else {
               for (var i = 0; i < data.tasks.length; i++) {
                 var t = data.tasks[i];
                 html +=
-                  '<div style="padding:10px 0;border-bottom:1px solid #eee;">' +
-                  '<strong>' +
-                  t.title +
-                  "</strong>" +
-                  (t.due_date ? ' - <span style="color:#7A6E5E;">' + t.due_date + "</span>" : "") +
-                  (t.completed ? ' <span style="color:#2e1547;">(Completed)</span>' : "") +
+                  '<div class="task-item' + (t.completed ? " done" : "") + '">';
+                html +=
+                  '<div class="task-toggle">' +
+                  (t.completed ? "✓" : "") +
                   "</div>";
+                html += "<span>" + t.title + "</span>";
+                if (t.due_date) {
+                  html +=
+                    '<span style="color:#7A6E5E;font-size:0.8rem;margin-left:8px;">' +
+                    t.due_date +
+                    "</span>";
+                }
+                html += "</div>";
               }
             }
-            html += "</div>";
 
-            html +=
-              '<div style="margin-bottom:24px;"><h4 style="margin-bottom:12px;color:#2e1547;">Messages</h4>';
+            html += "<h4>Messages</h4>";
             if (data.messages.length === 0) {
               html += '<p style="color:#7A6E5E;">No messages yet.</p>';
             } else {
               for (var i = 0; i < data.messages.length; i++) {
                 var m = data.messages[i];
+                html += '<div class="msg-bubble">';
+                html += '<span class="from">' + m.sender + "</span>";
                 html +=
-                  '<div style="padding:10px 0;border-bottom:1px solid #eee;">' +
-                  '<strong>' +
-                  m.sender +
-                  "</strong>" +
-                  ' <span style="color:#7A6E5E;">' +
-                  (m.created_at || "") +
-                  "</span>" +
-                  "<div>" +
-                  m.text +
-                  "</div>" +
-                  "</div>";
+                  '<span class="when">' + (m.created_at || "") + "</span>";
+                html += '<div class="body">' + m.text + "</div>";
+                html += "</div>";
               }
             }
-            html += "</div>";
 
-            html +=
-              '<div style="margin-bottom:24px;"><h4 style="margin-bottom:12px;color:#2e1547;">Documents</h4>';
+            html += "<h4>Documents</h4>";
             if (data.documents.length === 0) {
               html += '<p style="color:#7A6E5E;">No documents yet.</p>';
             } else {
               for (var i = 0; i < data.documents.length; i++) {
                 var d = data.documents[i];
+                html += '<div class="doc-row">';
                 html +=
-                  '<div style="padding:10px 0;border-bottom:1px solid #eee;">' +
-                  '<strong>' +
-                  d.name +
-                  "</strong>" +
-                  ' <span style="color:#7A6E5E;">' +
-                  (d.file_type || "") +
-                  " - " +
-                  (d.status || "") +
-                  "</span>" +
-                  "</div>";
+                  '<span class="doc-type">' +
+                  (d.file_type || "FILE") +
+                  "</span>";
+                html += "<span>" + d.name + "</span>";
+                if (d.status) {
+                  html +=
+                    '<span style="color:#7A6E5E;font-size:0.8rem;margin-left:auto;">' +
+                    d.status +
+                    "</span>";
+                }
+                html += "</div>";
               }
             }
+
             html += "</div>";
 
             eventBox.innerHTML = html;
@@ -321,36 +321,54 @@
           })
           .then(function (data) {
             if (!data.success) return;
-            document.getElementById("stat-quotes").textContent = data.quotes.length;
+            document.getElementById("stat-quotes").textContent =
+              data.quotes.length;
 
             var box = document.getElementById("quotes-list");
             if (data.quotes.length === 0) {
-              box.innerHTML = '<p style="color:#7A6E5E;">No quote requests yet.</p>';
+              box.innerHTML =
+                '<p style="color:#7A6E5E;">No quote requests yet.</p>';
               return;
             }
 
             var html = "";
             for (var i = 0; i < data.quotes.length; i++) {
               var q = data.quotes[i];
+              html += '<div class="panel" style="margin-bottom:12px;">';
+              html += '<div class="info-row">';
+              html += '<span class="info-label">Name</span>';
               html +=
-                '<div style="padding:16px 0;border-bottom:1px solid #eee;">' +
-                '<strong>' +
+                '<span class="info-val">' +
                 (q.first_name || "") +
                 " " +
                 (q.last_name || "") +
-                "</strong>" +
-                '<div style="color:#7A6E5E;">' +
-                (q.email || "") +
-                (q.phone ? " | " + q.phone : "") +
-                "</div>" +
-                '<div>' +
+                "</span>";
+              html += "</div>";
+              html += '<div class="info-row">';
+              html += '<span class="info-label">Email</span>';
+              html += '<span class="info-val">' + (q.email || "") + "</span>";
+              html += "</div>";
+              if (q.phone) {
+                html += '<div class="info-row">';
+                html += '<span class="info-label">Phone</span>';
+                html += '<span class="info-val">' + q.phone + "</span>";
+                html += "</div>";
+              }
+              html += '<div class="info-row">';
+              html += '<span class="info-label">Event</span>';
+              html +=
+                '<span class="info-val">' +
                 (q.event_type || "Event") +
-                (q.event_date ? " - " + q.event_date : "") +
-                "</div>" +
-                '<div style="color:#7A6E5E;">' +
-                (q.location || "") +
-                "</div>" +
-                "</div>";
+                (q.event_date ? " — " + q.event_date : "") +
+                "</span>";
+              html += "</div>";
+              if (q.location) {
+                html += '<div class="info-row">';
+                html += '<span class="info-label">Location</span>';
+                html += '<span class="info-val">' + q.location + "</span>";
+                html += "</div>";
+              }
+              html += "</div>";
             }
             box.innerHTML = html;
           });
@@ -363,29 +381,24 @@
           })
           .then(function (data) {
             if (!data.success) return;
-            document.getElementById("stat-messages").textContent = data.messages.length;
+            document.getElementById("stat-messages").textContent =
+              data.messages.length;
 
             var box = document.getElementById("inbox-list");
             if (data.messages.length === 0) {
-              box.innerHTML = '<p style="color:#7A6E5E;">No contact messages yet.</p>';
+              box.innerHTML =
+                '<p style="color:#7A6E5E;">No contact messages yet.</p>';
               return;
             }
 
             var html = "";
             for (var i = 0; i < data.messages.length; i++) {
               var m = data.messages[i];
-              html +=
-                '<div style="padding:16px 0;border-bottom:1px solid #eee;">' +
-                '<strong>' +
-                (m.name || "") +
-                "</strong>" +
-                '<div style="color:#7A6E5E;">' +
-                (m.email || "") +
-                "</div>" +
-                '<div>' +
-                (m.message || "") +
-                "</div>" +
-                "</div>";
+              html += '<div class="msg-bubble">';
+              html += '<span class="from">' + (m.name || "") + "</span>";
+              html += '<span class="when">' + (m.email || "") + "</span>";
+              html += '<div class="body">' + (m.message || "") + "</div>";
+              html += "</div>";
             }
             box.innerHTML = html;
           });
