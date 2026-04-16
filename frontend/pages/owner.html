@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vision Realized | Owner Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/owner.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="login.html" class="nav-portal">Client Login</a>
+      </div>
+      <a href="quote.html" class="nav-cta">Start a Quote</a>
+    </nav>
+
+    <div class="owner-layout">
+      <div class="owner-sidebar">
+        <div class="owner-sidebar-title">Owner Dashboard</div>
+        <div
+          class="owner-nav-item active"
+          onclick="showTab(this, 'tab-events')"
+        >
+          Client Events
+        </div>
+        <div class="owner-nav-item" onclick="showTab(this, 'tab-quotes')">
+          Quote Requests
+        </div>
+        <div class="owner-nav-item" onclick="showTab(this, 'tab-inbox')">
+          Contact Inbox
+        </div>
+        <div style="margin-top: auto; padding-top: 16px">
+          <div class="owner-nav-item" onclick="doLogout()">Sign Out</div>
+        </div>
+      </div>
+
+      <div class="owner-main">
+        <div class="owner-header">
+          <h1 id="owner-greeting">Owner Dashboard</h1>
+          <p>
+            Manage client events, view quotes, and communicate with clients.
+          </p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="num" id="stat-events">-</div>
+            <div class="label">Active Events</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-quotes">-</div>
+            <div class="label">Quote Requests</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-messages">-</div>
+            <div class="label">Contact Messages</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="stat-clients">-</div>
+            <div class="label">Total Clients</div>
+          </div>
+        </div>
+
+        <div id="tab-events" class="tab-content active">
+          <h2
+            style="
+              font-family: &quot;Cormorant Garamond&quot;, serif;
+              font-size: 1.6rem;
+              color: #2e1547;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
+            Client Events
+          </h2>
+
+          <div style="overflow-x: auto; margin-bottom: 24px">
+            <table class="events-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Event</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="events-tbody">
+                <tr>
+                  <td colspan="6" style="color: #7a6e5e">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="event-detail"></div>
+        </div>
+
+        <div id="tab-quotes" class="tab-content">
+          <h2
+            style="
+              font-family: &quot;Cormorant Garamond&quot;, serif;
+              font-size: 1.6rem;
+              color: #2e1547;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
+            Quote Requests
+          </h2>
+          <div id="quotes-list"><p style="color: #7a6e5e">Loading...</p></div>
+        </div>
+
+        <div id="tab-inbox" class="tab-content">
+          <h2
+            style="
+              font-family: &quot;Cormorant Garamond&quot;, serif;
+              font-size: 1.6rem;
+              color: #2e1547;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
+            Contact Inbox
+          </h2>
+          <div id="inbox-list"><p style="color: #7a6e5e">Loading...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var API = "http://localhost:5001";
+      var token = localStorage.getItem("token");
+      var user = JSON.parse(localStorage.getItem("user"));
+      if (!user || !token || user.role !== "Owner")
+        window.location.href = "login.html";
+
+      document.getElementById("owner-greeting").textContent =
+        "Welcome, " + (user.firstname || "Admin");
+
+      function showTab(el, id) {
+        var tabs = document.querySelectorAll(".tab-content");
+        for (var i = 0; i < tabs.length; i++)
+          tabs[i].classList.remove("active");
+        document.getElementById(id).classList.add("active");
+        var navs = document.querySelectorAll(".owner-nav-item");
+        for (var i = 0; i < navs.length; i++)
+          navs[i].classList.remove("active");
+        el.classList.add("active");
+        document.getElementById("event-detail").innerHTML = "";
+      }
+
+      function doLogout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "../index.html";
+      }
+
+      function badgeClass(status) {
+        if (status === "Quote Submitted") return "badge-qs";
+        if (status === "Consultation") return "badge-co";
+        if (status === "Planning") return "badge-pl";
+        if (status === "Vendors Set") return "badge-vs";
+        if (status === "Event Day") return "badge-ed";
+        if (status === "Completed") return "badge-cm";
+        return "badge-qs";
+      }
+
+      var allEvents = [];
+
+      function loadEvents() {
+        fetch(API + "/owner/events", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            allEvents = data.events;
+            document.getElementById("stat-events").textContent =
+              allEvents.length;
+            document.getElementById("stat-clients").textContent =
+              allEvents.length;
+
+            var tbody = document.getElementById("events-tbody");
+            if (allEvents.length === 0) {
+              tbody.innerHTML =
+                '<tr><td colspan="6" style="color:#7A6E5E;">No events yet.</td></tr>';
+              return;
+            }
+
+            var html = "";
+            for (var i = 0; i < allEvents.length; i++) {
+              var ev = allEvents[i];
+              html += "<tr>";
+              html +=
+                "<td><strong>" +
+                ev.firstname +
+                " " +
+                ev.lastname +
+                "</strong>" +
+                '<br><span style="font-size:0.75rem;color:#7A6E5E;">' +
+                (ev.email || "") +
+                "</span></td>";
+              html += "<td>" + (ev.event_name || "-") + "</td>";
+              html += "<td>" + (ev.event_date || "TBD") + "</td>";
+              html += "<td>" + (ev.event_type || "-") + "</td>";
+              html +=
+                '<td><span class="status-badge ' +
+                badgeClass(ev.status) +
+                '">' +
+                ev.status +
+                "</span></td>";
+              html +=
+                '<td><button class="action-btn" onclick="openEvent(' +
+                ev.id +
+                ')">Manage</button></td>';
+              html += "</tr>";
+            }
+            tbody.innerHTML = html;
+          });
+      }
+
+      function openEvent(eventId) {
+        fetch(API + "/owner/event-detail/" + eventId, {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+
+            var eventBox = document.getElementById("event-detail");
+            var html = "";
+
+            html += '<div class="panel">';
+            html += "<h3>Event Details</h3>";
+
+            html += "<h4>Tasks</h4>";
+            if (data.tasks.length === 0) {
+              html += '<p style="color:#7A6E5E;">No tasks yet.</p>';
+            } else {
+              for (var i = 0; i < data.tasks.length; i++) {
+                var t = data.tasks[i];
+                html +=
+                  '<div class="task-item' + (t.completed ? " done" : "") + '">';
+                html +=
+                  '<div class="task-toggle">' +
+                  (t.completed ? "✓" : "") +
+                  "</div>";
+                html += "<span>" + t.title + "</span>";
+                if (t.due_date) {
+                  html +=
+                    '<span style="color:#7A6E5E;font-size:0.8rem;margin-left:8px;">' +
+                    t.due_date +
+                    "</span>";
+                }
+                html += "</div>";
+              }
+            }
+
+            html += "<h4>Messages</h4>";
+            if (data.messages.length === 0) {
+              html += '<p style="color:#7A6E5E;">No messages yet.</p>';
+            } else {
+              for (var i = 0; i < data.messages.length; i++) {
+                var m = data.messages[i];
+                html += '<div class="msg-bubble">';
+                html += '<span class="from">' + m.sender + "</span>";
+                html +=
+                  '<span class="when">' + (m.created_at || "") + "</span>";
+                html += '<div class="body">' + m.text + "</div>";
+                html += "</div>";
+              }
+            }
+
+            html += "<h4>Documents</h4>";
+            if (data.documents.length === 0) {
+              html += '<p style="color:#7A6E5E;">No documents yet.</p>';
+            } else {
+              for (var i = 0; i < data.documents.length; i++) {
+                var d = data.documents[i];
+                html += '<div class="doc-row">';
+                html +=
+                  '<span class="doc-type">' +
+                  (d.file_type || "FILE") +
+                  "</span>";
+                html += "<span>" + d.name + "</span>";
+                if (d.status) {
+                  html +=
+                    '<span style="color:#7A6E5E;font-size:0.8rem;margin-left:auto;">' +
+                    d.status +
+                    "</span>";
+                }
+                html += "</div>";
+              }
+            }
+
+            html += "</div>";
+
+            eventBox.innerHTML = html;
+          });
+      }
+
+      function loadQuotes() {
+        fetch(API + "/quotes")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            document.getElementById("stat-quotes").textContent =
+              data.quotes.length;
+
+            var box = document.getElementById("quotes-list");
+            if (data.quotes.length === 0) {
+              box.innerHTML =
+                '<p style="color:#7A6E5E;">No quote requests yet.</p>';
+              return;
+            }
+
+            var html = "";
+            for (var i = 0; i < data.quotes.length; i++) {
+              var q = data.quotes[i];
+              html += '<div class="panel" style="margin-bottom:12px;">';
+              html += '<div class="info-row">';
+              html += '<span class="info-label">Name</span>';
+              html +=
+                '<span class="info-val">' +
+                (q.first_name || "") +
+                " " +
+                (q.last_name || "") +
+                "</span>";
+              html += "</div>";
+              html += '<div class="info-row">';
+              html += '<span class="info-label">Email</span>';
+              html += '<span class="info-val">' + (q.email || "") + "</span>";
+              html += "</div>";
+              if (q.phone) {
+                html += '<div class="info-row">';
+                html += '<span class="info-label">Phone</span>';
+                html += '<span class="info-val">' + q.phone + "</span>";
+                html += "</div>";
+              }
+              html += '<div class="info-row">';
+              html += '<span class="info-label">Event</span>';
+              html +=
+                '<span class="info-val">' +
+                (q.event_type || "Event") +
+                (q.event_date ? " — " + q.event_date : "") +
+                "</span>";
+              html += "</div>";
+              if (q.location) {
+                html += '<div class="info-row">';
+                html += '<span class="info-label">Location</span>';
+                html += '<span class="info-val">' + q.location + "</span>";
+                html += "</div>";
+              }
+              html += "</div>";
+            }
+            box.innerHTML = html;
+          });
+      }
+
+      function loadInbox() {
+        fetch(API + "/messages")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            document.getElementById("stat-messages").textContent =
+              data.messages.length;
+
+            var box = document.getElementById("inbox-list");
+            if (data.messages.length === 0) {
+              box.innerHTML =
+                '<p style="color:#7A6E5E;">No contact messages yet.</p>';
+              return;
+            }
+
+            var html = "";
+            for (var i = 0; i < data.messages.length; i++) {
+              var m = data.messages[i];
+              html += '<div class="msg-bubble">';
+              html += '<span class="from">' + (m.name || "") + "</span>";
+              html += '<span class="when">' + (m.email || "") + "</span>";
+              html += '<div class="body">' + (m.message || "") + "</div>";
+              html += "</div>";
+            }
+            box.innerHTML = html;
+          });
+      }
+
+      loadQuotes();
+      loadInbox();
+      loadEvents();
+    </script>
+  </body>
+</html>
