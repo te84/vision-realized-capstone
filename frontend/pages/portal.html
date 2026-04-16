@@ -1,409 +1,727 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vision Realized | Client Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/styles.css">
-</head>
-<body>
-
-<nav>
-  <div class="nav-links">
-    <a href="../index.html">Home</a>
-    <a href="about.html">About Us</a>
-    <a href="services.html">Services</a>
-     <a href="gallery.html">Gallery</a>
-    <a href="testimonials.html">Testimonials</a>
-    <a href="contact.html">Contact Us</a>
-    <a href="portal.html" class="nav-portal">Client Portal</a>
-  </div>
-  <a href="quote.html" class="nav-cta">Start a Quote</a>
-</nav>
-
-<div class="page-content">
-  <div class="portal-layout">
-    <div class="portal-sidebar">
-      <div class="portal-user">
-        <div class="portal-avatar" id="portal-avatar">--</div>
-        <div><div class="portal-user-name" id="portal-user-name">Loading...</div><div class="portal-user-event" id="portal-user-event"></div></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vision Realized | Client Portal</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="services.html">Services</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="portal.html" class="nav-portal">Client Portal</a>
       </div>
-      <div class="portal-nav-item active" onclick="switchTab(this,'tab-overview')"><span class="portal-nav-icon">--</span> Dashboard</div>
-      <div class="portal-nav-item" onclick="switchTab(this,'tab-progress')"><span class="portal-nav-icon">--</span> Event Progress</div>
-      <div class="portal-nav-item" onclick="switchTab(this,'tab-checklist')"><span class="portal-nav-icon">--</span> My Tasks</div>
-      <div class="portal-nav-item" onclick="switchTab(this,'tab-docs')"><span class="portal-nav-icon">--</span> Documents</div>
-      <div class="portal-nav-item" onclick="switchTab(this,'tab-messages')"><span class="portal-nav-icon">--</span> Messages <span id="msg-badge" style="display:none;margin-left:auto;background:#6B3FA0;color:white;font-size:0.65rem;padding:1px 7px;border-radius:10px;font-weight:600;">0</span></div>
-      <div class="portal-nav-item" onclick="switchTab(this,'tab-after')"><span class="portal-nav-icon">--</span> After Event</div>
-      <div style="margin-top:auto;padding-bottom:16px;">
-        <a href="../index.html" class="portal-nav-item"><span class="portal-nav-icon">&larr;</span> Back to Site</a>
-        <div class="portal-nav-item" onclick="logout()"><span class="portal-nav-icon">&times;</span> Sign Out</div>
+      <a href="quote.html" class="nav-cta">Start a Quote</a>
+    </nav>
+
+    <div class="page-content">
+      <div class="portal-layout">
+        <div class="portal-sidebar">
+          <div class="portal-user">
+            <div class="portal-avatar" id="portal-avatar">--</div>
+            <div>
+              <div class="portal-user-name" id="portal-user-name">
+                Loading...
+              </div>
+              <div class="portal-user-event" id="portal-user-event"></div>
+            </div>
+          </div>
+          <div
+            class="portal-nav-item active"
+            onclick="switchTab(this, 'tab-overview')"
+          >
+            <span class="portal-nav-icon">--</span> Dashboard
+          </div>
+          <div
+            class="portal-nav-item"
+            onclick="switchTab(this, 'tab-progress')"
+          >
+            <span class="portal-nav-icon">--</span> Event Progress
+          </div>
+          <div
+            class="portal-nav-item"
+            onclick="switchTab(this, 'tab-checklist')"
+          >
+            <span class="portal-nav-icon">--</span> My Tasks
+          </div>
+          <div class="portal-nav-item" onclick="switchTab(this, 'tab-docs')">
+            <span class="portal-nav-icon">--</span> Documents
+          </div>
+          <div
+            class="portal-nav-item"
+            onclick="switchTab(this, 'tab-messages')"
+          >
+            <span class="portal-nav-icon">--</span> Messages
+            <span
+              id="msg-badge"
+              style="
+                display: none;
+                margin-left: auto;
+                background: #6b3fa0;
+                color: white;
+                font-size: 0.65rem;
+                padding: 1px 7px;
+                border-radius: 10px;
+                font-weight: 600;
+              "
+              >0</span
+            >
+          </div>
+          <div class="portal-nav-item" onclick="switchTab(this, 'tab-after')">
+            <span class="portal-nav-icon">--</span> After Event
+          </div>
+          <div style="margin-top: auto; padding-bottom: 16px">
+            <a href="../index.html" class="portal-nav-item"
+              ><span class="portal-nav-icon">&larr;</span> Back to Site</a
+            >
+            <div class="portal-nav-item" onclick="logout()">
+              <span class="portal-nav-icon">&times;</span> Sign Out
+            </div>
+          </div>
+        </div>
+
+        <div class="portal-content">
+          <div id="tab-overview">
+            <div class="portal-header">
+              <div class="portal-greeting">Welcome back</div>
+              <div class="portal-title" id="portal-greeting-name">
+                Loading...
+              </div>
+            </div>
+            <div class="event-status-card" id="event-status-card">
+              <div>
+                <div class="event-badge" id="event-badge"></div>
+                <div class="event-name" id="event-name"></div>
+                <div class="event-meta" id="event-meta"></div>
+              </div>
+              <div style="text-align: center; flex-shrink: 0">
+                <div class="countdown-num" id="countdown-num">--</div>
+                <div class="countdown-label">Days Away</div>
+              </div>
+            </div>
+            <div class="journey-track">
+              <div class="journey-title">Event Journey</div>
+              <div class="journey-steps" id="journey-steps"></div>
+            </div>
+            <div class="dash-grid">
+              <div class="dash-card">
+                <div class="dash-card-title">My Tasks</div>
+                <div class="checklist" id="dash-tasks"></div>
+              </div>
+              <div class="dash-card">
+                <div class="dash-card-title">Recent Messages</div>
+                <div class="msg-list" id="dash-messages"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-progress" style="display: none">
+            <div class="portal-header">
+              <div class="portal-greeting">Current status</div>
+              <div class="portal-title">Event Progress</div>
+            </div>
+            <div
+              id="progress-steps"
+              style="display: flex; flex-direction: column; gap: 12px"
+            ></div>
+          </div>
+
+          <div id="tab-checklist" style="display: none">
+            <div class="portal-header">
+              <div class="portal-greeting">Stay on track</div>
+              <div class="portal-title">My Tasks</div>
+            </div>
+            <div
+              id="tasks-full"
+              style="
+                background: #fffdf9;
+                border: 1px solid rgba(74, 39, 114, 0.15);
+                border-radius: 4px;
+                padding: 32px;
+              "
+            ></div>
+          </div>
+
+          <div id="tab-docs" style="display: none">
+            <div class="portal-header">
+              <div class="portal-greeting">Files & contracts</div>
+              <div class="portal-title">Documents</div>
+            </div>
+            <div id="docs-list"></div>
+          </div>
+
+          <div id="tab-messages" style="display: none">
+            <div class="portal-header">
+              <div class="portal-greeting">Stay in touch</div>
+              <div class="portal-title">Messages</div>
+            </div>
+            <div
+              id="messages-full"
+              style="display: flex; flex-direction: column; gap: 16px"
+            ></div>
+            <div
+              id="reply-box"
+              style="
+                display: none;
+                margin-top: 16px;
+                background: #fffdf9;
+                border: 1px solid rgba(74, 39, 114, 0.15);
+                padding: 16px;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+              "
+            >
+              <input
+                id="reply-input"
+                placeholder="Reply..."
+                style="
+                  flex: 1;
+                  padding: 12px 16px;
+                  border: 1.5px solid rgba(74, 39, 114, 0.15);
+                  background: #faf7f2;
+                  font-family: &quot;DM Sans&quot;, sans-serif;
+                  font-size: 0.88rem;
+                  outline: none;
+                "
+              />
+              <button
+                onclick="sendReply()"
+                style="
+                  background: #4a2772;
+                  color: white;
+                  border: none;
+                  padding: 12px 20px;
+                  font-family: &quot;DM Sans&quot;, sans-serif;
+                  font-size: 0.82rem;
+                  cursor: pointer;
+                "
+              >
+                Send
+              </button>
+            </div>
+          </div>
+
+          <div id="tab-after" style="display: none">
+            <div class="portal-header">
+              <div class="portal-greeting">Relive your event</div>
+              <div class="portal-title">After Your Event</div>
+            </div>
+            <div class="after-card">
+              <h3>How did we do?</h3>
+              <p>
+                Your feedback helps us grow and helps future clients find us. It
+                only takes a minute.
+              </p>
+              <div class="star-row">
+                &#11088;&#11088;&#11088;&#11088;&#11088;
+              </div>
+              <button class="btn-primary">Leave a Review</button>
+            </div>
+            <div class="after-grid">
+              <div class="after-mini"><p>Download event photos</p></div>
+              <div class="after-mini"><p>Refer a friend</p></div>
+              <div class="after-mini"><p>Book your next event</p></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="portal-content">
-      <div id="tab-overview">
-        <div class="portal-header"><div class="portal-greeting">Welcome back</div><div class="portal-title" id="portal-greeting-name">Loading...</div></div>
-        <div class="event-status-card" id="event-status-card">
-          <div>
-            <div class="event-badge" id="event-badge"></div>
-            <div class="event-name" id="event-name"></div>
-            <div class="event-meta" id="event-meta"></div>
-          </div>
-          <div style="text-align:center;flex-shrink:0;"><div class="countdown-num" id="countdown-num">--</div><div class="countdown-label">Days Away</div></div>
-        </div>
-        <div class="journey-track">
-          <div class="journey-title">Event Journey</div>
-          <div class="journey-steps" id="journey-steps"></div>
-        </div>
-        <div class="dash-grid">
-          <div class="dash-card">
-            <div class="dash-card-title">My Tasks</div>
-            <div class="checklist" id="dash-tasks"></div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-title">Recent Messages</div>
-            <div class="msg-list" id="dash-messages"></div>
-          </div>
-        </div>
-      </div>
+    <script>
+      var API = "http://localhost:5001";
+      var user = JSON.parse(localStorage.getItem("user"));
+      var token = localStorage.getItem("token");
 
-      <div id="tab-progress" style="display:none">
-        <div class="portal-header"><div class="portal-greeting">Current status</div><div class="portal-title">Event Progress</div></div>
-        <div id="progress-steps" style="display:flex;flex-direction:column;gap:12px;"></div>
-      </div>
+      if (!user || !token) window.location.href = "login.html";
 
-      <div id="tab-checklist" style="display:none">
-        <div class="portal-header"><div class="portal-greeting">Stay on track</div><div class="portal-title">My Tasks</div></div>
-        <div id="tasks-full" style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:32px;"></div>
-      </div>
-
-      <div id="tab-docs" style="display:none">
-        <div class="portal-header"><div class="portal-greeting">Files & contracts</div><div class="portal-title">Documents</div></div>
-        <div id="docs-list"></div>
-      </div>
-
-      <div id="tab-messages" style="display:none">
-        <div class="portal-header"><div class="portal-greeting">Stay in touch</div><div class="portal-title">Messages</div></div>
-        <div id="messages-full" style="display:flex;flex-direction:column;gap:16px;"></div>
-        <div id="reply-box" style="display:none;margin-top:16px;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);padding:16px;display:flex;gap:12px;align-items:center;">
-          <input id="reply-input" placeholder="Reply..." style="flex:1;padding:12px 16px;border:1.5px solid rgba(74,39,114,0.15);background:#FAF7F2;font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;">
-          <button onclick="sendReply()" style="background:#4A2772;color:white;border:none;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;">Send</button>
-        </div>
-      </div>
-
-      <div id="tab-after" style="display:none">
-        <div class="portal-header"><div class="portal-greeting">Relive your event</div><div class="portal-title">After Your Event</div></div>
-        <div class="after-card">
-          <h3>How did we do?</h3>
-          <p>Your feedback helps us grow and helps future clients find us. It only takes a minute.</p>
-          <div class="star-row">&#11088;&#11088;&#11088;&#11088;&#11088;</div>
-          <button class="btn-primary">Leave a Review</button>
-        </div>
-        <div class="after-grid">
-          <div class="after-mini"><p>Download event photos</p></div>
-          <div class="after-mini"><p>Refer a friend</p></div>
-          <div class="after-mini"><p>Book your next event</p></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  var API = '';
-  var user = JSON.parse(localStorage.getItem('user'));
-  var token = localStorage.getItem('token');
-
-  if (!user || !token) window.location.href = 'login.html';
-
-  if (user) {
-    var navEl = document.querySelector('.nav-portal');
-    navEl.textContent = user.firstname + "'s Portal";
-    navEl.href = 'portal.html';
-  }
-
-  function switchTab(el, id) {
-    var items = document.querySelectorAll('.portal-nav-item');
-    for (var i = 0; i < items.length; i++) items[i].classList.remove('active');
-    if (el) el.classList.add('active');
-    var tabs = document.querySelectorAll('.portal-content > div');
-    for (var i = 0; i < tabs.length; i++) tabs[i].style.display = 'none';
-    document.getElementById(id).style.display = 'block';
-    window.scrollTo(0, 0);
-  }
-
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = 'index.html';
-  }
-
-  function getGreeting() {
-    var h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
-
-  function daysUntil(d) {
-    if (!d) return null;
-    var ev = new Date(d + 'T00:00:00');
-    var now = new Date();
-    now.setHours(0,0,0,0);
-    return Math.ceil((ev - now) / 86400000);
-  }
-
-  function fmtDate(d) {
-    if (!d) return 'TBD';
-    var dt = new Date(d + 'T00:00:00');
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return months[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
-  }
-
-  function loadDashboard() {
-    fetch(API + '/client/dashboard', {
-      headers: { 'Authorization': 'Bearer ' + token }
-    })
-    .then(function(res) {
-      if (!res.ok) throw new Error('bad token');
-      return res.json();
-    })
-    .then(function(data) {
-      renderDashboard(data);
-    })
-    .catch(function(err) {
-      console.log('dashboard error:', err);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    });
-  }
-
-  function renderDashboard(data) {
-    var u = data.user;
-    var ev = data.event;
-    var tasks = data.tasks;
-    var msgs = data.messages;
-    var docs = data.documents;
-    var journey = data.journey;
-
-    if (ev) currentEventId = ev.id;
-    var fullName = u.firstname + ' ' + u.lastname;
-    var initials = fullName.split(' ').map(function(n){ return n[0]; }).join('').toUpperCase().slice(0,2);
-    document.getElementById('portal-avatar').textContent = initials;
-    document.getElementById('portal-user-name').textContent = fullName;
-
-    if (ev) {
-      var shortDate = ev.date ? fmtDate(ev.date) : '';
-      document.getElementById('portal-user-event').textContent = (ev.event_type || 'Event') + (shortDate ? ' · ' + shortDate : '');
-    } else {
-      document.getElementById('portal-user-event').textContent = 'No event yet';
-    }
-
-    document.getElementById('portal-greeting-name').textContent = getGreeting() + ', ' + u.firstname;
-
-    if (ev) {
-      document.getElementById('event-badge').textContent = ev.status || 'Pending';
-      document.getElementById('event-name').textContent = ev.name || 'Your Event';
-      var metaHtml = '';
-      metaHtml += '<div class="event-meta-item"><strong>' + fmtDate(ev.date) + '</strong></div>';
-      metaHtml += '<div class="event-meta-item"><strong>' + (ev.location || 'TBD') + '</strong></div>';
-      metaHtml += '<div class="event-meta-item"><strong>~' + (ev.guests || '?') + ' Guests</strong></div>';
-      metaHtml += '<div class="event-meta-item"><strong>' + (ev.planner || 'TBD') + '</strong></div>';
-      document.getElementById('event-meta').innerHTML = metaHtml;
-
-      var days = daysUntil(ev.date);
-      if (days !== null && days >= 0) document.getElementById('countdown-num').textContent = days;
-      else if (days !== null) document.getElementById('countdown-num').textContent = 'Past';
-      else document.getElementById('countdown-num').textContent = '--';
-    } else {
-      document.getElementById('event-badge').textContent = 'No Event';
-      document.getElementById('event-name').textContent = 'No event found';
-      document.getElementById('event-meta').innerHTML = '<div class="event-meta-item">Submit a quote to get started</div>';
-      document.getElementById('countdown-num').textContent = '--';
-    }
-
-    var jEl = document.getElementById('journey-steps');
-    if (journey.length > 0) {
-      var html = '';
-      for (var i = 0; i < journey.length; i++) {
-        var s = journey[i];
-        var dot = '';
-        if (s.status === 'done') dot = '✓';
-        else if (s.status === 'current') dot = '·';
-        else dot = s.step;
-        html += '<div class="j-step ' + s.status + '"><div class="j-dot">' + dot + '</div><div class="j-name">' + s.name + '</div></div>';
+      if (user) {
+        var navEl = document.querySelector(".nav-portal");
+        navEl.textContent = user.firstname + "'s Portal";
+        navEl.href = "portal.html";
       }
-      jEl.innerHTML = html;
-    } else {
-      jEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
-    }
 
-    var dashTasks = document.getElementById('dash-tasks');
-    if (tasks.length > 0) {
-      var html = '';
-      for (var i = 0; i < tasks.length; i++) {
-        var t = tasks[i];
-        var cls = t.completed ? ' done' : '';
-        var chk = t.completed ? '✓' : '';
-        var due = '';
-        if (t.due_date && !t.completed) due = ' <span style="color:#4A2772;font-size:0.72rem;">Due ' + fmtDate(t.due_date) + '</span>';
-        var click = t.completed ? '' : ' onclick="completeTask(' + t.id + ')" style="cursor:pointer;" title="Click to mark complete"';
-        html += '<div class="check-item' + cls + '"><div class="check-box"' + click + '>' + chk + '</div><span class="check-text">' + t.title + due + '</span></div>';
+      function switchTab(el, id) {
+        var items = document.querySelectorAll(".portal-nav-item");
+        for (var i = 0; i < items.length; i++)
+          items[i].classList.remove("active");
+        if (el) el.classList.add("active");
+        var tabs = document.querySelectorAll(".portal-content > div");
+        for (var i = 0; i < tabs.length; i++) tabs[i].style.display = "none";
+        document.getElementById(id).style.display = "block";
+        window.scrollTo(0, 0);
       }
-      dashTasks.innerHTML = html;
-    } else {
-      dashTasks.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
-    }
 
-    var dashMsgs = document.getElementById('dash-messages');
-    if (msgs.length > 0) {
-      var html = '';
-      var cnt = msgs.length > 3 ? 3 : msgs.length;
-      for (var i = 0; i < cnt; i++) {
-        var m = msgs[i];
-        var unread = !m.read ? ' msg-unread' : '';
-        var ini = m.sender ? m.sender.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2) : '??';
-        var prev = m.text.length > 60 ? m.text.substring(0,60) + '...' : m.text;
-        html += '<div class="msg-item' + unread + '"><div class="msg-avatar">' + ini + '</div><div><div class="msg-name">' + m.sender + '</div><div class="msg-preview">' + prev + '</div></div><div class="msg-time">' + fmtDate(m.date) + '</div></div>';
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "../index.html";
       }
-      dashMsgs.innerHTML = html;
-    } else {
-      dashMsgs.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
-    }
 
-    var unread = 0;
-    for (var i = 0; i < msgs.length; i++) { if (!msgs[i].read) unread++; }
-    if (unread > 0) {
-      document.getElementById('msg-badge').textContent = unread;
-      document.getElementById('msg-badge').style.display = 'inline';
-    }
+      function getGreeting() {
+        var h = new Date().getHours();
+        if (h < 12) return "Good morning";
+        if (h < 17) return "Good afternoon";
+        return "Good evening";
+      }
 
-    var progEl = document.getElementById('progress-steps');
-    if (journey.length > 0) {
-      var html = '';
-      for (var i = 0; i < journey.length; i++) {
-        var s = journey[i];
-        if (s.status === 'done') {
-          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:rgba(74,39,114,0.06);border:1px solid rgba(74,39,114,0.2);border-radius:4px;">';
-          html += '<span style="color:#4A2772;font-weight:500;">✓</span>';
-          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#4A2772;opacity:0.7;">Completed</div>';
-          html += '<div style="font-size:1.05rem;font-weight:500;color:#2E1547;">' + s.name + '</div></div></div>';
-        } else if (s.status === 'current') {
-          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#4A2772;border-radius:4px;">';
-          html += '<span style="color:white;">→</span>';
-          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">In Progress</div>';
-          html += '<div style="font-size:1.05rem;font-weight:500;color:white;">' + s.name + '</div></div></div>';
+      function daysUntil(d) {
+        if (!d) return null;
+        var ev = new Date(d + "T00:00:00");
+        var now = new Date();
+        now.setHours(0, 0, 0, 0);
+        return Math.ceil((ev - now) / 86400000);
+      }
+
+      function fmtDate(d) {
+        if (!d) return "TBD";
+        var dt = new Date(d + "T00:00:00");
+        var months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        return (
+          months[dt.getMonth()] + " " + dt.getDate() + ", " + dt.getFullYear()
+        );
+      }
+
+      function loadDashboard() {
+        fetch(API + "/client/dashboard", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error("bad token");
+            return res.json();
+          })
+          .then(function (data) {
+            renderDashboard(data);
+          })
+          .catch(function (err) {
+            console.log("dashboard error:", err);
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "login.html";
+          });
+      }
+
+      function renderDashboard(data) {
+        var u = data.user;
+        var ev = data.event;
+        var tasks = data.tasks;
+        var msgs = data.messages;
+        var docs = data.documents;
+        var journey = data.journey;
+
+        if (ev) currentEventId = ev.id;
+        var fullName = u.firstname + " " + u.lastname;
+        var initials = fullName
+          .split(" ")
+          .map(function (n) {
+            return n[0];
+          })
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
+        document.getElementById("portal-avatar").textContent = initials;
+        document.getElementById("portal-user-name").textContent = fullName;
+
+        if (ev) {
+          var shortDate = ev.date ? fmtDate(ev.date) : "";
+          document.getElementById("portal-user-event").textContent =
+            (ev.event_type || "Event") + (shortDate ? " · " + shortDate : "");
         } else {
-          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
-          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">Upcoming</div>';
-          html += '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' + s.name + '</div></div></div>';
+          document.getElementById("portal-user-event").textContent =
+            "No event yet";
         }
-      }
-      progEl.innerHTML = html;
-    } else {
-      progEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No progress data yet. Submit a quote to get started.</p>';
-    }
 
-    var tasksFull = document.getElementById('tasks-full');
-    if (tasks.length > 0) {
-      var done = 0; var remaining = 0;
-      for (var i = 0; i < tasks.length; i++) { if (tasks[i].completed) done++; else remaining++; }
+        document.getElementById("portal-greeting-name").textContent =
+          getGreeting() + ", " + u.firstname;
 
-      var html = '<div style="display:flex;gap:10px;margin-bottom:24px;">';
-      html += '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' + done + ' Completed</div>';
-      html += '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' + remaining + ' Remaining</div></div>';
-      html += '<div class="checklist" style="gap:16px;">';
-      for (var i = 0; i < tasks.length; i++) {
-        var t = tasks[i];
-        var cls = t.completed ? ' done' : '';
-        var chk = t.completed ? '✓' : '';
-        var dateInfo = '';
-        if (t.due_date) {
-          dateInfo = t.completed
-            ? '<div style="font-size:0.72rem;color:#7A6E5E;margin-top:2px;">Completed</div>'
-            : '<div style="font-size:0.72rem;color:#4A2772;font-weight:500;margin-top:2px;">Due ' + fmtDate(t.due_date) + '</div>';
+        if (ev) {
+          document.getElementById("event-badge").textContent =
+            ev.status || "Pending";
+          document.getElementById("event-name").textContent =
+            ev.name || "Your Event";
+          var metaHtml = "";
+          metaHtml +=
+            '<div class="event-meta-item"><strong>' +
+            fmtDate(ev.date) +
+            "</strong></div>";
+          metaHtml +=
+            '<div class="event-meta-item"><strong>' +
+            (ev.location || "TBD") +
+            "</strong></div>";
+          metaHtml +=
+            '<div class="event-meta-item"><strong>~' +
+            (ev.guests || "?") +
+            " Guests</strong></div>";
+          metaHtml +=
+            '<div class="event-meta-item"><strong>' +
+            (ev.planner || "TBD") +
+            "</strong></div>";
+          document.getElementById("event-meta").innerHTML = metaHtml;
+
+          var days = daysUntil(ev.date);
+          if (days !== null && days >= 0)
+            document.getElementById("countdown-num").textContent = days;
+          else if (days !== null)
+            document.getElementById("countdown-num").textContent = "Past";
+          else document.getElementById("countdown-num").textContent = "--";
+        } else {
+          document.getElementById("event-badge").textContent = "No Event";
+          document.getElementById("event-name").textContent = "No event found";
+          document.getElementById("event-meta").innerHTML =
+            '<div class="event-meta-item">Submit a quote to get started</div>';
+          document.getElementById("countdown-num").textContent = "--";
         }
-        var click2 = t.completed ? '' : ' onclick="completeTask(' + t.id + ')" style="cursor:pointer;" title="Click to complete"';
-        html += '<div class="check-item' + cls + '" style="padding:14px 0;"><div class="check-box"' + click2 + '>' + chk + '</div><div><span class="check-text">' + t.title + '</span>' + dateInfo + '</div></div>';
+
+        var jEl = document.getElementById("journey-steps");
+        if (journey.length > 0) {
+          var html = "";
+          for (var i = 0; i < journey.length; i++) {
+            var s = journey[i];
+            var dot = "";
+            if (s.status === "done") dot = "✓";
+            else if (s.status === "current") dot = "·";
+            else dot = s.step;
+            html +=
+              '<div class="j-step ' +
+              s.status +
+              '"><div class="j-dot">' +
+              dot +
+              '</div><div class="j-name">' +
+              s.name +
+              "</div></div>";
+          }
+          jEl.innerHTML = html;
+        } else {
+          jEl.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
+        }
+
+        var dashTasks = document.getElementById("dash-tasks");
+        if (tasks.length > 0) {
+          var html = "";
+          for (var i = 0; i < tasks.length; i++) {
+            var t = tasks[i];
+            var cls = t.completed ? " done" : "";
+            var chk = t.completed ? "✓" : "";
+            var due = "";
+            if (t.due_date && !t.completed)
+              due =
+                ' <span style="color:#4A2772;font-size:0.72rem;">Due ' +
+                fmtDate(t.due_date) +
+                "</span>";
+            var click = t.completed
+              ? ""
+              : ' onclick="completeTask(' +
+                t.id +
+                ')" style="cursor:pointer;" title="Click to mark complete"';
+            html +=
+              '<div class="check-item' +
+              cls +
+              '"><div class="check-box"' +
+              click +
+              ">" +
+              chk +
+              '</div><span class="check-text">' +
+              t.title +
+              due +
+              "</span></div>";
+          }
+          dashTasks.innerHTML = html;
+        } else {
+          dashTasks.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
+        }
+
+        var dashMsgs = document.getElementById("dash-messages");
+        if (msgs.length > 0) {
+          var html = "";
+          var cnt = msgs.length > 3 ? 3 : msgs.length;
+          for (var i = 0; i < cnt; i++) {
+            var m = msgs[i];
+            var unread = !m.read ? " msg-unread" : "";
+            var ini = m.sender
+              ? m.sender
+                  .split(" ")
+                  .map(function (n) {
+                    return n[0];
+                  })
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2)
+              : "??";
+            var prev =
+              m.text.length > 60 ? m.text.substring(0, 60) + "..." : m.text;
+            html +=
+              '<div class="msg-item' +
+              unread +
+              '"><div class="msg-avatar">' +
+              ini +
+              '</div><div><div class="msg-name">' +
+              m.sender +
+              '</div><div class="msg-preview">' +
+              prev +
+              '</div></div><div class="msg-time">' +
+              fmtDate(m.date) +
+              "</div></div>";
+          }
+          dashMsgs.innerHTML = html;
+        } else {
+          dashMsgs.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
+        }
+
+        var unread = 0;
+        for (var i = 0; i < msgs.length; i++) {
+          if (!msgs[i].read) unread++;
+        }
+        if (unread > 0) {
+          document.getElementById("msg-badge").textContent = unread;
+          document.getElementById("msg-badge").style.display = "inline";
+        }
+
+        var progEl = document.getElementById("progress-steps");
+        if (journey.length > 0) {
+          var html = "";
+          for (var i = 0; i < journey.length; i++) {
+            var s = journey[i];
+            if (s.status === "done") {
+              html +=
+                '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:rgba(74,39,114,0.06);border:1px solid rgba(74,39,114,0.2);border-radius:4px;">';
+              html += '<span style="color:#4A2772;font-weight:500;">✓</span>';
+              html +=
+                '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#4A2772;opacity:0.7;">Completed</div>';
+              html +=
+                '<div style="font-size:1.05rem;font-weight:500;color:#2E1547;">' +
+                s.name +
+                "</div></div></div>";
+            } else if (s.status === "current") {
+              html +=
+                '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#4A2772;border-radius:4px;">';
+              html += '<span style="color:white;">→</span>';
+              html +=
+                '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">In Progress</div>';
+              html +=
+                '<div style="font-size:1.05rem;font-weight:500;color:white;">' +
+                s.name +
+                "</div></div></div>";
+            } else {
+              html +=
+                '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
+              html +=
+                '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">Upcoming</div>';
+              html +=
+                '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' +
+                s.name +
+                "</div></div></div>";
+            }
+          }
+          progEl.innerHTML = html;
+        } else {
+          progEl.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No progress data yet. Submit a quote to get started.</p>';
+        }
+
+        var tasksFull = document.getElementById("tasks-full");
+        if (tasks.length > 0) {
+          var done = 0;
+          var remaining = 0;
+          for (var i = 0; i < tasks.length; i++) {
+            if (tasks[i].completed) done++;
+            else remaining++;
+          }
+
+          var html = '<div style="display:flex;gap:10px;margin-bottom:24px;">';
+          html +=
+            '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' +
+            done +
+            " Completed</div>";
+          html +=
+            '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' +
+            remaining +
+            " Remaining</div></div>";
+          html += '<div class="checklist" style="gap:16px;">';
+          for (var i = 0; i < tasks.length; i++) {
+            var t = tasks[i];
+            var cls = t.completed ? " done" : "";
+            var chk = t.completed ? "✓" : "";
+            var dateInfo = "";
+            if (t.due_date) {
+              dateInfo = t.completed
+                ? '<div style="font-size:0.72rem;color:#7A6E5E;margin-top:2px;">Completed</div>'
+                : '<div style="font-size:0.72rem;color:#4A2772;font-weight:500;margin-top:2px;">Due ' +
+                  fmtDate(t.due_date) +
+                  "</div>";
+            }
+            var click2 = t.completed
+              ? ""
+              : ' onclick="completeTask(' +
+                t.id +
+                ')" style="cursor:pointer;" title="Click to complete"';
+            html +=
+              '<div class="check-item' +
+              cls +
+              '" style="padding:14px 0;"><div class="check-box"' +
+              click2 +
+              ">" +
+              chk +
+              '</div><div><span class="check-text">' +
+              t.title +
+              "</span>" +
+              dateInfo +
+              "</div></div>";
+          }
+          html += "</div>";
+          tasksFull.innerHTML = html;
+        } else {
+          tasksFull.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.9rem;">No tasks assigned yet. Your planner will add tasks as your event progresses.</p>';
+        }
+
+        var docsEl = document.getElementById("docs-list");
+        if (docs.length > 0) {
+          var html = "";
+          for (var i = 0; i < docs.length; i++) {
+            var d = docs[i];
+            var ftype = (d.type || "FILE").toUpperCase();
+            html += '<div class="doc-item">';
+            html +=
+              '<div style="width:32px;height:32px;background:#F3EEF9;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#4A2772;flex-shrink:0;">' +
+              ftype +
+              "</div>";
+            html +=
+              '<div><div class="doc-name">' +
+              d.name +
+              '</div><div class="doc-meta">' +
+              ftype +
+              " · " +
+              fmtDate(d.date) +
+              "</div></div>";
+            html +=
+              '<div style="font-size:0.75rem;color:#4A2772;">' +
+              (d.status || "") +
+              "</div>";
+            html += "</div>";
+          }
+          docsEl.innerHTML = html;
+        } else {
+          docsEl.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No documents uploaded yet. Your planner will upload contracts and files here.</p>';
+        }
+
+        var msgsFull = document.getElementById("messages-full");
+        if (msgs.length > 0) {
+          var html = "";
+          for (var i = 0; i < msgs.length; i++) {
+            var m = msgs[i];
+            var ini = m.sender
+              ? m.sender
+                  .split(" ")
+                  .map(function (n) {
+                    return n[0];
+                  })
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2)
+              : "??";
+            var bdr = !m.read ? "border-left:4px solid #4A2772;" : "";
+            var badge = !m.read
+              ? '<div style="margin-left:auto;font-size:0.68rem;background:#6B3FA0;color:white;padding:2px 10px;border-radius:10px;font-weight:600;">New</div>'
+              : "";
+            var opa = m.read ? "opacity:0.7;" : "";
+            html +=
+              '<div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);' +
+              bdr +
+              "border-radius:4px;padding:20px 24px;" +
+              opa +
+              '">';
+            html +=
+              '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">';
+            html += '<div class="msg-avatar">' + ini + "</div>";
+            html +=
+              '<div><div style="font-size:0.9rem;font-weight:500;color:#2E1547;">' +
+              m.sender +
+              "</div>";
+            html +=
+              '<div style="font-size:0.72rem;color:#7A6E5E;">' +
+              fmtDate(m.date) +
+              "</div></div>";
+            html += badge + "</div>";
+            html +=
+              '<p style="font-size:0.88rem;color:#1A1208;line-height:1.7;">' +
+              m.text +
+              "</p></div>";
+          }
+          msgsFull.innerHTML = html;
+        } else {
+          msgsFull.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No messages yet. Your planner will reach out here once your event is being planned.</p>';
+        }
+
+        var replyBox = document.getElementById("reply-box");
+        if (currentEventId) replyBox.style.display = "flex";
       }
-      html += '</div>';
-      tasksFull.innerHTML = html;
-    } else {
-      tasksFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;">No tasks assigned yet. Your planner will add tasks as your event progresses.</p>';
-    }
 
-    var docsEl = document.getElementById('docs-list');
-    if (docs.length > 0) {
-      var html = '';
-      for (var i = 0; i < docs.length; i++) {
-        var d = docs[i];
-        var ftype = (d.type || 'FILE').toUpperCase();
-        html += '<div class="doc-item">';
-        html += '<div style="width:32px;height:32px;background:#F3EEF9;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#4A2772;flex-shrink:0;">' + ftype + '</div>';
-        html += '<div><div class="doc-name">' + d.name + '</div><div class="doc-meta">' + ftype + ' · ' + fmtDate(d.date) + '</div></div>';
-        html += '<div style="font-size:0.75rem;color:#4A2772;">' + (d.status || '') + '</div>';
-        html += '</div>';
+      var currentEventId = null;
+
+      function completeTask(tid) {
+        fetch(API + "/client/tasks/" + tid + "/complete", {
+          method: "PUT",
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function () {
+            loadDashboard();
+          });
       }
-      docsEl.innerHTML = html;
-    } else {
-      docsEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No documents uploaded yet. Your planner will upload contracts and files here.</p>';
-    }
 
-    var msgsFull = document.getElementById('messages-full');
-    if (msgs.length > 0) {
-      var html = '';
-      for (var i = 0; i < msgs.length; i++) {
-        var m = msgs[i];
-        var ini = m.sender ? m.sender.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2) : '??';
-        var bdr = !m.read ? 'border-left:4px solid #4A2772;' : '';
-        var badge = !m.read ? '<div style="margin-left:auto;font-size:0.68rem;background:#6B3FA0;color:white;padding:2px 10px;border-radius:10px;font-weight:600;">New</div>' : '';
-        var opa = m.read ? 'opacity:0.7;' : '';
-        html += '<div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);' + bdr + 'border-radius:4px;padding:20px 24px;' + opa + '">';
-        html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">';
-        html += '<div class="msg-avatar">' + ini + '</div>';
-        html += '<div><div style="font-size:0.9rem;font-weight:500;color:#2E1547;">' + m.sender + '</div>';
-        html += '<div style="font-size:0.72rem;color:#7A6E5E;">' + fmtDate(m.date) + '</div></div>';
-        html += badge + '</div>';
-        html += '<p style="font-size:0.88rem;color:#1A1208;line-height:1.7;">' + m.text + '</p></div>';
+      function sendReply() {
+        var txt = document.getElementById("reply-input").value;
+        if (!txt || !currentEventId) return;
+        fetch(API + "/client/messages", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ event_id: currentEventId, text: txt }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (d) {
+            if (d.success) {
+              document.getElementById("reply-input").value = "";
+              loadDashboard();
+            }
+          });
       }
-      msgsFull.innerHTML = html;
-    } else {
-      msgsFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No messages yet. Your planner will reach out here once your event is being planned.</p>';
-    }
 
-    var replyBox = document.getElementById('reply-box');
-    if (currentEventId) replyBox.style.display = 'flex';
-  }
-
-  var currentEventId = null;
-
-  function completeTask(tid) {
-    fetch(API + '/client/tasks/' + tid + '/complete', {
-      method: 'PUT',
-      headers: { 'Authorization': 'Bearer ' + token }
-    }).then(function(r) { return r.json(); })
-    .then(function() { loadDashboard(); });
-  }
-
-  function sendReply() {
-    var txt = document.getElementById('reply-input').value;
-    if (!txt || !currentEventId) return;
-    fetch(API + '/client/messages', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event_id: currentEventId, text: txt })
-    }).then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.success) {
-        document.getElementById('reply-input').value = '';
-        loadDashboard();
-      }
-    });
-  }
-
-  loadDashboard();
-</script>
-</body>
+      loadDashboard();
+    </script>
+  </body>
 </html>
