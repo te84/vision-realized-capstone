@@ -6,8 +6,9 @@ from routes.auth import register_auth_routes
 from routes.events import register_owner_events_routes
 from routes.event_details import register_owner_event_detail_routes
 from routes.inbox import register_inbox_routes
-from routes.testing import register_testing_routes
-from routes.reset_password import register_reset_password_routes
+from routes.client_actions import register_client_action_routes
+from routes.owner_communications import register_owner_communication_routes
+from routes.owner_tasks import register_owner_task_routes
 
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend')
 
@@ -26,8 +27,9 @@ register_auth_routes(app)
 register_owner_events_routes(app)
 register_owner_event_detail_routes(app)
 register_inbox_routes(app)
-register_testing_routes(app)
-register_reset_password_routes(app)
+register_client_action_routes(app)
+register_owner_communication_routes(app)
+register_owner_task_routes(app)
 
 create_tables()
 
