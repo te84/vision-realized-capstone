@@ -31,6 +31,15 @@
           onclick="showTab(this, 'tab-events')"
         >
           Client Events
+          <span id = "event badge" style="
+          background: #2e1547;
+          color: white;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          padding: 2px 7px;
+          margin-left: 8px;
+          font-family: 'DM Sans', sans-serif;
+          "></span>
         </div>
         <div class="owner-nav-item" onclick="showTab(this, 'tab-quotes')">
           Quote Requests
@@ -189,6 +198,8 @@
             if (!data.success) return;
             allEvents = data.events;
             document.getElementById("stat-events").textContent =
+              allEvents.length;
+            document.getElementById("event-badge").textContent =
               allEvents.length;
             document.getElementById("stat-clients").textContent =
               allEvents.length;
