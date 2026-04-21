@@ -1,224 +1,524 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vision Realized | Start a Quote</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/styles.css">
-</head>
-<body style="background:#FFFDF9;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vision Realized | Start a Quote</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body style="background: #fffdf9">
+    <nav>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="services.html">Services</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="login.html" class="nav-portal">Client Login</a>
+      </div>
+      <a href="quote.html" class="nav-cta">START A QUOTE</a>
+    </nav>
 
-<nav>
-  <div class="nav-links">
-    <a href="../index.html">Home</a>
-    <a href="about.html">About Us</a>
-    <a href="services.html">Services</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="testimonials.html">Testimonials</a>
-    <a href="login.html" class="nav-portal">Client Login</a>
-  </div>
-  <a href="quote.html" class="nav-cta">START A QUOTE</a>
-</nav>
-
-<div class="page-content">
-  <div id="quote-form-screen">
-    <div class="quote-layout">
-      <div class="quote-sidebar">
-        <h2>Tell us about your event.</h2>
-        <p>Fill this out and we'll reach out within 24 hours to schedule a free consultation — no commitment required.</p>
-        <div class="sidebar-features">
-          <div class="sidebar-feat"><div class="feat-icon"></div><div class="feat-text"><strong>Free Consultation</strong>We'll review your details and reach out to talk through your vision.</div></div>
-          <div class="sidebar-feat"><div class="feat-icon"></div><div class="feat-text"><strong>Client Dashboard Access</strong>Track your event and message us online anytime.</div></div>
-          <div class="sidebar-feat"><div class="feat-icon"></div><div class="feat-text"><strong>English & Español</strong>Select your preferred language below.</div></div>
-        </div>
-        <div class="lang-toggle">
-          <button class="lang-btn active" onclick="this.classList.add('active');this.nextElementSibling.classList.remove('active')">English</button>
-          <button class="lang-btn" onclick="this.classList.add('active');this.previousElementSibling.classList.remove('active')">Español</button>
+    <div class="page-content">
+      <div id="quote-form-screen">
+        <div class="quote-layout">
+          <div class="quote-sidebar">
+            <h2>Tell us about your event.</h2>
+            <p>
+              Fill this out and we'll reach out within 24 hours to schedule a
+              free consultation — no commitment required.
+            </p>
+            <div class="sidebar-features">
+              <div class="sidebar-feat">
+                <div class="feat-icon"></div>
+                <div class="feat-text">
+                  <strong>Free Consultation</strong>We'll review your details
+                  and reach out to talk through your vision.
+                </div>
+              </div>
+              <div class="sidebar-feat">
+                <div class="feat-icon"></div>
+                <div class="feat-text">
+                  <strong>Client Dashboard Access</strong>Track your event and
+                  message us online anytime.
+                </div>
+              </div>
+              <div class="sidebar-feat">
+                <div class="feat-icon"></div>
+                <div class="feat-text">
+                  <strong>English & Español</strong>Select your preferred
+                  language below.
+                </div>
+              </div>
+            </div>
+            <div class="lang-toggle">
+              <button
+                class="lang-btn active"
+                onclick="
+                  this.classList.add('active');
+                  this.nextElementSibling.classList.remove('active');
+                "
+              >
+                English
+              </button>
+              <button
+                class="lang-btn"
+                onclick="
+                  this.classList.add('active');
+                  this.previousElementSibling.classList.remove('active');
+                "
+              >
+                Español
+              </button>
+            </div>
+          </div>
+          <div class="quote-form-wrap">
+            <div class="form-progress">
+              <div class="prog-step active" id="prog-0"></div>
+              <div class="prog-step" id="prog-1"></div>
+              <div class="prog-step" id="prog-2"></div>
+              <div class="prog-step" id="prog-3"></div>
+              <div class="prog-step" id="prog-4"></div>
+              <span class="prog-label" id="prog-label">Step 1 of 5</span>
+            </div>
+            <div class="form-step active" id="step-0">
+              <h2 class="form-step-title">First, about you.</h2>
+              <p class="form-step-sub">
+                We'll use this to follow up after your submission.
+              </p>
+              <div class="field-row">
+                <div class="field">
+                  <label>First Name</label
+                  ><input type="text" placeholder="Jane" />
+                </div>
+                <div class="field">
+                  <label>Last Name</label
+                  ><input type="text" placeholder="Smith" />
+                </div>
+              </div>
+              <div class="field">
+                <label>Email Address</label
+                ><input type="email" placeholder="jane@email.com" />
+              </div>
+              <div class="field">
+                <label>Phone Number</label
+                ><input type="tel" placeholder="(555) 555-5555" />
+              </div>
+              <div class="field">
+                <label>Create a Password</label
+                ><input
+                  type="password"
+                  placeholder="For your client portal login"
+                />
+              </div>
+              <div class="field">
+                <label>Security Question</label
+                ><select id="security-q">
+                  <option value="">Select a question</option>
+                  <option value="What city were you born in?">
+                    What city were you born in?
+                  </option>
+                  <option value="What is your pet's name?">
+                    What is your pet's name?
+                  </option>
+                  <option value="What is your mother's maiden name?">
+                    What is your mother's maiden name?
+                  </option>
+                  <option value="What was the name of your first school?">
+                    What was the name of your first school?
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Security Answer</label
+                ><input
+                  type="text"
+                  id="security-a"
+                  placeholder="Your answer (for password reset)"
+                />
+              </div>
+              <div class="field">
+                <label>How did you hear about us?</label
+                ><select>
+                  <option value="">Select one</option>
+                  <option>Google</option>
+                  <option>Instagram</option>
+                  <option>Friend or family referral</option>
+                  <option>LinkedIn</option>
+                  <option>Attended a Vision Realized event</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-nav">
+                <button class="btn-next" onclick="goToStep(1)">
+                  Continue →
+                </button>
+              </div>
+            </div>
+            <div class="form-step" id="step-1">
+              <h2 class="form-step-title">What kind of event?</h2>
+              <p class="form-step-sub">Select the type that fits best.</p>
+              <div class="event-type-grid">
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Corporate Event</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Community Event</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Team Building</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Fundraising Gala</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Birthday Party</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Sweet Sixteen</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Expo / Trade Show</span>
+                </div>
+                <div class="event-type-btn" onclick="pickType(this)">
+                  <span class="etb-name">Other</span>
+                </div>
+              </div>
+              <div class="form-nav">
+                <button class="btn-back" onclick="goToStep(0)">← Back</button
+                ><button class="btn-next" onclick="goToStep(2)">
+                  Continue →
+                </button>
+              </div>
+            </div>
+            <div class="form-step" id="step-2">
+              <h2 class="form-step-title">Event details.</h2>
+              <p class="form-step-sub">
+                The more you share, the better we can prepare.
+              </p>
+              <div class="field-row">
+                <div class="field">
+                  <label>Event Date</label><input type="date" />
+                </div>
+                <div class="field">
+                  <label>Estimated Guest Count</label
+                  ><select>
+                    <option>Under 25</option>
+                    <option>25–50</option>
+                    <option selected>50–100</option>
+                    <option>100–200</option>
+                    <option>200–500</option>
+                    <option>500+</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label>Location / City</label
+                ><input
+                  type="text"
+                  placeholder="Newark, NJ"
+                  value="Newark, NJ"
+                />
+              </div>
+              <div class="field">
+                <label>Venue Status</label
+                ><select>
+                  <option>I have a venue</option>
+                  <option>I need help finding one</option>
+                  <option>Open to suggestions</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Tell us about your vision</label
+                ><textarea
+                  placeholder="Theme, vibe, special requests, anything that matters to you..."
+                ></textarea>
+              </div>
+              <div class="form-nav">
+                <button class="btn-back" onclick="goToStep(1)">← Back</button
+                ><button class="btn-next" onclick="goToStep(3)">
+                  Continue →
+                </button>
+              </div>
+            </div>
+            <div class="form-step" id="step-3">
+              <h2 class="form-step-title">Budget range.</h2>
+              <p class="form-step-sub">
+                All ranges welcome — this just helps us tailor the conversation.
+              </p>
+              <div class="budget-grid">
+                <div class="budget-btn" onclick="pickBudget(this)">
+                  <div class="budget-range">Under $1K</div>
+                  <div class="budget-label">Micro event</div>
+                </div>
+                <div class="budget-btn" onclick="pickBudget(this)">
+                  <div class="budget-range">$1K – $3K</div>
+                  <div class="budget-label">Intimate gathering</div>
+                </div>
+                <div class="budget-btn" onclick="pickBudget(this)">
+                  <div class="budget-range">$3K – $7.5K</div>
+                  <div class="budget-label">Mid-size event</div>
+                </div>
+                <div class="budget-btn" onclick="pickBudget(this)">
+                  <div class="budget-range">$7.5K – $15K</div>
+                  <div class="budget-label">Full service</div>
+                </div>
+                <div class="budget-btn" onclick="pickBudget(this)">
+                  <div class="budget-range">$15K – $30K</div>
+                  <div class="budget-label">Premium experience</div>
+                </div>
+                <div class="budget-btn" onclick="pickBudget(this)">
+                  <div class="budget-range">$30K+</div>
+                  <div class="budget-label">Large-scale / gala</div>
+                </div>
+              </div>
+              <div class="field" style="margin-top: 20px">
+                <label>Notes on your budget (optional)</label
+                ><textarea
+                  style="min-height: 80px"
+                  placeholder="Flexibility, priorities, anything else..."
+                ></textarea>
+              </div>
+              <div class="form-nav">
+                <button class="btn-back" onclick="goToStep(2)">← Back</button
+                ><button class="btn-next" onclick="goToStep(4)">
+                  Continue →
+                </button>
+              </div>
+            </div>
+            <div class="form-step" id="step-4">
+              <h2 class="form-step-title">What's the vibe?</h2>
+              <p class="form-step-sub">
+                Pick any that feel right — you can choose more than one.
+              </p>
+              <div class="vibe-grid">
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Elegant</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Bold & Colorful</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Natural</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Modern</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Romantic</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Playful</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Corporate</p>
+                </div>
+                <div
+                  class="vibe-btn"
+                  onclick="this.classList.toggle('selected')"
+                >
+                  <p>Glamorous</p>
+                </div>
+              </div>
+              <div class="field" style="margin-top: 24px">
+                <label>Anything else before you submit?</label
+                ><textarea
+                  placeholder="Final notes, questions, or anything we should know..."
+                ></textarea>
+              </div>
+              <div
+                style="
+                  font-size: 0.78rem;
+                  color: #7a6e5e;
+                  line-height: 1.6;
+                  margin-top: 16px;
+                "
+              >
+                By submitting, you agree to be contacted by Vision Realized LLC
+                regarding your inquiry.
+              </div>
+              <div class="form-nav">
+                <button class="btn-back" onclick="goToStep(3)">← Back</button
+                ><button
+                  class="btn-next"
+                  style="background: #2e1547"
+                  onclick="submitQuote()"
+                >
+                  Submit Request
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="quote-form-wrap">
-        <div class="form-progress">
-          <div class="prog-step active" id="prog-0"></div>
-          <div class="prog-step" id="prog-1"></div>
-          <div class="prog-step" id="prog-2"></div>
-          <div class="prog-step" id="prog-3"></div>
-          <div class="prog-step" id="prog-4"></div>
-          <span class="prog-label" id="prog-label">Step 1 of 5</span>
-        </div>
-        <div class="form-step active" id="step-0">
-          <h2 class="form-step-title">First, about you.</h2>
-          <p class="form-step-sub">We'll use this to follow up after your submission.</p>
-          <div class="field-row">
-            <div class="field"><label>First Name</label><input type="text" placeholder="Jane"></div>
-            <div class="field"><label>Last Name</label><input type="text" placeholder="Smith"></div>
+      <div id="quote-confirm" class="confirm-screen" style="display: none">
+        <div class="confirm-circle">✓</div>
+        <h2>You're all set!</h2>
+        <p>
+          Your quote request has been submitted and your client portal account
+          has been created. We'll reach out within 24 hours.
+        </p>
+        <div class="confirm-detail">
+          <div class="confirm-row">
+            <span>Name</span><span id="conf-name">-</span>
           </div>
-          <div class="field"><label>Email Address</label><input type="email" placeholder="jane@email.com"></div>
-          <div class="field"><label>Phone Number</label><input type="tel" placeholder="(555) 555-5555"></div>
-          <div class="field"><label>Create a Password</label><input type="password" placeholder="For your client portal login"></div>
-          <div class="field"><label>Security Question</label><select id="security-q"><option value="">Select a question</option><option value="What city were you born in?">What city were you born in?</option><option value="What is your pet's name?">What is your pet's name?</option><option value="What is your mother's maiden name?">What is your mother's maiden name?</option><option value="What was the name of your first school?">What was the name of your first school?</option></select></div>
-          <div class="field"><label>Security Answer</label><input type="text" id="security-a" placeholder="Your answer (for password reset)"></div>
-          <div class="field"><label>How did you hear about us?</label><select><option value="">Select one</option><option>Google</option><option>Instagram</option><option>Friend or family referral</option><option>LinkedIn</option><option>Attended a Vision Realized event</option><option>Other</option></select></div>
-          <div class="form-nav"><button class="btn-next" onclick="goToStep(1)">Continue →</button></div>
-        </div>
-        <div class="form-step" id="step-1">
-          <h2 class="form-step-title">What kind of event?</h2>
-          <p class="form-step-sub">Select the type that fits best.</p>
-          <div class="event-type-grid">
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Corporate Event</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Community Event</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Team Building</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Fundraising Gala</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Birthday Party</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Sweet Sixteen</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Expo / Trade Show</span></div>
-            <div class="event-type-btn" onclick="pickType(this)"><span class="etb-name">Other</span></div>
+          <div class="confirm-row">
+            <span>Email / Username</span><span id="conf-email">-</span>
           </div>
-          <div class="form-nav"><button class="btn-back" onclick="goToStep(0)">← Back</button><button class="btn-next" onclick="goToStep(2)">Continue →</button></div>
-        </div>
-        <div class="form-step" id="step-2">
-          <h2 class="form-step-title">Event details.</h2>
-          <p class="form-step-sub">The more you share, the better we can prepare.</p>
-          <div class="field-row">
-            <div class="field"><label>Event Date</label><input type="date"></div>
-            <div class="field"><label>Estimated Guest Count</label><select><option>Under 25</option><option>25–50</option><option selected>50–100</option><option>100–200</option><option>200–500</option><option>500+</option></select></div>
+          <div class="confirm-row">
+            <span>Event Type</span><span id="conf-type">-</span>
           </div>
-          <div class="field"><label>Location / City</label><input type="text" placeholder="Newark, NJ" value="Newark, NJ"></div>
-          <div class="field"><label>Venue Status</label><select><option>I have a venue</option><option>I need help finding one</option><option>Open to suggestions</option></select></div>
-          <div class="field"><label>Tell us about your vision</label><textarea placeholder="Theme, vibe, special requests, anything that matters to you..."></textarea></div>
-          <div class="form-nav"><button class="btn-back" onclick="goToStep(1)">← Back</button><button class="btn-next" onclick="goToStep(3)">Continue →</button></div>
-        </div>
-        <div class="form-step" id="step-3">
-          <h2 class="form-step-title">Budget range.</h2>
-          <p class="form-step-sub">All ranges welcome — this just helps us tailor the conversation.</p>
-          <div class="budget-grid">
-            <div class="budget-btn" onclick="pickBudget(this)"><div class="budget-range">Under $1K</div><div class="budget-label">Micro event</div></div>
-            <div class="budget-btn" onclick="pickBudget(this)"><div class="budget-range">$1K – $3K</div><div class="budget-label">Intimate gathering</div></div>
-            <div class="budget-btn" onclick="pickBudget(this)"><div class="budget-range">$3K – $7.5K</div><div class="budget-label">Mid-size event</div></div>
-            <div class="budget-btn" onclick="pickBudget(this)"><div class="budget-range">$7.5K – $15K</div><div class="budget-label">Full service</div></div>
-            <div class="budget-btn" onclick="pickBudget(this)"><div class="budget-range">$15K – $30K</div><div class="budget-label">Premium experience</div></div>
-            <div class="budget-btn" onclick="pickBudget(this)"><div class="budget-range">$30K+</div><div class="budget-label">Large-scale / gala</div></div>
+          <div class="confirm-row">
+            <span>Response time</span><span>Within 24 hours</span>
           </div>
-          <div class="field" style="margin-top:20px;"><label>Notes on your budget (optional)</label><textarea style="min-height:80px;" placeholder="Flexibility, priorities, anything else..."></textarea></div>
-          <div class="form-nav"><button class="btn-back" onclick="goToStep(2)">← Back</button><button class="btn-next" onclick="goToStep(4)">Continue →</button></div>
         </div>
-        <div class="form-step" id="step-4">
-          <h2 class="form-step-title">What's the vibe?</h2>
-          <p class="form-step-sub">Pick any that feel right — you can choose more than one.</p>
-          <div class="vibe-grid">
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Elegant</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Bold & Colorful</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Natural</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Modern</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Romantic</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Playful</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Corporate</p></div>
-            <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Glamorous</p></div>
-          </div>
-          <div class="field" style="margin-top:24px;"><label>Anything else before you submit?</label><textarea placeholder="Final notes, questions, or anything we should know..."></textarea></div>
-          <div style="font-size:0.78rem;color:#7A6E5E;line-height:1.6;margin-top:16px;">By submitting, you agree to be contacted by Vision Realized LLC regarding your inquiry.</div>
-          <div class="form-nav"><button class="btn-back" onclick="goToStep(3)">← Back</button><button class="btn-next" style="background:#2E1547;" onclick="submitQuote()">Submit Request</button></div>
+        <p style="font-size: 0.85rem; color: #4a2772; margin-bottom: 24px">
+          Use your <strong>email</strong> and the password you created to log
+          in.
+        </p>
+        <div class="confirm-actions">
+          <a href="login.html" class="btn-primary">Access Client Dashboard →</a>
+          <a href="../index.html" class="btn-outline">Back to Home</a>
         </div>
       </div>
     </div>
-  </div>
-  <div id="quote-confirm" class="confirm-screen" style="display:none">
-    <div class="confirm-circle">✓</div>
-    <h2>You're all set!</h2>
-    <p>Your quote request has been submitted and your client portal account has been created. We'll reach out within 24 hours.</p>
-    <div class="confirm-detail">
-      <div class="confirm-row"><span>Name</span><span id="conf-name">-</span></div>
-      <div class="confirm-row"><span>Email / Username</span><span id="conf-email">-</span></div>
-      <div class="confirm-row"><span>Event Type</span><span id="conf-type">-</span></div>
-      <div class="confirm-row"><span>Response time</span><span>Within 24 hours</span></div>
-    </div>
-    <p style="font-size:0.85rem; color:#4A2772; margin-bottom:24px;">Use your <strong>email</strong> and the password you created to log in.</p>
-    <div class="confirm-actions">
-      <a href="login.html" class="btn-primary">Access Client Dashboard →</a>
-      <a href="../index.html" class="btn-outline">Back to Home</a>
-    </div>
-  </div>
-</div>
 
-<script>
-  var API = '';
+    <script>
+      var API = "http://localhost:5001";
 
-  function pickType(el) {
-    var btns = document.querySelectorAll('.event-type-btn');
-    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('selected');
-    el.classList.add('selected');
-  }
+      function pickType(el) {
+        var btns = document.querySelectorAll(".event-type-btn");
+        for (var i = 0; i < btns.length; i++)
+          btns[i].classList.remove("selected");
+        el.classList.add("selected");
+      }
 
-  function pickBudget(el) {
-    var btns = document.querySelectorAll('.budget-btn');
-    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('selected');
-    el.classList.add('selected');
-  }
+      function pickBudget(el) {
+        var btns = document.querySelectorAll(".budget-btn");
+        for (var i = 0; i < btns.length; i++)
+          btns[i].classList.remove("selected");
+        el.classList.add("selected");
+      }
 
-  var curStep = 0;
-  function goToStep(step) {
-    document.getElementById('step-' + curStep).classList.remove('active');
-    document.getElementById('prog-' + curStep).classList.remove('active');
-    if (step > curStep) document.getElementById('prog-' + curStep).classList.add('done');
-    curStep = step;
-    document.getElementById('step-' + curStep).classList.add('active');
-    document.getElementById('prog-' + curStep).classList.add('active');
-    document.getElementById('prog-label').textContent = 'Step ' + (step + 1) + ' of 5';
-    window.scrollTo(0, 0);
-  }
+      var curStep = 0;
+      function goToStep(step) {
+        document.getElementById("step-" + curStep).classList.remove("active");
+        document.getElementById("prog-" + curStep).classList.remove("active");
+        if (step > curStep)
+          document.getElementById("prog-" + curStep).classList.add("done");
+        curStep = step;
+        document.getElementById("step-" + curStep).classList.add("active");
+        document.getElementById("prog-" + curStep).classList.add("active");
+        document.getElementById("prog-label").textContent =
+          "Step " + (step + 1) + " of 5";
+        window.scrollTo(0, 0);
+      }
 
-  function submitQuote() {
-    var inputs0 = document.querySelectorAll('#step-0 input');
-    var selects0 = document.querySelectorAll('#step-0 select');
-    var fname = inputs0[0] ? inputs0[0].value : '';
-    var lname = inputs0[1] ? inputs0[1].value : '';
-    var email = inputs0[2] ? inputs0[2].value : '';
-    var phone = inputs0[3] ? inputs0[3].value : '';
-    var pw = inputs0[4] ? inputs0[4].value : '';
-    var secQ = document.getElementById('security-q') ? document.getElementById('security-q').value : '';
-    var secA = document.getElementById('security-a') ? document.getElementById('security-a').value : '';
-    var source = selects0[selects0.length - 1] ? selects0[selects0.length - 1].value : '';
+      function submitQuote() {
+        var inputs0 = document.querySelectorAll("#step-0 input");
+        var selects0 = document.querySelectorAll("#step-0 select");
+        var fname = inputs0[0] ? inputs0[0].value : "";
+        var lname = inputs0[1] ? inputs0[1].value : "";
+        var email = inputs0[2] ? inputs0[2].value : "";
+        var phone = inputs0[3] ? inputs0[3].value : "";
+        var pw = inputs0[4] ? inputs0[4].value : "";
+        var secQ = document.getElementById("security-q")
+          ? document.getElementById("security-q").value
+          : "";
+        var secA = document.getElementById("security-a")
+          ? document.getElementById("security-a").value
+          : "";
+        var source = selects0[selects0.length - 1]
+          ? selects0[selects0.length - 1].value
+          : "";
 
-    var typeSel = document.querySelector('.event-type-btn.selected .etb-name');
-    var evType = typeSel ? typeSel.textContent : '';
+        var typeSel = document.querySelector(
+          ".event-type-btn.selected .etb-name",
+        );
+        var evType = typeSel ? typeSel.textContent : "";
 
-    var inputs2 = document.querySelectorAll('#step-2 input');
-    var selects2 = document.querySelectorAll('#step-2 select');
-    var evDate = inputs2[0] ? inputs2[0].value : '';
-    var guests = selects2[0] ? selects2[0].value : '';
-    var loc = inputs2[1] ? inputs2[1].value : '';
+        var inputs2 = document.querySelectorAll("#step-2 input");
+        var selects2 = document.querySelectorAll("#step-2 select");
+        var evDate = inputs2[0] ? inputs2[0].value : "";
+        var guests = selects2[0] ? selects2[0].value : "";
+        var loc = inputs2[1] ? inputs2[1].value : "";
 
-    var budgetSel = document.querySelector('.budget-btn.selected .budget-range');
-    var budget = budgetSel ? budgetSel.textContent : '';
+        var budgetSel = document.querySelector(
+          ".budget-btn.selected .budget-range",
+        );
+        var budget = budgetSel ? budgetSel.textContent : "";
 
-    document.getElementById('conf-name').textContent = fname + ' ' + lname;
-    document.getElementById('conf-email').textContent = email || 'Not provided';
-    document.getElementById('conf-type').textContent = evType || 'Not specified';
+        document.getElementById("conf-name").textContent = fname + " " + lname;
+        document.getElementById("conf-email").textContent =
+          email || "Not provided";
+        document.getElementById("conf-type").textContent =
+          evType || "Not specified";
 
-    fetch(API + '/submit-quote', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        first_name: fname, last_name: lname, email: email, phone: phone,
-        password: pw, security_question: secQ, security_answer: secA,
-        source: source, event_type: evType, event_date: evDate,
-        guests: guests, location: loc, budget: budget
-      })
-    }).then(function(r) { return r.json(); })
-    .then(function(d) { console.log('saved', d); })
-    .catch(function(err) { console.log('error saving quote', err); });
+        fetch(API + "/submit-quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            first_name: fname,
+            last_name: lname,
+            email: email,
+            phone: phone,
+            password: pw,
+            security_question: secQ,
+            security_answer: secA,
+            source: source,
+            event_type: evType,
+            event_date: evDate,
+            guests: guests,
+            location: loc,
+            budget: budget,
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (d) {
+            console.log("saved", d);
+          })
+          .catch(function (err) {
+            console.log("error saving quote", err);
+          });
 
-    document.getElementById('quote-form-screen').style.display = 'none';
-    document.getElementById('quote-confirm').style.display = 'flex';
-    window.scrollTo(0, 0);
-  }
+        document.getElementById("quote-form-screen").style.display = "none";
+        document.getElementById("quote-confirm").style.display = "flex";
+        window.scrollTo(0, 0);
+      }
 
-  var u = JSON.parse(localStorage.getItem('user'));
-  if (u) {
-    var el = document.querySelector('.nav-portal');
-    el.textContent = u.firstname + "'s Portal";
-    el.href = 'portal.html';
-  }
-</script>
-</body>
+      var u = JSON.parse(localStorage.getItem("user"));
+      if (u) {
+        var el = document.querySelector(".nav-portal");
+        el.textContent = u.firstname + "'s Portal";
+        el.href = "portal.html";
+      }
+    </script>
+  </body>
 </html>
