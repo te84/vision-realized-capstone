@@ -18,6 +18,10 @@
     <a href="testimonials.html">Testimonials</a>
     <a href="contact.html">Contact</a>
     <a href="login.html" class="nav-portal">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
   </div>
   <a href="quote.html" class="nav-cta">START A QUOTE</a>
 </nav>
@@ -26,8 +30,8 @@
   <div style="background:url('../images/hero.png') center/cover no-repeat; position:relative; padding:80px 60px; min-height:280px; display:flex; align-items:center;">
     <div style="position:absolute; inset:0; background:rgba(0,0,0,0.5);"></div>
     <div style="position:relative; z-index:1;">
-      <h1 style="font-family:'Cormorant Garamond',serif; font-size:3rem; color:white; font-style:italic; font-weight:400;">From Our Clients</h1>
-      <p style="color:rgba(255,255,255,0.7); font-size:0.95rem; margin-top:8px;">What people say about working with Vision Realized.</p>
+      <h1 data-i18n="testiPageTitle" style="font-family:'Cormorant Garamond',serif; font-size:3rem; color:white; font-style:italic; font-weight:400;">From Our Clients</h1>
+      <p data-i18n="testiPageSub" style="color:rgba(255,255,255,0.7); font-size:0.95rem; margin-top:8px;">What people say about working with Vision Realized.</p>
     </div>
   </div>
 
@@ -55,13 +59,14 @@
     </div>
 
     <div style="text-align:center; margin-top:60px; padding:48px; background:#2E1547;">
-      <h2 style="font-family:'Cormorant Garamond',serif; font-size:2rem; color:white; font-style:italic; margin-bottom:12px;">Ready to be our next success story?</h2>
-      <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:24px;">Let us plan your next unforgettable experience.</p>
-      <a href="quote.html" style="background:white; color:#2E1547; padding:14px 32px; text-decoration:none; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; font-weight:500;">Start a Quote</a>
+      <h2 data-i18n="testiCta" style="font-family:'Cormorant Garamond',serif; font-size:2rem; color:white; font-style:italic; margin-bottom:12px;">Ready to be our next success story?</h2>
+      <p data-i18n="testiCtaSub" style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:24px;">Let us plan your next unforgettable experience.</p>
+      <a data-i18n="heroCta" href="quote.html" style="background:white; color:#2E1547; padding:14px 32px; text-decoration:none; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; font-weight:500;">Start a Quote</a>
     </div>
   </div>
 </div>
 
+<script src="../js/translations.js"></script>
 <script>
   var u = JSON.parse(localStorage.getItem('user'));
   if (u) {

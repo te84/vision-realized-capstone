@@ -18,20 +18,24 @@
     <a href="testimonials.html">Testimonials</a>
     <a href="contact.html">Contact</a>
     <a href="login.html" class="nav-portal">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
   </div>
   <a href="quote.html" class="nav-cta">START A QUOTE</a>
 </nav>
 
 <div class="page-content">
   <div style="padding:40px 60px 80px; max-width:1100px; margin:0 auto;">
-    <h2 style="font-family:'Cormorant Garamond',serif; font-size:2.8rem; color:#2E1547; font-style:italic; margin-bottom:8px;">Our Services</h2>
-    <p style="color:#7A6E5E; margin-bottom:16px;">Everything you need for a seamless event.</p>
+    <h2 data-i18n="svcPageTitle" style="font-family:'Cormorant Garamond',serif; font-size:2.8rem; color:#2E1547; font-style:italic; margin-bottom:8px;">Our Services</h2>
+    <p data-i18n="svcPageSub" style="color:#7A6E5E; margin-bottom:16px;">Everything you need for a seamless event.</p>
     <div style="width:50px; height:2px; background:#4A2772; margin-bottom:48px;"></div>
 
     <div style="display:flex; gap:0; margin-bottom:48px; flex-wrap:wrap;">
       <div style="background:#4A2772; padding:40px; color:white; flex:1; min-width:300px;">
-        <p style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 1</p>
-        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Event Manager</h3>
+        <p data-i18n="svcOpt1" style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 1</p>
+        <h3 data-i18n="eventManager" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Event Manager</h3>
         <p style="font-size:0.9rem; line-height:1.7; color:rgba(255,255,255,0.8); margin-bottom:20px;">You've done the planning — we run the day. Perfect if you already have your vendors and venue set up but need someone to manage while you enjoy the event.</p>
         <ul style="font-size:0.85rem; line-height:2; color:rgba(255,255,255,0.7); padding-left:18px;">
           <li>Day-of timeline management</li>
@@ -41,8 +45,8 @@
         </ul>
       </div>
       <div style="background:#2E1547; padding:40px; color:white; flex:1; min-width:300px;">
-        <p style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 2</p>
-        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Full Event Planner</h3>
+        <p data-i18n="svcOpt2" style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 2</p>
+        <h3 data-i18n="fullPlanner" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Full Event Planner</h3>
         <p style="font-size:0.9rem; line-height:1.7; color:rgba(255,255,255,0.8); margin-bottom:20px;">We handle planning everything from start to finish. Concept, vendors, budget, venue — you just show up and enjoy.</p>
         <ul style="font-size:0.85rem; line-height:2; color:rgba(255,255,255,0.7); padding-left:18px;">
           <li>Concept development</li>
@@ -55,7 +59,7 @@
     </div>
 
     <div style="margin-bottom:48px;">
-  <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:8px;">Our Typical Events</h3>
+  <h3 data-i18n="typicalEvents" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:8px;">Our Typical Events</h3>
   <p style="color:#7A6E5E; margin-bottom:16px;">Vision Realized works in <strong>corporate events</strong> and themed <strong>social events</strong>, adapting services with every client's needs and budget. <br> <strong>Exploring and booking venues, audio and visual setup, booking music, catering, and vendor management are included in every event planned!</strong></p>
   <div style="
     display:flex;
@@ -109,7 +113,7 @@
 </div>
 
 
-    <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:32px;">What We Cover</h3>
+    <h3 data-i18n="whatWeCover" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:32px;">What We Cover</h3>
     <div style="display:flex; flex-wrap:wrap; gap:24px;">
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">Event Conceptualization & Design</h4>
@@ -121,7 +125,8 @@
       </div>
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">Budget Planning & Financial Management</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Transparent budget tracking so you know exactly where every dollar goes. Give us your budget, and we accommodate your planned event accordingly.</p>      </div>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Transparent budget tracking so you know exactly where every dollar goes. Give us your budget, and we accommodate your planned event accordingly.</p>
+      </div>
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">On-Site Coordination & Execution</h4>
         <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We're there on the day to manage everything. Enjoy your event!</p>
@@ -129,7 +134,7 @@
     </div>
     <!-- Event Process -->
     <br>
-    <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:32px;">The Process</h3>
+    <h3 data-i18n="theProcess" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:32px;">The Process</h3>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">1. Submit your Quote</h4>
         <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Complete our online quote form and create an account to access your client dashboard.</p>
@@ -140,7 +145,8 @@
       </div>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">3. You Choose your Options</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We receive quotes from potential venues, vendors, rental companies, and live music, and provide you 3 options for each event feature based on your budget. You choose what best fits your vision</p>      </div>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We receive quotes from potential venues, vendors, rental companies, and live music, and provide you 3 options for each event feature based on your budget. You choose what best fits your vision</p>
+      </div>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">4. We Book for You</h4>
         <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Based on your choices, we negotiate with vendors and book sessions on your behalf.</p>
@@ -157,7 +163,7 @@
     <!-- Event Process End -->
 
     <div style="text-align:center; margin-top:48px;">
-      <a href="quote.html" style="background:#4A2772; color:white; padding:16px 36px; border:none; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:none; display:inline-block;">Get Started — Request a Quote</a>
+      <a data-i18n="getStartedCta" href="quote.html" style="background:#4A2772; color:white; padding:16px 36px; border:none; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:none; display:inline-block;">Get Started — Request a Quote</a>
     </div>
   </div>
 </div>
@@ -181,7 +187,7 @@
   </div>
 </footer>
 
-
+<script src="../js/translations.js"></script>
 <script>
   var u = JSON.parse(localStorage.getItem('user'));
   if (u) {

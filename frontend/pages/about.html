@@ -1,155 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vision Realized | About Us</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
 </head>
-
 <body>
 
-  <nav>
-    <div class="nav-links">
-      <a href="../index.html">Home</a>
-      <a href="about.html">About Us</a>
-      <a href="services.html">Services</a>
-      <a href="gallery.html">Gallery</a>
-      <a href="testimonials.html">Testimonials</a>
-      <a href="contact.html">Contact</a>
-      <a href="login.html" class="nav-portal">Client Login</a>
+<nav>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="about.html">About Us</a>
+    <a href="services.html">Services</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="testimonials.html">Testimonials</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html" class="nav-portal">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
+  </div>
+  <a href="quote.html" class="nav-cta">START A QUOTE</a>
+</nav>
+
+<div class="page-content">
+  <div style="padding:40px 60px 80px; max-width:1100px; margin:0 auto;">
+    <h2 data-i18n="aboutTitle" style="font-family:'Cormorant Garamond',serif; font-size:2.8rem; color:#2E1547; font-style:italic; margin-bottom:16px;">About Vision Realized</h2>
+    <div style="width:50px; height:2px; background:#4A2772; margin-bottom:40px;"></div>
+
+    <div style="display:flex; gap:48px; margin-bottom:60px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:300px;">
+        <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a; margin-bottom:16px;">Vision Realized LLC is a full-service event planning company based in Newark, New Jersey. Founded by Debora Roachford and Dawn Way, we specialize in turning our clients' ideas into unforgettable experiences.</p>
+        <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a; margin-bottom:16px;">Whether it's a corporate conference, a milestone birthday, a fundraising gala, or a community event — our team handles every detail so you can be fully present.</p>
+        <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a;">Our event planning company grew organically from hands-on experience and a shared passion for creating memorable events. Originally founded in November 2019 under a different name, the business began when Debora and her partners were recognized for their ability to transform event spaces during their work with a venue connected to the Newark International Film Festival. After being invited to manage events professionally, they launched their company and quickly began organizing multiple events.</p>
+        <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a;">Despite challenges during the COVID-19 pandemic and a restructuring of the partnership, Debora and Dawn continued to build the business, rebranding as Vision Realized in 2023 while maintaining their original foundation. The company is known for producing a select number of thoughtfully curated events each year, emphasizing quality, creativity, and collaboration. </p>
+        <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a;">From themed experiences, corporate networking events, to community initiatives such as the Black History crawl, Vision Realized focuses on impactful, detail-driven events and strong partnerships with other local businesses.</p>
+      </div>
+      <div style="flex:1; min-width:300px;">
+        <div style="background:#f5efe6; padding:32px; margin-bottom:20px;">
+          <h3 data-i18n="aboutMission" style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:#2E1547; font-style:italic; margin-bottom:10px;">Our Mission</h3>
+          <p data-i18n="aboutMissionDesc" style="font-size:0.9rem; line-height:1.7; color:#5a4c3a;">To make professional event planning accessible to everyone. Every event, big or small, deserves the same dedication and attention to detail.</p>
+        </div>
+        <div style="background:#f5efe6; padding:32px;">
+          <h3 data-i18n="aboutWhy" style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:#2E1547; font-style:italic; margin-bottom:10px;">Why Us</h3>
+          <p data-i18n="aboutWhyDesc" style="font-size:0.9rem; line-height:1.7; color:#5a4c3a;">We're not just planners — we're your partners. From the first phone call to the last guest leaving, we make sure everything runs smoothly.</p>
+        </div>
+      </div>
     </div>
-    <a href="quote.html" class="nav-cta">START A QUOTE</a>
-  </nav>
 
-  <div class="page-content">
-    <div style="padding:40px 60px 80px; max-width:1100px; margin:0 auto;">
-      <h2
-        style="font-family:'Cormorant Garamond',serif; font-size:2.8rem; color:#2E1547; font-style:italic; margin-bottom:16px;">
-        About Vision Realized</h2>
-      <div style="width:50px; height:2px; background:#4A2772; margin-bottom:40px;"></div>
-
-      <div style="display:flex; gap:48px; margin-bottom:60px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:300px;">
-          <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a; margin-bottom:16px;">Vision Realized LLC is a
-            full-service event planning company based in Newark, New Jersey. Founded by Debora Roachford and Dawn Way,
-            we specialize in turning our clients' ideas into unforgettable experiences.</p>
-          <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a; margin-bottom:16px;">Whether it's a corporate
-            conference, a milestone birthday, a fundraising gala, or a community event — our team handles every detail
-            so you can be fully present.</p>
-          <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a;">Our event planning company grew organically from
-            hands-on experience and a shared passion for creating memorable events. Originally founded in November 2019
-            under a different name, the business began when Debora and her partners were recognized for their ability to
-            transform event spaces during their work with a venue connected to the Newark International Film Festival.
-            After being invited to manage events professionally, they launched their company and quickly began
-            organizing multiple events.</p>
-          <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a;">Despite challenges during the COVID-19 pandemic
-            and a restructuring of the partnership, Debora and Dawn continued to build the business, rebranding as
-            Vision Realized in 2023 while maintaining their original foundation. The company is known for producing a
-            select number of thoughtfully curated events each year, emphasizing quality, creativity, and collaboration.
-          </p>
-          <p style="font-size:0.95rem; line-height:1.8; color:#5a4c3a;">From themed experiences, corporate networking
-            events, to community initiatives such as the Black History crawl, Vision Realized focuses on impactful,
-            detail-driven events and strong partnerships with other local businesses.</p>
-        </div>
-        <div style="flex:1; min-width:300px;">
-          <div style="background:#f5efe6; padding:32px; margin-bottom:20px;">
-            <h3
-              style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:#2E1547; font-style:italic; margin-bottom:10px;">
-              Our Mission</h3>
-            <p style="font-size:0.9rem; line-height:1.7; color:#5a4c3a;">To make professional event planning accessible
-              to everyone. Every event, big or small, deserves the same dedication and attention to detail.</p>
-          </div>
-          <div style="background:#f5efe6; padding:32px;">
-            <h3
-              style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:#2E1547; font-style:italic; margin-bottom:10px;">
-              Why Us</h3>
-            <p style="font-size:0.9rem; line-height:1.7; color:#5a4c3a;">We're not just planners — we're your partners.
-              From the first phone call to the last guest leaving, we make sure everything runs smoothly.</p>
-          </div>
-        </div>
-      </div>
-
-      <div style="background:#2E1547; padding:40px; color:white; text-align:center;">
-        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:12px;">
-          Meet the Founders</h3>
-        <p style="font-size:1rem; margin-bottom:4px;">Debora Roachford</p>
-        <p style="font-size:0.85rem; color:rgba(255,255,255,0.6);">Co-Founder & Lead Event Planner</p>
-        <p>Debora is a visionary leader and co-founder of Vision Realized Events, whose passion for organization and
-          service has shaped her journey into the event planning industry. A mother of two and grandmother of three, she
-          brings both personal warmth and professional dedication to her work. Originally from Panama, Debora relocated
-          to the United States as a teenager, where she completed her education and became deeply involved in her church
-          and local community. Her early experiences laid the foundation for her signature creativity, attention to
-          detail, and ability to bring people together. Her professional path in event planning expanded through her
-          involvement with the Newark International Film Festival, where she contributed as part of the event planning
-          team. In 2019, she co-founded an event planning business, originally named A Favor For You, which later
-          evolved into Vision Realized LLC. In addition to her entrepreneurial work, Debora has dedicated her time to
-          community service as a bilingual interpreter for a women’s shelter and the Princeton Breast Cancer Resource
-          Center, supporting women through her language skills as a breast and thyroid cancer survivor herself. Debora
-          exemplifies resilience, strength, and purpose. Her approach to event planning is rooted in meaningful
-          connection, cultural awareness, and community impact. Known for her creativity, compassion, and unwavering
-          commitment to excellence, Debora continues to design experiences that not only meet client expectations but
-          also leave a lasting impression on the communities she serves.
-        </p>
-      </div>
-      <div style="background:#2E1547; padding:40px; color:white; text-align:center;">
-        <p style="font-size:1rem; margin-bottom:4px;">Dawn Way</p>
-        <p style="font-size:0.85rem; color:rgba(255,255,255,0.6);">Co-Founder & Lead Event Planner</p>
-        <p>Dawn is one of the visionaries behind Vision Realized Events. With over 20 years of comprehensive event
-          planning and management experience, Dawn has dedicated her career to creating meaningful experiences for
-          social, corporate, and nonprofit organizations. Her expertise spans strategic event development, stakeholder
-          engagement, and flawless program execution across diverse industry sectors. Throughout her career, Dawn has
-          orchestrated countless events, from intimate corporate gatherings to large-scale galas and community
-          initiatives. Her commitment to excellence and attention to detail have made her a trusted partner for
-          organizations seeking impactful, purpose-driven events. Dawn's approach centers on understanding each client's
-          unique mission and vision, ensuring every event authentically reflects their values and objectives. Known by
-          colleagues and clients as organized, strategic, and passionate about bringing people together for meaningful
-          causes, Dawn's professional acumen and dedication to excellence have positioned her as a leading authority in
-          the events industry. She consistently delivers measurable outcomes that create lasting impact for clients and
-          communities alike, making every vision a realized success.
-        </p>
-      </div>
+    <div style="background:#2E1547; padding:40px; color:white; text-align:center;">
+      <h3 data-i18n="aboutFounders" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:12px;">Meet the Founders</h3>
+      <p style="font-size:1rem; margin-bottom:4px;">Debora Roachford</p>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.6);">Co-Founder & Lead Event Planner</p>
+      <p>Debora is a visionary leader and co-founder of Vision Realized Events, whose passion for organization and service has shaped her journey into the event planning industry. A mother of two and grandmother of three, she brings both personal warmth and professional dedication to her work. Originally from Panama, Debora relocated to the United States as a teenager, where she completed her education and became deeply involved in her church and local community. Her early experiences laid the foundation for her signature creativity, attention to detail, and ability to bring people together. Her professional path in event planning expanded through her involvement with the Newark International Film Festival, where she contributed as part of the event planning team. In 2019, she co-founded an event planning business, originally named A Favor For You, which later evolved into Vision Realized LLC. In addition to her entrepreneurial work, Debora has dedicated her time to community service as a bilingual interpreter for a women’s shelter and the Princeton Breast Cancer Resource Center, supporting women through her language skills as a breast and thyroid cancer survivor herself. Debora exemplifies resilience, strength, and purpose. Her approach to event planning is rooted in meaningful connection, cultural awareness, and community impact. Known for her creativity, compassion, and unwavering commitment to excellence, Debora continues to design experiences that not only meet client expectations but also leave a lasting impression on the communities she serves.
+</p>
+    </div>
+    <div style="background:#2E1547; padding:40px; color:white; text-align:center;">
+      <p style="font-size:1rem; margin-bottom:4px;">Dawn Way</p>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.6);">Co-Founder & Lead Event Planner</p>
+      <p>Dawn is one of the visionaries behind Vision Realized Events. With over 20 years of comprehensive event planning and management experience, Dawn has dedicated her career to creating meaningful experiences for social, corporate, and nonprofit organizations. Her expertise spans strategic event development, stakeholder engagement, and flawless program execution across diverse industry sectors. Throughout her career, Dawn has orchestrated countless events, from intimate corporate gatherings to large-scale galas and community initiatives. Her commitment to excellence and attention to detail have made her a trusted partner for organizations seeking impactful, purpose-driven events. Dawn's approach centers on understanding each client's unique mission and vision, ensuring every event authentically reflects their values and objectives. Known by colleagues and clients as organized, strategic, and passionate about bringing people together for meaningful causes, Dawn's professional acumen and dedication to excellence have positioned her as a leading authority in the events industry. She consistently delivers measurable outcomes that create lasting impact for clients and communities alike, making every vision a realized success.
+</p>
     </div>
   </div>
-  <footer>
-    <div class="footer-content">
-      <div>
-        <div class="footer-services">
-          <div class="footer-svc">
-            <div class="footer-svc-line"></div>
-            <div class="footer-svc-name">Fundraising Galas</div>
-          </div>
-          <div class="footer-svc">
-            <div class="footer-svc-line"></div>
-            <div class="footer-svc-name">Birthday Parties</div>
-          </div>
-          <div class="footer-svc">
-            <div class="footer-svc-line"></div>
-            <div class="footer-svc-name">Corporate Events</div>
-          </div>
-        </div>
-        <a href="services.html" class="btn-all-svc">All Services</a>
-      </div>
-      <div>
-        <div class="footer-label">Call or text for a free quote</div>
-        <div class="footer-phone">(862) 215-0186</div>
-        <div class="footer-label">Email Us</div>
-        <div class="footer-email">info@visionrealizedevents.com</div>
-      </div>
-    </div>
-  </footer>
-  <script>
-    var u = JSON.parse(localStorage.getItem('user'));
-    if (u) {
-      var el = document.querySelector('.nav-portal');
-      el.textContent = u.firstname + "'s Portal";
-      el.href = 'portal.html';
-    }
-  </script>
-</body>
+</div>
 
+<footer>
+  <div class="footer-content">
+    <div>
+      <div class="footer-services">
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Fundraising Galas</div></div>
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Birthday Parties</div></div>
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Corporate Events</div></div>
+      </div>
+      <a href="services.html" class="btn-all-svc">All Services</a>
+    </div>
+    <div>
+      <div class="footer-label">Call or text for a free quote</div>
+      <div class="footer-phone">(862) 215-0186</div>
+      <div class="footer-label">Email Us</div>
+      <div class="footer-email">info@visionrealizedevents.com</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/translations.js"></script>
+<script>
+  var u = JSON.parse(localStorage.getItem('user'));
+  if (u) {
+    var el = document.querySelector('.nav-portal');
+    el.textContent = u.firstname + "'s Portal";
+    el.href = 'portal.html';
+  }
+</script>
+</body>
 </html>
