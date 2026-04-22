@@ -16,7 +16,12 @@
     <a href="services.html">Services</a>
     <a href="gallery.html">Gallery</a>
     <a href="testimonials.html">Testimonials</a>
+    <a href="contact.html">Contact</a>
     <a href="login.html" class="nav-portal">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
   </div>
   <a href="quote.html" class="nav-cta">START A QUOTE</a>
 </nav>
@@ -33,8 +38,8 @@
           <div class="sidebar-feat"><div class="feat-icon"></div><div class="feat-text"><strong>English & Español</strong>Select your preferred language below.</div></div>
         </div>
         <div class="lang-toggle">
-          <button class="lang-btn active" onclick="this.classList.add('active');this.nextElementSibling.classList.remove('active')">English</button>
-          <button class="lang-btn" onclick="this.classList.add('active');this.previousElementSibling.classList.remove('active')">Español</button>
+          <button class="lang-btn active" onclick="setLang('en')">English</button>
+          <button class="lang-btn" onclick="setLang('es')">Español</button>
         </div>
       </div>
       <div class="quote-form-wrap">
@@ -115,6 +120,12 @@
             <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Corporate</p></div>
             <div class="vibe-btn" onclick="this.classList.toggle('selected')"><p>Glamorous</p></div>
           </div>
+          <div class="field" style="margin-top:24px;">
+            <label>Upload Inspiration Photos (optional)</label>
+            <p style="font-size:0.82rem; color:#7A6E5E; margin-bottom:10px;">Share photos that capture the look and feel you're going for — Pinterest screenshots, decor ideas, color palettes, anything!</p>
+            <input type="file" id="inspo-photos" multiple accept="image/*" style="padding:12px; background:#FAF7F2; border:1.5px solid rgba(74,39,114,0.15); width:100%; font-family:'DM Sans',sans-serif; font-size:0.85rem; cursor:pointer;">
+            <div id="inspo-preview" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;"></div>
+          </div>
           <div class="field" style="margin-top:24px;"><label>Anything else before you submit?</label><textarea placeholder="Final notes, questions, or anything we should know..."></textarea></div>
           <div style="font-size:0.78rem;color:#7A6E5E;line-height:1.6;margin-top:16px;">By submitting, you agree to be contacted by Vision Realized LLC regarding your inquiry.</div>
           <div class="form-nav"><button class="btn-back" onclick="goToStep(3)">← Back</button><button class="btn-next" style="background:#2E1547;" onclick="submitQuote()">Submit Request</button></div>
@@ -130,9 +141,14 @@
       <div class="confirm-row"><span>Name</span><span id="conf-name">-</span></div>
       <div class="confirm-row"><span>Email / Username</span><span id="conf-email">-</span></div>
       <div class="confirm-row"><span>Event Type</span><span id="conf-type">-</span></div>
+      <div class="confirm-row"><span>Event Date</span><span id="conf-date">-</span></div>
+      <div class="confirm-row"><span>Budget</span><span id="conf-budget">-</span></div>
       <div class="confirm-row"><span>Response time</span><span>Within 24 hours</span></div>
     </div>
-    <p style="font-size:0.85rem; color:#4A2772; margin-bottom:24px;">Use your <strong>email</strong> and the password you created to log in.</p>
+    <div style="background:#F3EEF9; border:1px solid rgba(74,39,114,0.15); padding:20px 24px; max-width:380px; width:100%; margin-bottom:24px; border-radius:4px;">
+      <p style="font-size:0.9rem; color:#2E1547; font-weight:500; margin-bottom:8px;">Your account is ready</p>
+      <p style="font-size:0.85rem; color:#5a4c3a; line-height:1.6;">Use your <strong>email address</strong> as your username and the <strong>password you just created</strong> to log in to your client dashboard. From there you can track your event, message your planner, and review documents.</p>
+    </div>
     <div class="confirm-actions">
       <a href="login.html" class="btn-primary">Access Client Dashboard →</a>
       <a href="../index.html" class="btn-outline">Back to Home</a>
@@ -140,8 +156,68 @@
   </div>
 </div>
 
+<script src="../js/translations.js"></script>
 <script>
   var API = '';
+
+  function showValidation(msg, stepEl) {
+    var existing = stepEl.querySelector('.validation-msg');
+    if (existing) existing.remove();
+    if (!msg) return;
+    var div = document.createElement('div');
+    div.className = 'validation-msg';
+    div.style.cssText = 'background:#fdf0f0;border:1px solid #e74c3c;color:#c0392b;padding:12px 16px;border-radius:4px;font-size:0.85rem;margin-bottom:16px;';
+    div.textContent = msg;
+    stepEl.insertBefore(div, stepEl.firstChild);
+    window.scrollTo(0, 0);
+  }
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validateStep(step) {
+    var stepEl = document.getElementById('step-' + step);
+    if (step === 0) {
+      var inputs = stepEl.querySelectorAll('input');
+      var selects = stepEl.querySelectorAll('select');
+      var fname = inputs[0] ? inputs[0].value.trim() : '';
+      var lname = inputs[1] ? inputs[1].value.trim() : '';
+      var email = inputs[2] ? inputs[2].value.trim() : '';
+      var phone = inputs[3] ? inputs[3].value.trim() : '';
+      var pw = inputs[4] ? inputs[4].value : '';
+      var secQ = document.getElementById('security-q').value;
+      var secA = document.getElementById('security-a').value.trim();
+      if (!fname || !lname) { showValidation('Please enter your first and last name.', stepEl); return false; }
+      if (!email || !validateEmail(email)) { showValidation('Please enter a valid email address.', stepEl); return false; }
+      if (!phone) { showValidation('Please enter your phone number.', stepEl); return false; }
+      if (!pw || pw.length < 6) { showValidation('Please create a password (at least 6 characters).', stepEl); return false; }
+      if (!secQ) { showValidation('Please select a security question.', stepEl); return false; }
+      if (!secA) { showValidation('Please enter your security answer.', stepEl); return false; }
+      showValidation('', stepEl);
+      return true;
+    }
+    if (step === 1) {
+      var sel = document.querySelector('.event-type-btn.selected');
+      if (!sel) { showValidation('Please select an event type.', stepEl); return false; }
+      showValidation('', stepEl);
+      return true;
+    }
+    if (step === 2) {
+      var inputs2 = stepEl.querySelectorAll('input');
+      var evDate = inputs2[0] ? inputs2[0].value : '';
+      if (!evDate) { showValidation('Please select an event date.', stepEl); return false; }
+      showValidation('', stepEl);
+      return true;
+    }
+    if (step === 3) {
+      var sel = document.querySelector('.budget-btn.selected');
+      if (!sel) { showValidation('Please select a budget range.', stepEl); return false; }
+      showValidation('', stepEl);
+      return true;
+    }
+    return true;
+  }
 
   function pickType(el) {
     var btns = document.querySelectorAll('.event-type-btn');
@@ -157,6 +233,7 @@
 
   var curStep = 0;
   function goToStep(step) {
+    if (step > curStep && !validateStep(curStep)) return;
     document.getElementById('step-' + curStep).classList.remove('active');
     document.getElementById('prog-' + curStep).classList.remove('active');
     if (step > curStep) document.getElementById('prog-' + curStep).classList.add('done');
@@ -168,6 +245,7 @@
   }
 
   function submitQuote() {
+    if (!validateStep(4)) return;
     var inputs0 = document.querySelectorAll('#step-0 input');
     var selects0 = document.querySelectorAll('#step-0 select');
     var fname = inputs0[0] ? inputs0[0].value : '';
@@ -188,12 +266,25 @@
     var guests = selects2[0] ? selects2[0].value : '';
     var loc = inputs2[1] ? inputs2[1].value : '';
 
+    var venueStatus = selects2[1] ? selects2[1].value : '';
+    var vision = document.querySelector('#step-2 textarea') ? document.querySelector('#step-2 textarea').value : '';
+
     var budgetSel = document.querySelector('.budget-btn.selected .budget-range');
     var budget = budgetSel ? budgetSel.textContent : '';
+    var budgetNotes = document.querySelector('#step-3 textarea') ? document.querySelector('#step-3 textarea').value : '';
+
+    var vibeEls = document.querySelectorAll('.vibe-btn.selected p');
+    var vibes = [];
+    for (var v = 0; v < vibeEls.length; v++) vibes.push(vibeEls[v].textContent);
+    var vibeStr = vibes.join(', ');
+
+    var finalNotes = document.querySelector('#step-4 textarea') ? document.querySelector('#step-4 textarea').value : '';
 
     document.getElementById('conf-name').textContent = fname + ' ' + lname;
     document.getElementById('conf-email').textContent = email || 'Not provided';
     document.getElementById('conf-type').textContent = evType || 'Not specified';
+    document.getElementById('conf-date').textContent = evDate || 'Not specified';
+    document.getElementById('conf-budget').textContent = budget || 'Not specified';
 
     fetch(API + '/submit-quote', {
       method: 'POST',
@@ -202,15 +293,65 @@
         first_name: fname, last_name: lname, email: email, phone: phone,
         password: pw, security_question: secQ, security_answer: secA,
         source: source, event_type: evType, event_date: evDate,
-        guests: guests, location: loc, budget: budget
+        guests: guests, location: loc, venue_status: venueStatus,
+        vision: vision, budget: budget, budget_notes: budgetNotes,
+        vibes: vibeStr, final_notes: finalNotes
       })
     }).then(function(r) { return r.json(); })
-    .then(function(d) { console.log('saved', d); })
+    .then(function(d) {
+      console.log('saved', d);
+      uploadInspoPhotos(email);
+    })
     .catch(function(err) { console.log('error saving quote', err); });
 
     document.getElementById('quote-form-screen').style.display = 'none';
     document.getElementById('quote-confirm').style.display = 'flex';
     window.scrollTo(0, 0);
+  }
+
+  // Inspo photo preview
+  document.getElementById('inspo-photos').addEventListener('change', function() {
+    var preview = document.getElementById('inspo-preview');
+    preview.innerHTML = '';
+    var files = this.files;
+    for (var i = 0; i < files.length && i < 5; i++) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.cssText = 'width:80px; height:80px; object-fit:cover; border:1.5px solid rgba(74,39,114,0.15); border-radius:4px;';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(files[i]);
+    }
+    if (files.length > 5) {
+      var note = document.createElement('span');
+      note.textContent = 'Max 5 photos';
+      note.style.cssText = 'font-size:0.75rem; color:#7A6E5E; align-self:center;';
+      preview.appendChild(note);
+    }
+  });
+
+  function uploadInspoPhotos(email) {
+    var input = document.getElementById('inspo-photos');
+    if (!input.files.length) return;
+    var files = input.files;
+    var count = Math.min(files.length, 5);
+    for (var i = 0; i < count; i++) {
+      (function(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          fetch(API + '/quote/photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, filename: file.name, image_data: e.target.result })
+          }).then(function(r) { return r.json(); })
+          .then(function(d) { console.log('photo uploaded', d); })
+          .catch(function(err) { console.log('photo upload error', err); });
+        };
+        reader.readAsDataURL(file);
+      })(files[i]);
+    }
   }
 
   var u = JSON.parse(localStorage.getItem('user'));
