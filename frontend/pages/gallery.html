@@ -38,11 +38,11 @@
   <div style="max-width:1100px; margin:0 auto; padding:48px 60px 80px;">
 
     <div id="gallery-filters" style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
-      <button data-i18n="filterAll" class="gallery-filter active" onclick="filterGallery('all', this)" style="padding:8px 20px; border-radius:20px; font-size:0.75rem; cursor:pointer; border:1.5px solid #4A2772; background:#4A2772; color:white; font-family:'DM Sans',sans-serif;">All</button>
-      <button data-i18n="filterCorporate" class="gallery-filter" onclick="filterGallery('Corporate', this)" style="padding:8px 20px; border-radius:20px; font-size:0.75rem; cursor:pointer; border:1.5px solid rgba(74,39,114,0.2); background:transparent; color:#4A2772; font-family:'DM Sans',sans-serif;">Corporate</button>
-      <button data-i18n="filterSocial" class="gallery-filter" onclick="filterGallery('Social', this)" style="padding:8px 20px; border-radius:20px; font-size:0.75rem; cursor:pointer; border:1.5px solid rgba(74,39,114,0.2); background:transparent; color:#4A2772; font-family:'DM Sans',sans-serif;">Social</button>
-      <button data-i18n="filterGala" class="gallery-filter" onclick="filterGallery('Gala', this)" style="padding:8px 20px; border-radius:20px; font-size:0.75rem; cursor:pointer; border:1.5px solid rgba(74,39,114,0.2); background:transparent; color:#4A2772; font-family:'DM Sans',sans-serif;">Gala</button>
-      <button data-i18n="filterParty" class="gallery-filter" onclick="filterGallery('Party', this)" style="padding:8px 20px; border-radius:20px; font-size:0.75rem; cursor:pointer; border:1.5px solid rgba(74,39,114,0.2); background:transparent; color:#4A2772; font-family:'DM Sans',sans-serif;">Party</button>
+      <button data-i18n="filterAll" class="gallery-filter active" onclick="filterGallery('all', this)">All</button>
+      <button data-i18n="filterCorporate" class="gallery-filter" onclick="filterGallery('Corporate', this)">Corporate</button>
+      <button data-i18n="filterSocial" class="gallery-filter" onclick="filterGallery('Social', this)">Social</button>
+      <button data-i18n="filterGala" class="gallery-filter" onclick="filterGallery('Gala', this)">Gala</button>
+      <button data-i18n="filterParty" class="gallery-filter" onclick="filterGallery('Party', this)">Party</button>
     </div>
 
     <div id="gallery-grid" style="display:flex; flex-wrap:wrap; gap:20px;">
@@ -57,6 +57,25 @@
 
   </div>
 </div>
+
+<footer>
+  <div class="footer-content">
+    <div>
+      <div class="footer-services">
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Fundraising Galas</div></div>
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Birthday Parties</div></div>
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Corporate Events</div></div>
+      </div>
+      <a href="services.html" class="btn-all-svc">All Services</a>
+    </div>
+    <div>
+      <div class="footer-label">Call or text for a free quote</div>
+      <div class="footer-phone">(862) 215-0186</div>
+      <div class="footer-label">Email Us</div>
+      <div class="footer-email">info@visionrealizedevents.com</div>
+    </div>
+  </div>
+</footer>
 
 <script src="../js/translations.js"></script>
 <script>
@@ -104,14 +123,8 @@
 
   function filterGallery(category, btnEl) {
     var btns = document.querySelectorAll('.gallery-filter');
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].style.background = 'transparent';
-      btns[i].style.color = '#4A2772';
-      btns[i].style.borderColor = 'rgba(74,39,114,0.2)';
-    }
-    btnEl.style.background = '#4A2772';
-    btnEl.style.color = 'white';
-    btnEl.style.borderColor = '#4A2772';
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+    btnEl.classList.add('active');
     if (category === 'all') {
       renderGallery(allGalleryItems);
     } else {

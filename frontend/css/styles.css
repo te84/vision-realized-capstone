@@ -258,6 +258,27 @@ footer > * { position:relative; z-index:1; }
 .after-mini:hover { border-color:#4A2772; }
 .after-mini p { font-size:0.85rem; color:#2E1547; font-weight:500; }
 
+.gallery-filter { padding:8px 20px; border-radius:20px; font-size:0.75rem; cursor:pointer; border:1.5px solid rgba(74,39,114,0.2); background:transparent; color:#4A2772; font-family:'DM Sans',sans-serif; transition:background 0.2s, color 0.2s; }
+.gallery-filter:hover { background:rgba(74,39,114,0.08); }
+.gallery-filter.active { background:#4A2772; color:white; border-color:#4A2772; }
+
+.gallery-item { transition:transform 0.2s, box-shadow 0.2s; }
+.gallery-item:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(74,39,114,0.12); }
+
+.testi-card { transition:box-shadow 0.2s; border:1px solid rgba(74,39,114,0.08); padding:32px; background:white; }
+.testi-card:hover { box-shadow:0 4px 20px rgba(74,39,114,0.1); }
+
+.ev-card { transition:transform 0.2s; }
+.ev-card:hover { transform:scale(1.02); }
+
+.svc-card { transition:box-shadow 0.2s; border-radius:4px; overflow:hidden; }
+.svc-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+.svc-img { border-radius:4px 4px 0 0; }
+
+.btn-gold, .btn-ghost { transition:background 0.2s, border-color 0.2s; }
+.btn-cta-quote { transition:background 0.2s; }
+.ev-learn { transition:background 0.2s; }
+
 /* Mobile Responsive */
 @media (max-width: 1024px) {
   .hero { padding:40px; }
@@ -340,18 +361,27 @@ footer > * { position:relative; z-index:1; }
   .cta-band h2 { font-size:1.8rem; }
 }
 
-/* Gallery mobile */
 @media (max-width: 768px) {
   #gallery-filters { justify-content:center; }
   #gallery-grid { justify-content:center; }
   #gallery-grid > div { min-width:100% !important; max-width:100% !important; }
+  .gallery-filter { padding:6px 14px; font-size:0.7rem; }
+  .nav-lang { margin-left:8px; }
+  .nav-lang button { padding:3px 8px; font-size:0.65rem; }
+  .footer-phone { font-size:1.8rem; }
+  .footer-email { font-size:1.2rem; }
 }
 
-/* Touch targets */
+@media (max-width: 480px) {
+  .gallery-filter { padding:5px 12px; }
+  .nav-lang { gap:2px; }
+}
+
 @media (hover: none) {
   .btn-next, .btn-back, .btn-login, .btn-primary, .btn-outline, .btn-gold, .btn-ghost, .btn-cta-quote, .btn-all-svc, .nav-cta {
     min-height:44px;
   }
   .check-box { width:24px; height:24px; }
   .event-type-btn, .budget-btn, .vibe-btn { padding:16px 10px; }
+  .gallery-filter { min-height:36px; }
 }
