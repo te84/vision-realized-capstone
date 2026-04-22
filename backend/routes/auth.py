@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from db import get_db, hash_password, SECRET_KEY
+from db import get_db, hash_password, check_password, SECRET_KEY
 import psycopg2.extras
 import jwt
 import datetime
@@ -43,7 +43,7 @@ def register_auth_routes(app):
 
             if not user:
                 return jsonify({'message': 'Invalid username or password'}), 401
-            if hash_password(pw) != user['password']:
+            if not check_password(pw, user['password']):
                 return jsonify({'message': 'Invalid username or password'}), 401
 
             tok = jwt.encode({
