@@ -177,7 +177,6 @@
                 background: #fffdf9;
                 border: 1px solid rgba(74, 39, 114, 0.15);
                 padding: 16px;
-                display: flex;
                 gap: 12px;
                 align-items: center;
               "
@@ -388,10 +387,10 @@
             document.getElementById("countdown-num").textContent = "Past";
           else document.getElementById("countdown-num").textContent = "--";
         } else {
-          document.getElementById("event-badge").textContent = "No Event";
-          document.getElementById("event-name").textContent = "No event found";
+          document.getElementById("event-badge").textContent = "Getting Started";
+          document.getElementById("event-name").textContent = "Welcome to Vision Realized";
           document.getElementById("event-meta").innerHTML =
-            '<div class="event-meta-item">Submit a quote to get started</div>';
+            '<div class="event-meta-item"><strong>Submit a quote to begin planning your event</strong></div>';
           document.getElementById("countdown-num").textContent = "--";
         }
 
