@@ -150,12 +150,29 @@
         if (e.key === "Enter") doLogin();
       });
 
-      var u = JSON.parse(localStorage.getItem("user"));
-      if (u) {
-        var el = document.querySelector(".nav-portal");
-        el.textContent = u.firstname + "'s Portal";
-        el.href = "portal.html";
-      }
+      (function () {
+        var token = localStorage.getItem("token");
+        var u = JSON.parse(localStorage.getItem("user") || "null");
+        if (!token || !u) return;
+
+        var API = "http://localhost:5000";
+        fetch(API + "/dashboard", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            if (r.status === 401 || r.status === 403) {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              return;
+            }
+            window.location.href =
+              u.role === "Owner" ? "owner.html" : "portal.html";
+          })
+          .catch(function () {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          });
+      })();
     </script>
   </body>
 </html>

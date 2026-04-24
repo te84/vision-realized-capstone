@@ -118,6 +118,26 @@
           >
             Quote Requests
           </h2>
+          <div style="margin-bottom: 16px; position: relative">
+            <input
+              id="quote-search"
+              type="text"
+              placeholder="Search by name, email, or event type…"
+              oninput="filterQuotes()"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px 16px 10px 38px;
+                border: 1.5px solid rgba(74, 39, 114, 0.2);
+                background: #fffdf9;
+                font-family: inherit;
+                font-size: 0.88rem;
+                color: #2e1547;
+                outline: none;
+                border-radius: 2px;
+              "
+            />
+          </div>
           <div id="quotes-list"><p style="color: #7a6e5e">Loading...</p></div>
         </div>
 
@@ -397,21 +417,6 @@
               }
             }
 
-            html += "<h4>Messages</h4>";
-            if (data.messages.length === 0) {
-              html += '<p style="color:#7A6E5E;">No messages yet.</p>';
-            } else {
-              for (var i = 0; i < data.messages.length; i++) {
-                var m = data.messages[i];
-                html += '<div class="msg-bubble">';
-                html += '<span class="from">' + m.sender + "</span>";
-                html +=
-                  '<span class="when">' + (m.created_at || "") + "</span>";
-                html += '<div class="body">' + m.text + "</div>";
-                html += "</div>";
-              }
-            }
-
             html += "<h4>Documents</h4>";
             if (data.documents.length === 0) {
               html += '<p style="color:#7A6E5E;">No documents yet.</p>';
@@ -440,6 +445,71 @@
           });
       }
 
+      var allQuotes = [];
+
+      function renderQuotes(quotes) {
+        var box = document.getElementById("quotes-list");
+        if (quotes.length === 0) {
+          box.innerHTML =
+            '<p style="color:#7A6E5E;">No matching quote requests.</p>';
+          return;
+        }
+        var html = "";
+        for (var i = 0; i < quotes.length; i++) {
+          var q = quotes[i];
+          html += '<div class="panel" style="margin-bottom:12px;">';
+          html += '<div class="info-row"><span class="info-label">Name</span>';
+          html +=
+            '<span class="info-val">' +
+            (q.first_name || "") +
+            " " +
+            (q.last_name || "") +
+            "</span></div>";
+          html += '<div class="info-row"><span class="info-label">Email</span>';
+          html += '<span class="info-val">' + (q.email || "") + "</span></div>";
+          if (q.phone) {
+            html +=
+              '<div class="info-row"><span class="info-label">Phone</span>';
+            html += '<span class="info-val">' + q.phone + "</span></div>";
+          }
+          html += '<div class="info-row"><span class="info-label">Event</span>';
+          html +=
+            '<span class="info-val">' +
+            (q.event_type || "Event") +
+            (q.event_date ? " — " + q.event_date : "") +
+            "</span></div>";
+          if (q.location) {
+            html +=
+              '<div class="info-row"><span class="info-label">Location</span>';
+            html += '<span class="info-val">' + q.location + "</span></div>";
+          }
+          html += "</div>";
+        }
+        box.innerHTML = html;
+      }
+
+      function filterQuotes() {
+        var term = document
+          .getElementById("quote-search")
+          .value.trim()
+          .toLowerCase();
+        if (!term) {
+          renderQuotes(allQuotes);
+          return;
+        }
+        var filtered = allQuotes.filter(function (q) {
+          return (
+            ((q.first_name || "") + " " + (q.last_name || ""))
+              .toLowerCase()
+              .indexOf(term) > -1 ||
+            (q.email || "").toLowerCase().indexOf(term) > -1 ||
+            (q.event_type || "").toLowerCase().indexOf(term) > -1 ||
+            (q.location || "").toLowerCase().indexOf(term) > -1
+          );
+        });
+        renderQuotes(filtered);
+      }
+
       function loadQuotes() {
         fetch(API + "/quotes")
           .then(function (r) {
@@ -447,56 +517,15 @@
           })
           .then(function (data) {
             if (!data.success) return;
+            allQuotes = data.quotes;
             document.getElementById("stat-quotes").textContent =
-              data.quotes.length;
-
-            var box = document.getElementById("quotes-list");
-            if (data.quotes.length === 0) {
-              box.innerHTML =
+              allQuotes.length;
+            if (allQuotes.length === 0) {
+              document.getElementById("quotes-list").innerHTML =
                 '<p style="color:#7A6E5E;">No quote requests yet.</p>';
               return;
             }
-
-            var html = "";
-            for (var i = 0; i < data.quotes.length; i++) {
-              var q = data.quotes[i];
-              html += '<div class="panel" style="margin-bottom:12px;">';
-              html += '<div class="info-row">';
-              html += '<span class="info-label">Name</span>';
-              html +=
-                '<span class="info-val">' +
-                (q.first_name || "") +
-                " " +
-                (q.last_name || "") +
-                "</span>";
-              html += "</div>";
-              html += '<div class="info-row">';
-              html += '<span class="info-label">Email</span>';
-              html += '<span class="info-val">' + (q.email || "") + "</span>";
-              html += "</div>";
-              if (q.phone) {
-                html += '<div class="info-row">';
-                html += '<span class="info-label">Phone</span>';
-                html += '<span class="info-val">' + q.phone + "</span>";
-                html += "</div>";
-              }
-              html += '<div class="info-row">';
-              html += '<span class="info-label">Event</span>';
-              html +=
-                '<span class="info-val">' +
-                (q.event_type || "Event") +
-                (q.event_date ? " — " + q.event_date : "") +
-                "</span>";
-              html += "</div>";
-              if (q.location) {
-                html += '<div class="info-row">';
-                html += '<span class="info-label">Location</span>';
-                html += '<span class="info-val">' + q.location + "</span>";
-                html += "</div>";
-              }
-              html += "</div>";
-            }
-            box.innerHTML = html;
+            renderQuotes(allQuotes);
           });
       }
 
