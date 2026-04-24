@@ -118,6 +118,26 @@
           >
             Quote Requests
           </h2>
+          <div style="margin-bottom: 16px; position: relative">
+            <input
+              id="quote-search"
+              type="text"
+              placeholder="Search by name, email, or event type…"
+              oninput="filterQuotes()"
+              style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 10px 16px 10px 38px;
+                border: 1.5px solid rgba(74, 39, 114, 0.2);
+                background: #fffdf9;
+                font-family: inherit;
+                font-size: 0.88rem;
+                color: #2e1547;
+                outline: none;
+                border-radius: 2px;
+              "
+            />
+          </div>
           <div id="quotes-list"><p style="color: #7a6e5e">Loading...</p></div>
         </div>
 
@@ -232,7 +252,62 @@
           });
       }
 
+      var currentEditEventId = null;
+
+      function saveEventChanges() {
+        if (!currentEditEventId) return;
+        var payload = {
+          status: document.getElementById("edit-status").value,
+          event_date: document.getElementById("edit-date").value || null,
+          location: document.getElementById("edit-location").value,
+          planner: document.getElementById("edit-planner").value,
+          event_name: document.getElementById("edit-name").value,
+        };
+        var btn = document.getElementById("save-event-btn");
+        btn.disabled = true;
+        btn.textContent = "Saving…";
+        fetch(API + "/owner/events/" + currentEditEventId, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(payload),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (data.success) {
+              btn.textContent = "Saved ✓";
+              btn.style.background = "#3a7d44";
+              loadEvents();
+              setTimeout(function () {
+                btn.disabled = false;
+                btn.textContent = "Save Changes";
+                btn.style.background = "";
+              }, 2000);
+            } else {
+              btn.textContent = "Error — try again";
+              btn.disabled = false;
+            }
+          })
+          .catch(function () {
+            btn.textContent = "Error — try again";
+            btn.disabled = false;
+          });
+      }
+
       function openEvent(eventId) {
+        currentEditEventId = eventId;
+        var ev = null;
+        for (var i = 0; i < allEvents.length; i++) {
+          if (allEvents[i].id === eventId) {
+            ev = allEvents[i];
+            break;
+          }
+        }
+
         fetch(API + "/owner/event-detail/" + eventId, {
           headers: { Authorization: "Bearer " + token },
         })
@@ -247,6 +322,77 @@
 
             html += '<div class="panel">';
             html += "<h3>Event Details</h3>";
+
+            var statuses = [
+              "Quote Submitted",
+              "Consultation",
+              "Planning",
+              "Vendors Set",
+              "Event Day",
+              "Completed",
+            ];
+            var curStatus = ev && ev.status ? ev.status : "Quote Submitted";
+
+            html +=
+              '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;margin-bottom:24px;">';
+            html +=
+              '<h4 style="margin:0 0 14px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Edit Event</h4>';
+            html +=
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;">';
+
+            html +=
+              '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Event Name</label>';
+            html +=
+              '<input id="edit-name" value="' +
+              (ev && ev.event_name
+                ? ev.event_name.replace(/"/g, "&quot;")
+                : "") +
+              '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+            html +=
+              '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Status</label>';
+            html +=
+              '<select id="edit-status" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;">';
+            for (var s = 0; s < statuses.length; s++) {
+              var sel = statuses[s] === curStatus ? " selected" : "";
+              html +=
+                '<option value="' +
+                statuses[s] +
+                '"' +
+                sel +
+                ">" +
+                statuses[s] +
+                "</option>";
+            }
+            html += "</select></div>";
+
+            html +=
+              '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Event Date</label>';
+            html +=
+              '<input id="edit-date" type="date" value="' +
+              (ev && ev.event_date ? ev.event_date : "") +
+              '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+            html +=
+              '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Location</label>';
+            html +=
+              '<input id="edit-location" value="' +
+              (ev && ev.location ? ev.location.replace(/"/g, "&quot;") : "") +
+              '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+            html +=
+              '<div style="grid-column:1/-1"><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Planner</label>';
+            html +=
+              '<input id="edit-planner" value="' +
+              (ev && ev.planner ? ev.planner.replace(/"/g, "&quot;") : "") +
+              '" placeholder="Assign a planner name" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+            html += "</div>";
+            html += '<div style="margin-top:14px;text-align:right;">';
+            html +=
+              '<button id="save-event-btn" onclick="saveEventChanges()" style="padding:9px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;">Save Changes</button>';
+            html += "</div>";
+            html += "</div>";
 
             html += "<h4>Tasks</h4>";
             if (data.tasks.length === 0) {
@@ -267,21 +413,6 @@
                     t.due_date +
                     "</span>";
                 }
-                html += "</div>";
-              }
-            }
-
-            html += "<h4>Messages</h4>";
-            if (data.messages.length === 0) {
-              html += '<p style="color:#7A6E5E;">No messages yet.</p>';
-            } else {
-              for (var i = 0; i < data.messages.length; i++) {
-                var m = data.messages[i];
-                html += '<div class="msg-bubble">';
-                html += '<span class="from">' + m.sender + "</span>";
-                html +=
-                  '<span class="when">' + (m.created_at || "") + "</span>";
-                html += '<div class="body">' + m.text + "</div>";
                 html += "</div>";
               }
             }
@@ -314,6 +445,71 @@
           });
       }
 
+      var allQuotes = [];
+
+      function renderQuotes(quotes) {
+        var box = document.getElementById("quotes-list");
+        if (quotes.length === 0) {
+          box.innerHTML =
+            '<p style="color:#7A6E5E;">No matching quote requests.</p>';
+          return;
+        }
+        var html = "";
+        for (var i = 0; i < quotes.length; i++) {
+          var q = quotes[i];
+          html += '<div class="panel" style="margin-bottom:12px;">';
+          html += '<div class="info-row"><span class="info-label">Name</span>';
+          html +=
+            '<span class="info-val">' +
+            (q.first_name || "") +
+            " " +
+            (q.last_name || "") +
+            "</span></div>";
+          html += '<div class="info-row"><span class="info-label">Email</span>';
+          html += '<span class="info-val">' + (q.email || "") + "</span></div>";
+          if (q.phone) {
+            html +=
+              '<div class="info-row"><span class="info-label">Phone</span>';
+            html += '<span class="info-val">' + q.phone + "</span></div>";
+          }
+          html += '<div class="info-row"><span class="info-label">Event</span>';
+          html +=
+            '<span class="info-val">' +
+            (q.event_type || "Event") +
+            (q.event_date ? " — " + q.event_date : "") +
+            "</span></div>";
+          if (q.location) {
+            html +=
+              '<div class="info-row"><span class="info-label">Location</span>';
+            html += '<span class="info-val">' + q.location + "</span></div>";
+          }
+          html += "</div>";
+        }
+        box.innerHTML = html;
+      }
+
+      function filterQuotes() {
+        var term = document
+          .getElementById("quote-search")
+          .value.trim()
+          .toLowerCase();
+        if (!term) {
+          renderQuotes(allQuotes);
+          return;
+        }
+        var filtered = allQuotes.filter(function (q) {
+          return (
+            ((q.first_name || "") + " " + (q.last_name || ""))
+              .toLowerCase()
+              .indexOf(term) > -1 ||
+            (q.email || "").toLowerCase().indexOf(term) > -1 ||
+            (q.event_type || "").toLowerCase().indexOf(term) > -1 ||
+            (q.location || "").toLowerCase().indexOf(term) > -1
+          );
+        });
+        renderQuotes(filtered);
+      }
+
       function loadQuotes() {
         fetch(API + "/quotes")
           .then(function (r) {
@@ -321,56 +517,15 @@
           })
           .then(function (data) {
             if (!data.success) return;
+            allQuotes = data.quotes;
             document.getElementById("stat-quotes").textContent =
-              data.quotes.length;
-
-            var box = document.getElementById("quotes-list");
-            if (data.quotes.length === 0) {
-              box.innerHTML =
+              allQuotes.length;
+            if (allQuotes.length === 0) {
+              document.getElementById("quotes-list").innerHTML =
                 '<p style="color:#7A6E5E;">No quote requests yet.</p>';
               return;
             }
-
-            var html = "";
-            for (var i = 0; i < data.quotes.length; i++) {
-              var q = data.quotes[i];
-              html += '<div class="panel" style="margin-bottom:12px;">';
-              html += '<div class="info-row">';
-              html += '<span class="info-label">Name</span>';
-              html +=
-                '<span class="info-val">' +
-                (q.first_name || "") +
-                " " +
-                (q.last_name || "") +
-                "</span>";
-              html += "</div>";
-              html += '<div class="info-row">';
-              html += '<span class="info-label">Email</span>';
-              html += '<span class="info-val">' + (q.email || "") + "</span>";
-              html += "</div>";
-              if (q.phone) {
-                html += '<div class="info-row">';
-                html += '<span class="info-label">Phone</span>';
-                html += '<span class="info-val">' + q.phone + "</span>";
-                html += "</div>";
-              }
-              html += '<div class="info-row">';
-              html += '<span class="info-label">Event</span>';
-              html +=
-                '<span class="info-val">' +
-                (q.event_type || "Event") +
-                (q.event_date ? " — " + q.event_date : "") +
-                "</span>";
-              html += "</div>";
-              if (q.location) {
-                html += '<div class="info-row">';
-                html += '<span class="info-label">Location</span>';
-                html += '<span class="info-val">' + q.location + "</span>";
-                html += "</div>";
-              }
-              html += "</div>";
-            }
-            box.innerHTML = html;
+            renderQuotes(allQuotes);
           });
       }
 

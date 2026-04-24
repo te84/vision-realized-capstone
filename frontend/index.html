@@ -186,13 +186,33 @@
     </div>
 
     <script>
-      // we may need to remove this script, probably will cause problem later on
-      var u = JSON.parse(localStorage.getItem("user"));
-      if (u) {
-        var el = document.querySelector(".nav-portal");
-        el.textContent = u.firstname + "'s Portal";
-        el.href = "portal.html";
-      }
+      (function () {
+        var token = localStorage.getItem("token");
+        var u = JSON.parse(localStorage.getItem("user") || "null");
+        if (!token || !u) return;
+
+        var API = "http://localhost:5000";
+        fetch(API + "/dashboard", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            if (r.status === 401 || r.status === 403) {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              return;
+            }
+            var el = document.querySelector(".nav-portal");
+            if (el) {
+              el.textContent = (u.firstname || u.username) + "'s Portal";
+              el.href =
+                u.role === "Owner" ? "pages/owner.html" : "pages/portal.html";
+            }
+          })
+          .catch(function () {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          });
+      })();
     </script>
   </body>
 </html>
