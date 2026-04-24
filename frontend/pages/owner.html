@@ -17,7 +17,6 @@
         <a href="../index.html">Home</a>
         <a href="about.html">About Us</a>
         <a href="services.html">Services</a>
-        <a href="contact.html">Contact Us</a>
         <a href="login.html" class="nav-portal">Client Login</a>
       </div>
       <a href="quote.html" class="nav-cta">Start a Quote</a>
@@ -281,7 +280,6 @@
             if (data.success) {
               btn.textContent = "Saved ✓";
               btn.style.background = "#3a7d44";
-              // refresh the events table in the background so the badge updates
               loadEvents();
               setTimeout(function () {
                 btn.disabled = false;
@@ -324,7 +322,6 @@
             html += '<div class="panel">';
             html += "<h3>Event Details</h3>";
 
-            // ── Edit form ──────────────────────────────────────────────
             var statuses = [
               "Quote Submitted",
               "Consultation",
@@ -389,17 +386,15 @@
               (ev && ev.planner ? ev.planner.replace(/"/g, "&quot;") : "") +
               '" placeholder="Assign a planner name" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
 
-            html += "</div>"; // end grid
+            html += "</div>";
             html += '<div style="margin-top:14px;text-align:right;">';
             html +=
               '<button id="save-event-btn" onclick="saveEventChanges()" style="padding:9px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;">Save Changes</button>';
             html += "</div>";
-            html += "</div>"; // end edit card
-            // ──────────────────────────────────────────────────────────
+            html += "</div>";
 
             html += "<h4>Tasks</h4>";
 
-            // ── Assign task form ───────────────────────────────────────
             html +=
               '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:14px 16px;margin-bottom:14px;">';
             html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
@@ -410,7 +405,6 @@
             html +=
               '<button onclick="ownerAddTask()" style="padding:8px 18px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;white-space:nowrap;">+ Assign</button>';
             html += "</div></div>";
-            // ──────────────────────────────────────────────────────────
 
             html += '<div id="owner-task-list">';
             if (data.tasks.length === 0) {
@@ -504,7 +498,6 @@
             document.getElementById("new-task-title").value = "";
             document.getElementById("new-task-date").value = "";
 
-            // append task row to list immediately
             var list = document.getElementById("owner-task-list");
             var emptyMsg = list.querySelector("p");
             if (emptyMsg) emptyMsg.remove();
