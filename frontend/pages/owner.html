@@ -281,6 +281,7 @@
             if (data.success) {
               btn.textContent = "Saved ✓";
               btn.style.background = "#3a7d44";
+              // refresh the events table in the background so the badge updates
               loadEvents();
               setTimeout(function () {
                 btn.disabled = false;
@@ -323,6 +324,7 @@
             html += '<div class="panel">';
             html += "<h3>Event Details</h3>";
 
+            // ── Edit form ──────────────────────────────────────────────
             var statuses = [
               "Quote Submitted",
               "Consultation",
@@ -387,32 +389,61 @@
               (ev && ev.planner ? ev.planner.replace(/"/g, "&quot;") : "") +
               '" placeholder="Assign a planner name" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
 
-            html += "</div>";
+            html += "</div>"; // end grid
             html += '<div style="margin-top:14px;text-align:right;">';
             html +=
               '<button id="save-event-btn" onclick="saveEventChanges()" style="padding:9px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;">Save Changes</button>';
             html += "</div>";
-            html += "</div>";
+            html += "</div>"; // end edit card
+            // ──────────────────────────────────────────────────────────
 
             html += "<h4>Tasks</h4>";
+
+            // ── Assign task form ───────────────────────────────────────
+            html +=
+              '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:14px 16px;margin-bottom:14px;">';
+            html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+            html +=
+              '<input id="new-task-title" placeholder="Task title…" style="flex:2;min-width:140px;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;">';
+            html +=
+              '<input id="new-task-date" type="date" style="flex:1;min-width:120px;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;">';
+            html +=
+              '<button onclick="ownerAddTask()" style="padding:8px 18px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;white-space:nowrap;">+ Assign</button>';
+            html += "</div></div>";
+            // ──────────────────────────────────────────────────────────
+
+            html += '<div id="owner-task-list">';
             if (data.tasks.length === 0) {
               html += '<p style="color:#7A6E5E;">No tasks yet.</p>';
             } else {
               for (var i = 0; i < data.tasks.length; i++) {
                 var t = data.tasks[i];
                 html +=
-                  '<div class="task-item' + (t.completed ? " done" : "") + '">';
+                  '<div class="task-item' +
+                  (t.completed ? " done" : "") +
+                  '" id="task-row-' +
+                  t.id +
+                  '" style="display:flex;align-items:center;justify-content:space-between;">';
                 html +=
-                  '<div class="task-toggle">' +
+                  '<div style="display:flex;align-items:center;gap:8px;">';
+                html +=
+                  '<div class="task-toggle" onclick="ownerToggleTask(' +
+                  t.id +
+                  ')" style="cursor:pointer;">' +
                   (t.completed ? "✓" : "") +
                   "</div>";
                 html += "<span>" + t.title + "</span>";
                 if (t.due_date) {
                   html +=
-                    '<span style="color:#7A6E5E;font-size:0.8rem;margin-left:8px;">' +
+                    '<span style="color:#7A6E5E;font-size:0.8rem;">— ' +
                     t.due_date +
                     "</span>";
                 }
+                html += "</div>";
+                html +=
+                  '<button onclick="ownerDeleteTask(' +
+                  t.id +
+                  ')" style="background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer;padding:2px 6px;" title="Delete task">✕</button>';
                 html += "</div>";
               }
             }
@@ -442,6 +473,108 @@
             html += "</div>";
 
             eventBox.innerHTML = html;
+          });
+      }
+
+      function ownerAddTask() {
+        var title = document.getElementById("new-task-title").value.trim();
+        var due = document.getElementById("new-task-date").value || null;
+        if (!title) {
+          document.getElementById("new-task-title").focus();
+          return;
+        }
+
+        fetch(API + "/owner/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            event_id: currentEditEventId,
+            title: title,
+            due_date: due,
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            document.getElementById("new-task-title").value = "";
+            document.getElementById("new-task-date").value = "";
+
+            // append task row to list immediately
+            var list = document.getElementById("owner-task-list");
+            var emptyMsg = list.querySelector("p");
+            if (emptyMsg) emptyMsg.remove();
+
+            var row = document.createElement("div");
+            row.className = "task-item";
+            row.id = "task-row-" + (data.task_id || Date.now());
+            row.style.cssText =
+              "display:flex;align-items:center;justify-content:space-between;";
+            var tid = data.task_id || 0;
+            row.innerHTML =
+              '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<div class="task-toggle" onclick="ownerToggleTask(' +
+              tid +
+              ')" style="cursor:pointer;"></div>' +
+              "<span>" +
+              title +
+              "</span>" +
+              (due
+                ? '<span style="color:#7A6E5E;font-size:0.8rem;">— ' +
+                  due +
+                  "</span>"
+                : "") +
+              "</div>" +
+              '<button onclick="ownerDeleteTask(' +
+              tid +
+              ')" style="background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer;padding:2px 6px;" title="Delete task">✕</button>';
+            list.appendChild(row);
+          });
+      }
+
+      function ownerToggleTask(taskId) {
+        fetch(API + "/owner/tasks/" + taskId, {
+          method: "PUT",
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            var row = document.getElementById("task-row-" + taskId);
+            if (!row) return;
+            var toggle = row.querySelector(".task-toggle");
+            if (row.classList.contains("done")) {
+              row.classList.remove("done");
+              toggle.textContent = "";
+            } else {
+              row.classList.add("done");
+              toggle.textContent = "✓";
+            }
+          });
+      }
+
+      function ownerDeleteTask(taskId) {
+        fetch(API + "/owner/tasks/" + taskId, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            var row = document.getElementById("task-row-" + taskId);
+            if (row) row.remove();
+            var list = document.getElementById("owner-task-list");
+            if (list && list.children.length === 0) {
+              list.innerHTML = '<p style="color:#7A6E5E;">No tasks yet.</p>';
+            }
           });
       }
 
