@@ -231,8 +231,10 @@
             }
 
             var html = "";
+            var today = new Date();
             for (var i = 0; i < allEvents.length; i++) {
               var ev = allEvents[i];
+              var isOverdue = ev.event_date && new Date(ev.event_date) < today && ev.status !== "Completed";
               html += "<tr>";
               html +=
                 "<td><strong>" +
