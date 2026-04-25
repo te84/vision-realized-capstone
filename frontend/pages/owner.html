@@ -170,8 +170,10 @@
       if (!user || !token || user.role !== "Owner")
         window.location.href = "login.html";
 
-      document.getElementById("owner-greeting").textContent =
-        "Welcome, " + (user.firstname || "Admin");
+      var hour = new Date().getHours();
+      var timeGreeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+      document.getElementById("owner-greeting").textContent = 
+        timeGreeting + ", " + (user.firstname || "Admin");
 
       function showTab(el, id) {
         var tabs = document.querySelectorAll(".tab-content");
