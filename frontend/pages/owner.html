@@ -25,12 +25,18 @@
     <div class="owner-layout">
       <div class="owner-sidebar">
         <div class="owner-sidebar-title">Owner Dashboard</div>
-        <div
-          class="owner-nav-item active"
-          onclick="showTab(this, 'tab-events')"
-        >
-          Client Events
-        </div>
+       <div class="owner-nav-item active" onclick="showTab(this, 'tab-events')">
+         Client Events
+         <span id="events-badge" style="
+           background: #2e1547; 
+           color: white;
+           border-radius: 999px;
+           font-size: 0.7rem;
+           padding: 2px 7px;
+           margin-left: 8px;
+           font-family: 'DM Sans', sans-serif;
+          "></span>
+       </div>
         <div class="owner-nav-item" onclick="showTab(this, 'tab-quotes')">
           Quote Requests
         </div>
@@ -208,6 +214,8 @@
             if (!data.success) return;
             allEvents = data.events;
             document.getElementById("stat-events").textContent =
+              allEvents.length;
+            document.getElementById("events-badge").textContent = 
               allEvents.length;
             document.getElementById("stat-clients").textContent =
               allEvents.length;
