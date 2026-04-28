@@ -739,33 +739,183 @@
           });
       }
 
+      var activeMessageEventId = null;
+
       function loadInbox() {
-        fetch(API + "/messages")
+        fetch(API + "/owner/events", {
+          headers: { Authorization: "Bearer " + token },
+        })
           .then(function (r) {
             return r.json();
           })
           .then(function (data) {
             if (!data.success) return;
-            document.getElementById("stat-messages").textContent =
-              data.messages.length;
+
+            allEvents = data.events;
+            var requests = [];
+
+            for (var i = 0; i < allEvents.length; i++) {
+              requests.push(
+                fetch(API + "/owner/event-detail/" + allEvents[i].id, {
+                  headers: { Authorization: "Bearer " + token },
+                }).then(function (r) {
+                  return r.json();
+                })
+              );
+            }
+
+            Promise.all(requests).then(function (details) {
+              var conversations = [];
+
+              for (var i = 0; i < details.length; i++) {
+                if (details[i].success && details[i].messages.length > 0) {
+                  conversations.push({
+                    event: allEvents[i],
+                    messages: details[i].messages
+                  });
+                }
+              }
+
+              document.getElementById("stat-messages").textContent =
+                conversations.length;
+
+              var box = document.getElementById("inbox-list");
+              if (conversations.length === 0) {
+                box.innerHTML =
+                  '<p style="color:#7A6E5E;">No client messages yet.</p>';
+                return;
+              }
+
+              var html = "";
+              for (var i = 0; i < conversations.length; i++) {
+                var ev = conversations[i].event;
+                var msgs = conversations[i].messages;
+                var last = msgs[msgs.length - 1];
+
+                html +=
+                  '<div class="msg-bubble" style="cursor:pointer;" onclick="openOwnerMessageChat(' +
+                  ev.id +
+                  ')">';
+                html +=
+                  '<span class="from">' +
+                  (ev.firstname || "") +
+                  " " +
+                  (ev.lastname || "") +
+                  "</span>";
+                html +=
+                  '<span class="when">' +
+                  (ev.email || "") +
+                  " · " +
+                  (ev.event_name || "Event") +
+                  "</span>";
+                html += '<div class="body">' + (last.text || "") + "</div>";
+                html += "</div>";
+              }
+
+              box.innerHTML = html;
+            });
+          });
+      }
+
+      function openOwnerMessageChat(eventId) {
+        activeMessageEventId = eventId;
+
+        var ev = null;
+        for (var i = 0; i < allEvents.length; i++) {
+          if (allEvents[i].id === eventId) {
+            ev = allEvents[i];
+            break;
+          }
+        }
+
+        fetch(API + "/owner/event-detail/" + eventId, {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
 
             var box = document.getElementById("inbox-list");
-            if (data.messages.length === 0) {
-              box.innerHTML =
-                '<p style="color:#7A6E5E;">No contact messages yet.</p>';
-              return;
-            }
-
             var html = "";
+
+            html += '<div class="panel">';
+            html +=
+              "<h3>" +
+              ((ev && ev.firstname) || "Client") +
+              " " +
+              ((ev && ev.lastname) || "") +
+              "</h3>";
+            html +=
+              '<p style="color:#7A6E5E;margin-bottom:18px;">' +
+              ((ev && ev.email) || "") +
+              " · " +
+              ((ev && ev.event_name) || "Event") +
+              "</p>";
+
+            html +=
+              '<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px;">';
+
             for (var i = 0; i < data.messages.length; i++) {
               var m = data.messages[i];
-              html += '<div class="msg-bubble">';
-              html += '<span class="from">' + (m.name || "") + "</span>";
-              html += '<span class="when">' + (m.email || "") + "</span>";
-              html += '<div class="body">' + (m.message || "") + "</div>";
+              var align =
+                m.sender === "Vision Realized"
+                  ? "margin-left:auto;background:#4a2772;color:white;"
+                  : "margin-right:auto;background:#fffdf9;color:#1A1208;";
+
+              html +=
+                '<div style="max-width:70%;padding:12px 16px;border:1px solid rgba(74,39,114,0.15);border-radius:4px;' +
+                align +
+                '">';
+              html +=
+                '<div style="font-size:0.72rem;opacity:0.75;margin-bottom:4px;">' +
+                (m.sender || "") +
+                "</div>";
+              html +=
+                '<div style="font-size:0.9rem;line-height:1.5;">' +
+                (m.text || "") +
+                "</div>";
               html += "</div>";
             }
+
+            html += "</div>";
+
+            html +=
+              '<textarea id="owner-message-text" placeholder="Type your reply..." style="width:100%;box-sizing:border-box;min-height:90px;padding:12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.9rem;margin-bottom:12px;"></textarea>';
+            html += '<div style="display:flex;justify-content:space-between;gap:12px;">';
+            html += '<button class="action-btn" onclick="loadInbox()">Back to Inbox</button>';
+            html += '<button class="action-btn" onclick="sendOwnerEventMessage()">Send Reply</button>';
+            html += "</div>";
+
+            html += "</div>";
             box.innerHTML = html;
+          });
+      }
+
+      function sendOwnerEventMessage() {
+        if (!activeMessageEventId) return;
+
+        var text = document.getElementById("owner-message-text").value.trim();
+        if (!text) return;
+
+        fetch(API + "/owner/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            event_id: activeMessageEventId,
+            sender: "Vision Realized",
+            text: text
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (data.success) openOwnerMessageChat(activeMessageEventId);
           });
       }
 

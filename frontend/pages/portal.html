@@ -526,7 +526,7 @@
               '</div><div class="msg-preview">' +
               prev +
               '</div></div><div class="msg-time">' +
-              fmtDate(m.date) +
+              (m.date || "") +
               "</div></div>";
           }
           dashMsgs.innerHTML = html;
@@ -618,7 +618,7 @@
                 '</div><div class="msg-preview">' +
                 m.text +
                 '</div></div><div class="msg-time">' +
-                fmtDate(m.date) +
+                (m.date || "") +
                 "</div></div>";
             }
             msgsFull.innerHTML = html;
@@ -842,7 +842,7 @@
               '</div><div class="msg-preview">' +
               prev +
               '</div></div><div class="msg-time">' +
-              fmtDate(m.date) +
+              (m.date || "") +
               "</div></div>";
           }
           dashMsgs.innerHTML = html;
@@ -1024,7 +1024,7 @@
               "</div>";
             html +=
               '<div style="font-size:0.72rem;color:#7A6E5E;">' +
-              fmtDate(m.date) +
+              (m.date || "") +
               "</div></div>";
             html += badge + "</div>";
             html +=

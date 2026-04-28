@@ -15,7 +15,7 @@ def register_contact_routes(app):
         try:
             db = get_db()
             cur = db.cursor()
-            cur.execute("INSERT INTO contact_messages (name, email, message) VALUES (%s,%s,%s)", (name, email, msg))
+            cur.execute("INSERT INTO contact_messages (name, email, message, sender) VALUES (%s,%s,%s,%s)", (name, email, msg, 'Client'))
             db.commit(); cur.close(); db.close()
             return jsonify({'success': True, 'message': 'Message received'})
         except Exception as e:
