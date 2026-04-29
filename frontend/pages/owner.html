@@ -25,18 +25,24 @@
     <div class="owner-layout">
       <div class="owner-sidebar">
         <div class="owner-sidebar-title">Owner Dashboard</div>
-       <div class="owner-nav-item active" onclick="showTab(this, 'tab-events')">
-         Client Events
-         <span id="events-badge" style="
-           background: #2e1547; 
-           color: white;
-           border-radius: 999px;
-           font-size: 0.7rem;
-           padding: 2px 7px;
-           margin-left: 8px;
-           font-family: 'DM Sans', sans-serif;
-          "></span>
-       </div>
+        <div
+          class="owner-nav-item active"
+          onclick="showTab(this, 'tab-events')"
+        >
+          Client Events
+          <span
+            id="events-badge"
+            style="
+              background: #2e1547;
+              color: white;
+              border-radius: 999px;
+              font-size: 0.7rem;
+              padding: 2px 7px;
+              margin-left: 8px;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+            "
+          ></span>
+        </div>
         <div class="owner-nav-item" onclick="showTab(this, 'tab-quotes')">
           Quote Requests
         </div>
@@ -171,8 +177,13 @@
         window.location.href = "login.html";
 
       var hour = new Date().getHours();
-      var timeGreeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-      document.getElementById("owner-greeting").textContent = 
+      var timeGreeting =
+        hour < 12
+          ? "Good morning"
+          : hour < 18
+            ? "Good afternoon"
+            : "Good evening";
+      document.getElementById("owner-greeting").textContent =
         timeGreeting + ", " + (user.firstname || "Admin");
 
       function showTab(el, id) {
@@ -218,7 +229,7 @@
             allEvents = data.events;
             document.getElementById("stat-events").textContent =
               allEvents.length;
-            document.getElementById("events-badge").textContent = 
+            document.getElementById("events-badge").textContent =
               allEvents.length;
             document.getElementById("stat-clients").textContent =
               allEvents.length;
@@ -234,7 +245,10 @@
             var today = new Date();
             for (var i = 0; i < allEvents.length; i++) {
               var ev = allEvents[i];
-              var isOverdue = ev.event_date && new Date(ev.event_date) < today && ev.status !== "Completed";
+              var isOverdue =
+                ev.event_date &&
+                new Date(ev.event_date) < today &&
+                ev.status !== "Completed";
               html += "<tr>";
               html +=
                 "<td><strong>" +
@@ -408,7 +422,8 @@
 
             html += "<h4>Quote Details</h4>";
             if (!data.quote) {
-              html += '<p style="color:#7A6E5E;">No quote details found for this event.</p>';
+              html +=
+                '<p style="color:#7A6E5E;">No quote details found for this event.</p>';
             } else {
               html +=
                 '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;margin-bottom:24px;">';
@@ -503,6 +518,55 @@
                 html += "</div>";
               }
             }
+
+            html += "</div>"; // close owner-task-list
+
+            // ── Message Client ──────────────────────────────────────
+            html += '<h4 style="margin-top:28px;">Message Client</h4>';
+            html +=
+              '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:16px 20px;margin-bottom:24px;">';
+
+            // Chat history
+            html +=
+              '<div id="owner-chat-history" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:280px;overflow-y:auto;">';
+            if (!data.messages || data.messages.length === 0) {
+              html +=
+                '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet. Start the conversation below.</p>';
+            } else {
+              for (var m = 0; m < data.messages.length; m++) {
+                var msg = data.messages[m];
+                var isOwner = msg.sender === "Vision Realized";
+                var bubbleStyle = isOwner
+                  ? "margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;"
+                  : "margin-right:auto;background:#fff;color:#1A1208;border:1px solid rgba(74,39,114,0.15);border-radius:12px 12px 12px 2px;";
+                html +=
+                  '<div style="max-width:75%;padding:10px 14px;' +
+                  bubbleStyle +
+                  '">';
+                html +=
+                  '<div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">' +
+                  (msg.sender || "") +
+                  "</div>";
+                html +=
+                  '<div style="font-size:0.88rem;line-height:1.5;">' +
+                  (msg.text || "") +
+                  "</div>";
+                html += "</div>";
+              }
+            }
+            html += "</div>";
+
+            // Input row
+            html += '<div style="display:flex;gap:8px;align-items:flex-end;">';
+            html +=
+              '<textarea id="owner-event-msg-input" placeholder="Type a message to the client…" rows="2" style="flex:1;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:none;outline:none;border-radius:2px;"></textarea>';
+            html +=
+              '<button onclick="sendOwnerEventMsg(' +
+              eventId +
+              ')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;border-radius:2px;">Send</button>';
+            html += "</div>";
+            html += "</div>"; // end message panel
+            // ────────────────────────────────────────────────────────
 
             html += "<h4>Documents</h4>";
             if (data.documents.length === 0) {
@@ -709,7 +773,7 @@
             budget: document.getElementById("edit-quote-budget").value,
             source: document.getElementById("edit-quote-source").value,
             guests: document.getElementById("edit-quote-guests").value,
-            event_type: document.getElementById("edit-quote-event-type").value
+            event_type: document.getElementById("edit-quote-event-type").value,
           }),
         })
           .then(function (r) {
@@ -760,7 +824,7 @@
                   headers: { Authorization: "Bearer " + token },
                 }).then(function (r) {
                   return r.json();
-                })
+                }),
               );
             }
 
@@ -771,7 +835,7 @@
                 if (details[i].success && details[i].messages.length > 0) {
                   conversations.push({
                     event: allEvents[i],
-                    messages: details[i].messages
+                    messages: details[i].messages,
                   });
                 }
               }
@@ -883,9 +947,12 @@
 
             html +=
               '<textarea id="owner-message-text" placeholder="Type your reply..." style="width:100%;box-sizing:border-box;min-height:90px;padding:12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.9rem;margin-bottom:12px;"></textarea>';
-            html += '<div style="display:flex;justify-content:space-between;gap:12px;">';
-            html += '<button class="action-btn" onclick="loadInbox()">Back to Inbox</button>';
-            html += '<button class="action-btn" onclick="sendOwnerEventMessage()">Send Reply</button>';
+            html +=
+              '<div style="display:flex;justify-content:space-between;gap:12px;">';
+            html +=
+              '<button class="action-btn" onclick="loadInbox()">Back to Inbox</button>';
+            html +=
+              '<button class="action-btn" onclick="sendOwnerEventMessage()">Send Reply</button>';
             html += "</div>";
 
             html += "</div>";
@@ -908,7 +975,7 @@
           body: JSON.stringify({
             event_id: activeMessageEventId,
             sender: "Vision Realized",
-            text: text
+            text: text,
           }),
         })
           .then(function (r) {
@@ -916,6 +983,48 @@
           })
           .then(function (data) {
             if (data.success) openOwnerMessageChat(activeMessageEventId);
+          });
+      }
+
+      function sendOwnerEventMsg(eventId) {
+        var input = document.getElementById("owner-event-msg-input");
+        var text = input ? input.value.trim() : "";
+        if (!text) {
+          if (input) input.focus();
+          return;
+        }
+
+        fetch(API + "/owner/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            event_id: eventId,
+            sender: "Vision Realized",
+            text: text,
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            var history = document.getElementById("owner-chat-history");
+            var empty = history.querySelector("p");
+            if (empty) empty.remove();
+            var bubble = document.createElement("div");
+            bubble.style.cssText =
+              "max-width:75%;padding:10px 14px;margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;";
+            bubble.innerHTML =
+              '<div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">Vision Realized</div>' +
+              '<div style="font-size:0.88rem;line-height:1.5;">' +
+              text +
+              "</div>";
+            history.appendChild(bubble);
+            history.scrollTop = history.scrollHeight;
+            input.value = "";
           });
       }
 
