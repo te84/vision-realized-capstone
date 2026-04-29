@@ -10,6 +10,11 @@
     />
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/owner.css" />
+    <style>
+      :root { --accent: #4a2772; }
+      /* Route the CSS variable to properties used by external stylesheets */
+      .action-btn, button[style*="background:#4a2772"], button[style*="background: #4a2772"] { background: var(--accent) !important; }
+    </style>  
   </head>
   <body>
     <nav>
