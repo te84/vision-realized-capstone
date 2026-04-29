@@ -55,6 +55,17 @@
           Contact Inbox
         </div>
         <div style="margin-top: auto; padding-top: 16px">
+          <div style="padding: 8px 16px 12px;">
+            <label style="font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6;display:block;margin-bottom:6px;">Accent Color</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="color" id="accent-color-picker" value="#4a2772"
+                style="width:32px;height:32px;border:none;background:none;cursor:pointer;padding:0;"
+                oninput="applyAccentColor(this.value)"
+                onchange="applyAccentColor(this.value)" />
+              <button onclick="resetAccentColor()"
+                style="font-size:0.72rem;font-family:inherit;background:none;border:none;opacity:0.55;cursor:pointer;padding:0;letter-spacing:0.04em;">Reset</button>
+            </div>
+          </div>          
           <div class="owner-nav-item" onclick="doLogout()">Sign Out</div>
         </div>
       </div>
