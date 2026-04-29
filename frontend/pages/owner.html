@@ -202,6 +202,24 @@
       document.getElementById("owner-greeting").textContent =
         timeGreeting + ", " + (user.firstname || "Admin");
 
+      var DEFAULT_ACCENT = "#4a2772";
+ 
+      function applyAccentColor(hex) {
+        document.body.style.setProperty("--accent", hex);
+        localStorage.setItem("ownerAccentColor", hex);
+        var picker = document.getElementById("accent-color-picker");
+        if (picker) picker.value = hex;
+      }
+ 
+      function resetAccentColor() {
+        applyAccentColor(DEFAULT_ACCENT);
+      }
+ 
+      (function initAccentColor() {
+        var saved = localStorage.getItem("ownerAccentColor");
+        if (saved) applyAccentColor(saved);
+      })();
+      
       function showTab(el, id) {
         var tabs = document.querySelectorAll(".tab-content");
         for (var i = 0; i < tabs.length; i++)
