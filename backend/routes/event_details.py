@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 from db import get_db
 from routes.auth import verify_token
 import psycopg2.extras
@@ -24,5 +24,58 @@ def register_owner_event_detail_routes(app):
         docs = [dict(d) for d in cur.fetchall()]
         for d in docs:
             if d.get('created_at'): d['created_at'] = str(d['created_at'])
+
+
+        cur.execute("""
+            SELECT q.*
+            FROM quotes q
+            JOIN client c ON LOWER(q.email) = LOWER(c.email)
+            JOIN events e ON e.client_id = c.client_id
+            WHERE e.id = %s
+              AND LOWER(q.event_type) = LOWER(e.event_type)
+              AND q.event_date::text = e.event_date::text
+            ORDER BY q.created_at DESC
+            LIMIT 1
+        """, (event_id,))
+        quote = cur.fetchone()
+        quote_data = dict(quote) if quote else None
+        if quote_data:
+            if quote_data.get('event_date'): quote_data['event_date'] = str(quote_data['event_date'])
+            if quote_data.get('created_at'): quote_data['created_at'] = str(quote_data['created_at'])
+
         cur.close(); db.close()
-        return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs})
+        return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs, 'quote': quote_data})
+
+    @app.route('/owner/event-detail/<int:event_id>/quote', methods=['PUT'])
+    def update_event_quote(event_id):
+        tok = verify_token()
+        if not tok or tok.get('role') != 'Owner':
+            return jsonify({'message': 'Not authorized'}), 401
+        data = request.get_json()
+        db = get_db()
+        cur = db.cursor()
+
+        if 'guests' in data and data.get('guests') is not None:
+            cur.execute('UPDATE events SET guests = %s WHERE id = %s', (data.get('guests'), event_id))
+
+        cur.execute("""
+            SELECT q.id
+            FROM quotes q
+            JOIN client c ON LOWER(q.email) = LOWER(c.email)
+            JOIN events e ON e.client_id = c.client_id
+            WHERE e.id = %s
+              AND LOWER(q.event_type) = LOWER(e.event_type)
+              AND q.event_date::text = e.event_date::text
+            ORDER BY q.created_at DESC
+            LIMIT 1
+        """, (event_id,))
+        quote = cur.fetchone()
+        if quote:
+            cur.execute("""UPDATE quotes
+                SET budget = %s, source = %s, guests = %s, event_type = %s
+                WHERE id = %s""",
+                (data.get('budget'), data.get('source'), data.get('guests'), data.get('event_type'), quote[0]))
+
+        db.commit()
+        cur.close(); db.close()
+        return jsonify({'success': True, 'message': 'Quote updated'})

@@ -18,7 +18,6 @@
         <a href="services.html">Services</a>
         <a href="gallery.html">Gallery</a>
         <a href="testimonials.html">Testimonials</a>
-        <a href="contact.html">Contact Us</a>
         <a href="portal.html" class="nav-portal">Client Portal</a>
       </div>
       <a href="quote.html" class="nav-cta">Start a Quote</a>
@@ -96,6 +95,53 @@
               <div class="portal-greeting">Welcome back</div>
               <div class="portal-title" id="portal-greeting-name">
                 Loading...
+              </div>
+            </div>
+            <div id="event-switcher" style="display: none; margin-bottom: 24px">
+              <div
+                style="
+                  font-size: 0.68rem;
+                  letter-spacing: 0.14em;
+                  text-transform: uppercase;
+                  color: #9a8fb5;
+                  margin-bottom: 8px;
+                "
+              >
+                Viewing Event
+              </div>
+              <div style="position: relative">
+                <select
+                  id="event-select"
+                  onchange="switchEvent(this.value)"
+                  style="
+                    width: 100%;
+                    appearance: none;
+                    -webkit-appearance: none;
+                    padding: 14px 44px 14px 18px;
+                    background: whitesmoke;
+                    color: black;
+                    font-family: &quot;Cormorant Garamond&quot;, serif;
+                    font-size: 1.05rem;
+                    border: none;
+                    border-radius: 4px;
+                    outline: none;
+                    cursor: pointer;
+                    box-shadow: 0 2px 12px rgba(46, 21, 71, 0.18);
+                    letter-spacing: 0.02em;
+                  "
+                ></select>
+                <span
+                  style="
+                    position: absolute;
+                    right: 16px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    pointer-events: none;
+                    color: #9a6fc4;
+                    font-size: 0.75rem;
+                  "
+                  >&#9660;</span
+                >
               </div>
             </div>
             <div class="event-status-card" id="event-status-card">
@@ -324,8 +370,316 @@
           });
       }
 
+      var allEventsData = [];
+
+      function populateEventDropdown(events) {
+        var switcher = document.getElementById("event-switcher");
+        var select = document.getElementById("event-select");
+        if (events.length <= 1) {
+          switcher.style.display = "none";
+          return;
+        }
+        switcher.style.display = "block";
+        select.innerHTML = "";
+        for (var i = 0; i < events.length; i++) {
+          var ev = events[i].event;
+          var label =
+            (ev.name || ev.event_type || "Event") +
+            (ev.date ? "  ·  " + fmtDate(ev.date) : "");
+          var opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = label;
+          select.appendChild(opt);
+        }
+      }
+
+      function switchEvent(idx) {
+        idx = parseInt(idx);
+        var bundle = allEventsData[idx];
+        if (!bundle) return;
+        renderEventBundle(bundle);
+      }
+
+      function renderEventBundle(bundle) {
+        var ev = bundle.event;
+        var tasks = bundle.tasks || [];
+        var msgs = bundle.messages || [];
+        var docs = bundle.documents || [];
+        var journey = bundle.journey || [];
+
+        currentEventId = ev.id;
+
+        var shortDate = ev.date ? fmtDate(ev.date) : "";
+        document.getElementById("portal-user-event").textContent =
+          (ev.event_type || "Event") + (shortDate ? " · " + shortDate : "");
+
+        document.getElementById("event-badge").textContent =
+          ev.status || "Pending";
+        document.getElementById("event-name").textContent =
+          ev.name || "Your Event";
+        var metaHtml = "";
+        metaHtml +=
+          '<div class="event-meta-item"><strong>' +
+          fmtDate(ev.date) +
+          "</strong></div>";
+        metaHtml +=
+          '<div class="event-meta-item"><strong>' +
+          (ev.location || "TBD") +
+          "</strong></div>";
+        metaHtml +=
+          '<div class="event-meta-item"><strong>~' +
+          (ev.guests || "?") +
+          " Guests</strong></div>";
+        metaHtml +=
+          '<div class="event-meta-item"><strong>' +
+          (ev.planner || "TBD") +
+          "</strong></div>";
+        document.getElementById("event-meta").innerHTML = metaHtml;
+        var days = daysUntil(ev.date);
+        document.getElementById("countdown-num").textContent =
+          days !== null ? (days >= 0 ? days : "Past") : "--";
+
+        var jEl = document.getElementById("journey-steps");
+        if (journey.length > 0) {
+          var html = "";
+          for (var i = 0; i < journey.length; i++) {
+            var s = journey[i];
+            var dot =
+              s.status === "done" ? "✓" : s.status === "current" ? "·" : s.step;
+            html +=
+              '<div class="j-step ' +
+              s.status +
+              '"><div class="j-dot">' +
+              dot +
+              '</div><div class="j-name">' +
+              s.name +
+              "</div></div>";
+          }
+          jEl.innerHTML = html;
+        } else {
+          jEl.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
+        }
+
+        var dashTasks = document.getElementById("dash-tasks");
+        if (tasks.length > 0) {
+          var html = "";
+          for (var i = 0; i < tasks.length; i++) {
+            var t = tasks[i];
+            var cls = t.completed ? " done" : "";
+            var chk = t.completed ? "✓" : "";
+            var due =
+              t.due_date && !t.completed
+                ? ' <span style="color:#4A2772;font-size:0.72rem;">Due ' +
+                  fmtDate(t.due_date) +
+                  "</span>"
+                : "";
+            var click = t.completed
+              ? ""
+              : ' onclick="completeTask(' +
+                t.id +
+                ')" style="cursor:pointer;" title="Click to mark complete"';
+            html +=
+              '<div class="check-item' +
+              cls +
+              '"><div class="check-box"' +
+              click +
+              ">" +
+              chk +
+              '</div><span class="check-text">' +
+              t.title +
+              due +
+              "</span></div>";
+          }
+          dashTasks.innerHTML = html;
+        } else {
+          dashTasks.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
+        }
+
+        var dashMsgs = document.getElementById("dash-messages");
+        if (msgs.length > 0) {
+          var html = "";
+          var cnt = Math.min(msgs.length, 3);
+          for (var i = 0; i < cnt; i++) {
+            var m = msgs[i];
+            var unread = !m.read ? " msg-unread" : "";
+            var ini = m.sender
+              ? m.sender
+                  .split(" ")
+                  .map(function (n) {
+                    return n[0];
+                  })
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2)
+              : "??";
+            var prev =
+              m.text.length > 60 ? m.text.substring(0, 60) + "..." : m.text;
+            html +=
+              '<div class="msg-item' +
+              unread +
+              '"><div class="msg-avatar">' +
+              ini +
+              '</div><div><div class="msg-name">' +
+              m.sender +
+              '</div><div class="msg-preview">' +
+              prev +
+              '</div></div><div class="msg-time">' +
+              (m.date || "") +
+              "</div></div>";
+          }
+          dashMsgs.innerHTML = html;
+        } else {
+          dashMsgs.innerHTML =
+            '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
+        }
+
+        var unreadCount = 0;
+        for (var i = 0; i < msgs.length; i++) {
+          if (!msgs[i].read) unreadCount++;
+        }
+        var badge = document.getElementById("msg-badge");
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = "inline";
+        } else {
+          badge.style.display = "none";
+        }
+
+        var progEl = document.getElementById("progress-steps");
+        if (progEl) {
+          if (journey.length > 0) {
+            var html = "";
+            for (var i = 0; i < journey.length; i++) {
+              var s = journey[i];
+              if (s.status === "done") {
+                html +=
+                  '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:rgba(74,39,114,0.06);border:1px solid rgba(74,39,114,0.2);border-radius:4px;">';
+                html += '<span style="color:#4A2772;font-weight:500;">✓</span>';
+                html +=
+                  '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#4A2772;opacity:0.7;">Completed</div>';
+                html +=
+                  '<div style="font-size:1.05rem;font-weight:500;color:#2E1547;">' +
+                  s.name +
+                  "</div></div></div>";
+              } else if (s.status === "current") {
+                html +=
+                  '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#4A2772;border-radius:4px;">';
+                html += '<span style="color:white;">→</span>';
+                html +=
+                  '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">In Progress</div>';
+                html +=
+                  '<div style="font-size:1.05rem;font-weight:500;color:white;">' +
+                  s.name +
+                  "</div></div></div>";
+              } else {
+                html +=
+                  '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
+                html +=
+                  '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">Upcoming</div>';
+                html +=
+                  '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' +
+                  s.name +
+                  "</div></div></div>";
+              }
+            }
+            progEl.innerHTML = html;
+          } else {
+            progEl.innerHTML =
+              '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No progress data yet.</p>';
+          }
+        }
+
+        var msgsFull = document.getElementById("messages-full");
+        if (msgsFull) {
+          if (msgs.length > 0) {
+            var html = "";
+            for (var i = 0; i < msgs.length; i++) {
+              var m = msgs[i];
+              var unread = !m.read ? " msg-unread" : "";
+              var ini = m.sender
+                ? m.sender
+                    .split(" ")
+                    .map(function (n) {
+                      return n[0];
+                    })
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2)
+                : "??";
+              html +=
+                '<div class="msg-item' +
+                unread +
+                '"><div class="msg-avatar">' +
+                ini +
+                '</div><div><div class="msg-name">' +
+                m.sender +
+                '</div><div class="msg-preview">' +
+                m.text +
+                '</div></div><div class="msg-time">' +
+                (m.date || "") +
+                "</div></div>";
+            }
+            msgsFull.innerHTML = html;
+          } else {
+            msgsFull.innerHTML =
+              '<p style="color:#7A6E5E;font-size:0.9rem;">No messages yet.</p>';
+          }
+        }
+
+        var tasksFull = document.getElementById("tasks-full");
+        if (tasksFull) {
+          if (tasks.length > 0) {
+            var done = tasks.filter(function (t) {
+              return t.completed;
+            }).length;
+            var html =
+              '<div style="display:flex;gap:10px;margin-bottom:24px;">';
+            html +=
+              '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' +
+              done +
+              " Completed</div>";
+            html +=
+              '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' +
+              (tasks.length - done) +
+              " Remaining</div>";
+            html += "</div>";
+            for (var i = 0; i < tasks.length; i++) {
+              var t = tasks[i];
+              var cls = t.completed ? " done" : "";
+              var chk = t.completed ? "✓" : "";
+              var click = t.completed
+                ? ""
+                : ' onclick="completeTask(' +
+                  t.id +
+                  ')" style="cursor:pointer;"';
+              html +=
+                '<div class="check-item' +
+                cls +
+                '"><div class="check-box"' +
+                click +
+                ">" +
+                chk +
+                '</div><span class="check-text">' +
+                t.title +
+                (t.due_date && !t.completed
+                  ? ' <span style="color:#4A2772;font-size:0.72rem;">Due ' +
+                    fmtDate(t.due_date) +
+                    "</span>"
+                  : "") +
+                "</span></div>";
+            }
+            tasksFull.innerHTML = html;
+          } else {
+            tasksFull.innerHTML = '<p style="color:#7A6E5E;">No tasks yet.</p>';
+          }
+        }
+      }
+
       function renderDashboard(data) {
         var u = data.user;
+        var events = data.events || [];
         var ev = data.event;
         var tasks = data.tasks;
         var msgs = data.messages;
@@ -333,6 +687,10 @@
         var journey = data.journey;
 
         if (ev) currentEventId = ev.id;
+
+        allEventsData = events;
+        populateEventDropdown(events);
+        if (events.length > 0) renderEventBundle(events[0]);
         var fullName = u.firstname + " " + u.lastname;
         var initials = fullName
           .split(" ")
@@ -484,7 +842,7 @@
               '</div><div class="msg-preview">' +
               prev +
               '</div></div><div class="msg-time">' +
-              fmtDate(m.date) +
+              (m.date || "") +
               "</div></div>";
           }
           dashMsgs.innerHTML = html;
@@ -666,7 +1024,7 @@
               "</div>";
             html +=
               '<div style="font-size:0.72rem;color:#7A6E5E;">' +
-              fmtDate(m.date) +
+              (m.date || "") +
               "</div></div>";
             html += badge + "</div>";
             html +=

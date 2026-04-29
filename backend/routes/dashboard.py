@@ -25,63 +25,68 @@ def register_dashboard_routes(app):
 
             cid = client['client_id']
 
-            cur.execute("SELECT * FROM events WHERE client_id = %s ORDER BY created_at DESC LIMIT 1", (cid,))
-            event = cur.fetchone()
+            cur.execute("SELECT * FROM events WHERE client_id = %s ORDER BY created_at DESC", (cid,))
+            all_events = cur.fetchall()
 
-            ev_data = None
-            eid = None
-            if event:
+            steps = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed']
+
+            def build_journey(status):
+                cur_status = status or 'Quote Submitted'
+                idx = 0
+                for i in range(len(steps)):
+                    if steps[i] == cur_status:
+                        idx = i
+                        break
+                result = []
+                for i in range(len(steps)):
+                    if i < idx: st = 'done'
+                    elif i == idx: st = 'current'
+                    else: st = 'pending'
+                    result.append({'step': i+1, 'name': steps[i], 'status': st})
+                return result
+
+            events_data = []
+            for event in all_events:
                 eid = event['id']
                 ev_data = {
-                    'id': event['id'], 'name': event['event_name'],
+                    'id': eid, 'name': event['event_name'],
                     'date': str(event['event_date']) if event['event_date'] else None,
                     'location': event['location'], 'guests': event['guests'],
                     'planner': event['planner'], 'status': event['status'],
                     'event_type': event['event_type']
                 }
 
-            tasks = []
-            if eid:
                 cur.execute("SELECT * FROM tasks WHERE event_id = %s ORDER BY created_at", (eid,))
-                for t in cur.fetchall():
-                    tasks.append({'id': t['id'], 'title': t['title'],
-                        'due_date': str(t['due_date']) if t['due_date'] else None,
-                        'completed': t['completed']})
+                tasks = [{'id': t['id'], 'title': t['title'],
+                    'due_date': str(t['due_date']) if t['due_date'] else None,
+                    'completed': t['completed']} for t in cur.fetchall()]
 
-            messages = []
-            if eid:
                 cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at DESC", (eid,))
+                messages = []
                 for m in cur.fetchall():
+                    msg_date = m['created_at'].strftime("%b %d, %Y at %I:%M %p") if m['created_at'] else ""
                     messages.append({'id': m['id'], 'sender': m['sender'], 'text': m['text'],
-                        'date': str(m['created_at']), 'read': m['read']})
+                        'date': msg_date, 'read': m['read']})
 
-            docs = []
-            if eid:
                 cur.execute("SELECT * FROM documents WHERE event_id = %s ORDER BY created_at DESC", (eid,))
-                for d in cur.fetchall():
-                    docs.append({'id': d['id'], 'name': d['name'], 'type': d['file_type'],
-                        'date': str(d['created_at']), 'status': d['status']})
+                docs = [{'id': d['id'], 'name': d['name'], 'type': d['file_type'],
+                    'date': str(d['created_at']), 'status': d['status']} for d in cur.fetchall()]
 
-            journey = []
-            if ev_data:
-                steps = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed']
-                cur_status = ev_data['status'] or 'Quote Submitted'
-                idx = 0
-                for i in range(len(steps)):
-                    if steps[i] == cur_status:
-                        idx = i
-                        break
-                for i in range(len(steps)):
-                    if i < idx: st = 'done'
-                    elif i == idx: st = 'current'
-                    else: st = 'pending'
-                    journey.append({'step': i+1, 'name': steps[i], 'status': st})
+                events_data.append({
+                    'event': ev_data, 'tasks': tasks,
+                    'messages': messages, 'documents': docs,
+                    'journey': build_journey(ev_data['status'])
+                })
 
             cur.close(); db.close()
 
+            first = events_data[0] if events_data else {}
             return jsonify({
                 'user': {'firstname': client['firstname'], 'lastname': client['lastname'], 'email': client['email']},
-                'event': ev_data, 'tasks': tasks, 'messages': messages, 'documents': docs, 'journey': journey
+                'events': events_data,
+                'event': first.get('event'), 'tasks': first.get('tasks', []),
+                'messages': first.get('messages', []), 'documents': first.get('documents', []),
+                'journey': first.get('journey', [])
             })
         except Exception as e:
             print('dashboard error:', e)

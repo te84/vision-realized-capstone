@@ -10,6 +10,11 @@
     />
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/owner.css" />
+    <style>
+      :root { --accent: #4a2772; }
+      /* Route the CSS variable to properties used by external stylesheets */
+      .action-btn, button[style*="background:#4a2772"], button[style*="background: #4a2772"] { background: var(--accent) !important; }
+    </style>  
   </head>
   <body>
     <nav>
@@ -17,7 +22,6 @@
         <a href="../index.html">Home</a>
         <a href="about.html">About Us</a>
         <a href="services.html">Services</a>
-        <a href="contact.html">Contact Us</a>
         <a href="login.html" class="nav-portal">Client Login</a>
       </div>
       <a href="quote.html" class="nav-cta">Start a Quote</a>
@@ -31,6 +35,18 @@
           onclick="showTab(this, 'tab-events')"
         >
           Client Events
+          <span
+            id="events-badge"
+            style="
+              background: #2e1547;
+              color: white;
+              border-radius: 999px;
+              font-size: 0.7rem;
+              padding: 2px 7px;
+              margin-left: 8px;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+            "
+          ></span>
         </div>
         <div class="owner-nav-item" onclick="showTab(this, 'tab-quotes')">
           Quote Requests
@@ -39,6 +55,17 @@
           Contact Inbox
         </div>
         <div style="margin-top: auto; padding-top: 16px">
+          <div style="padding: 8px 16px 12px;">
+            <label style="font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6;display:block;margin-bottom:6px;">Accent Color</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="color" id="accent-color-picker" value="#4a2772"
+                style="width:32px;height:32px;border:none;background:none;cursor:pointer;padding:0;"
+                oninput="applyAccentColor(this.value)"
+                onchange="applyAccentColor(this.value)" />
+              <button onclick="resetAccentColor()"
+                style="font-size:0.72rem;font-family:inherit;background:none;border:none;opacity:0.55;cursor:pointer;padding:0;letter-spacing:0.04em;">Reset</button>
+            </div>
+          </div>          
           <div class="owner-nav-item" onclick="doLogout()">Sign Out</div>
         </div>
       </div>
@@ -165,9 +192,34 @@
       if (!user || !token || user.role !== "Owner")
         window.location.href = "login.html";
 
+      var hour = new Date().getHours();
+      var timeGreeting =
+        hour < 12
+          ? "Good morning"
+          : hour < 18
+            ? "Good afternoon"
+            : "Good evening";
       document.getElementById("owner-greeting").textContent =
-        "Welcome, " + (user.firstname || "Admin");
+        timeGreeting + ", " + (user.firstname || "Admin");
 
+      var DEFAULT_ACCENT = "#4a2772";
+ 
+      function applyAccentColor(hex) {
+        document.body.style.setProperty("--accent", hex);
+        localStorage.setItem("ownerAccentColor", hex);
+        var picker = document.getElementById("accent-color-picker");
+        if (picker) picker.value = hex;
+      }
+ 
+      function resetAccentColor() {
+        applyAccentColor(DEFAULT_ACCENT);
+      }
+ 
+      (function initAccentColor() {
+        var saved = localStorage.getItem("ownerAccentColor");
+        if (saved) applyAccentColor(saved);
+      })();
+      
       function showTab(el, id) {
         var tabs = document.querySelectorAll(".tab-content");
         for (var i = 0; i < tabs.length; i++)
@@ -181,6 +233,7 @@
       }
 
       function doLogout() {
+        if (!confirm("Are you sure you want to sign out?")) return;
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "../index.html";
@@ -210,6 +263,8 @@
             allEvents = data.events;
             document.getElementById("stat-events").textContent =
               allEvents.length;
+            document.getElementById("events-badge").textContent =
+              allEvents.length;
             document.getElementById("stat-clients").textContent =
               allEvents.length;
 
@@ -221,8 +276,13 @@
             }
 
             var html = "";
+            var today = new Date();
             for (var i = 0; i < allEvents.length; i++) {
               var ev = allEvents[i];
+              var isOverdue =
+                ev.event_date &&
+                new Date(ev.event_date) < today &&
+                ev.status !== "Completed";
               html += "<tr>";
               html +=
                 "<td><strong>" +
@@ -281,7 +341,6 @@
             if (data.success) {
               btn.textContent = "Saved ✓";
               btn.style.background = "#3a7d44";
-              // refresh the events table in the background so the badge updates
               loadEvents();
               setTimeout(function () {
                 btn.disabled = false;
@@ -324,7 +383,6 @@
             html += '<div class="panel">';
             html += "<h3>Event Details</h3>";
 
-            // ── Edit form ──────────────────────────────────────────────
             var statuses = [
               "Quote Submitted",
               "Consultation",
@@ -389,17 +447,65 @@
               (ev && ev.planner ? ev.planner.replace(/"/g, "&quot;") : "") +
               '" placeholder="Assign a planner name" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
 
-            html += "</div>"; // end grid
+            html += "</div>";
             html += '<div style="margin-top:14px;text-align:right;">';
             html +=
               '<button id="save-event-btn" onclick="saveEventChanges()" style="padding:9px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;">Save Changes</button>';
             html += "</div>";
-            html += "</div>"; // end edit card
-            // ──────────────────────────────────────────────────────────
+            html += "</div>";
+
+            html += "<h4>Quote Details</h4>";
+            if (!data.quote) {
+              html +=
+                '<p style="color:#7A6E5E;">No quote details found for this event.</p>';
+            } else {
+              html +=
+                '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;margin-bottom:24px;">';
+              html +=
+                '<h4 style="margin:0 0 14px;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Edit Quote Details</h4>';
+              html +=
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;">';
+
+              html +=
+                '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Budget</label>';
+              html +=
+                '<input id="edit-quote-budget" value="' +
+                (data.quote.budget || "") +
+                '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+              html +=
+                '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Source</label>';
+              html +=
+                '<input id="edit-quote-source" value="' +
+                (data.quote.source || "") +
+                '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+              html +=
+                '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Guests</label>';
+              html +=
+                '<input id="edit-quote-guests" value="' +
+                (data.quote.guests || "") +
+                '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+              html +=
+                '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Event Type</label>';
+              html +=
+                '<input id="edit-quote-event-type" value="' +
+                (data.quote.event_type || "") +
+                '" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;"></div>';
+
+              html += "</div>";
+              html += '<div style="margin-top:14px;text-align:right;">';
+              html +=
+                '<button onclick="saveQuoteDetails(' +
+                eventId +
+                ')" style="padding:9px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;">Save Quote Details</button>';
+              html += "</div>";
+              html += "</div>";
+            }
 
             html += "<h4>Tasks</h4>";
 
-            // ── Assign task form ───────────────────────────────────────
             html +=
               '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:14px 16px;margin-bottom:14px;">';
             html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
@@ -410,7 +516,6 @@
             html +=
               '<button onclick="ownerAddTask()" style="padding:8px 18px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;white-space:nowrap;">+ Assign</button>';
             html += "</div></div>";
-            // ──────────────────────────────────────────────────────────
 
             html += '<div id="owner-task-list">';
             if (data.tasks.length === 0) {
@@ -447,6 +552,55 @@
                 html += "</div>";
               }
             }
+
+            html += "</div>"; // close owner-task-list
+
+            // ── Message Client ──────────────────────────────────────
+            html += '<h4 style="margin-top:28px;">Message Client</h4>';
+            html +=
+              '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:16px 20px;margin-bottom:24px;">';
+
+            // Chat history
+            html +=
+              '<div id="owner-chat-history" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:280px;overflow-y:auto;">';
+            if (!data.messages || data.messages.length === 0) {
+              html +=
+                '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet. Start the conversation below.</p>';
+            } else {
+              for (var m = 0; m < data.messages.length; m++) {
+                var msg = data.messages[m];
+                var isOwner = msg.sender === "Vision Realized";
+                var bubbleStyle = isOwner
+                  ? "margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;"
+                  : "margin-right:auto;background:#fff;color:#1A1208;border:1px solid rgba(74,39,114,0.15);border-radius:12px 12px 12px 2px;";
+                html +=
+                  '<div style="max-width:75%;padding:10px 14px;' +
+                  bubbleStyle +
+                  '">';
+                html +=
+                  '<div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">' +
+                  (msg.sender || "") +
+                  "</div>";
+                html +=
+                  '<div style="font-size:0.88rem;line-height:1.5;">' +
+                  (msg.text || "") +
+                  "</div>";
+                html += "</div>";
+              }
+            }
+            html += "</div>";
+
+            // Input row
+            html += '<div style="display:flex;gap:8px;align-items:flex-end;">';
+            html +=
+              '<textarea id="owner-event-msg-input" placeholder="Type a message to the client…" rows="2" style="flex:1;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:none;outline:none;border-radius:2px;"></textarea>';
+            html +=
+              '<button onclick="sendOwnerEventMsg(' +
+              eventId +
+              ')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;border-radius:2px;">Send</button>';
+            html += "</div>";
+            html += "</div>"; // end message panel
+            // ────────────────────────────────────────────────────────
 
             html += "<h4>Documents</h4>";
             if (data.documents.length === 0) {
@@ -504,7 +658,6 @@
             document.getElementById("new-task-title").value = "";
             document.getElementById("new-task-date").value = "";
 
-            // append task row to list immediately
             var list = document.getElementById("owner-task-list");
             var emptyMsg = list.querySelector("p");
             if (emptyMsg) emptyMsg.remove();
@@ -643,6 +796,28 @@
         renderQuotes(filtered);
       }
 
+      function saveQuoteDetails(eventId) {
+        fetch(API + "/owner/event-detail/" + eventId + "/quote", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            budget: document.getElementById("edit-quote-budget").value,
+            source: document.getElementById("edit-quote-source").value,
+            guests: document.getElementById("edit-quote-guests").value,
+            event_type: document.getElementById("edit-quote-event-type").value,
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (data.success) openEvent(eventId);
+          });
+      }
+
       function loadQuotes() {
         fetch(API + "/quotes")
           .then(function (r) {
@@ -662,33 +837,241 @@
           });
       }
 
+      var activeMessageEventId = null;
+
       function loadInbox() {
-        fetch(API + "/messages")
+        fetch(API + "/owner/events", {
+          headers: { Authorization: "Bearer " + token },
+        })
           .then(function (r) {
             return r.json();
           })
           .then(function (data) {
             if (!data.success) return;
-            document.getElementById("stat-messages").textContent =
-              data.messages.length;
+
+            allEvents = data.events;
+            var requests = [];
+
+            for (var i = 0; i < allEvents.length; i++) {
+              requests.push(
+                fetch(API + "/owner/event-detail/" + allEvents[i].id, {
+                  headers: { Authorization: "Bearer " + token },
+                }).then(function (r) {
+                  return r.json();
+                }),
+              );
+            }
+
+            Promise.all(requests).then(function (details) {
+              var conversations = [];
+
+              for (var i = 0; i < details.length; i++) {
+                if (details[i].success && details[i].messages.length > 0) {
+                  conversations.push({
+                    event: allEvents[i],
+                    messages: details[i].messages,
+                  });
+                }
+              }
+
+              document.getElementById("stat-messages").textContent =
+                conversations.length;
+
+              var box = document.getElementById("inbox-list");
+              if (conversations.length === 0) {
+                box.innerHTML =
+                  '<p style="color:#7A6E5E;">No client messages yet.</p>';
+                return;
+              }
+
+              var html = "";
+              for (var i = 0; i < conversations.length; i++) {
+                var ev = conversations[i].event;
+                var msgs = conversations[i].messages;
+                var last = msgs[msgs.length - 1];
+
+                html +=
+                  '<div class="msg-bubble" style="cursor:pointer;" onclick="openOwnerMessageChat(' +
+                  ev.id +
+                  ')">';
+                html +=
+                  '<span class="from">' +
+                  (ev.firstname || "") +
+                  " " +
+                  (ev.lastname || "") +
+                  "</span>";
+                html +=
+                  '<span class="when">' +
+                  (ev.email || "") +
+                  " · " +
+                  (ev.event_name || "Event") +
+                  "</span>";
+                html += '<div class="body">' + (last.text || "") + "</div>";
+                html += "</div>";
+              }
+
+              box.innerHTML = html;
+            });
+          });
+      }
+
+      function openOwnerMessageChat(eventId) {
+        activeMessageEventId = eventId;
+
+        var ev = null;
+        for (var i = 0; i < allEvents.length; i++) {
+          if (allEvents[i].id === eventId) {
+            ev = allEvents[i];
+            break;
+          }
+        }
+
+        fetch(API + "/owner/event-detail/" + eventId, {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
 
             var box = document.getElementById("inbox-list");
-            if (data.messages.length === 0) {
-              box.innerHTML =
-                '<p style="color:#7A6E5E;">No contact messages yet.</p>';
-              return;
-            }
-
             var html = "";
+
+            html += '<div class="panel">';
+            html +=
+              "<h3>" +
+              ((ev && ev.firstname) || "Client") +
+              " " +
+              ((ev && ev.lastname) || "") +
+              "</h3>";
+            html +=
+              '<p style="color:#7A6E5E;margin-bottom:18px;">' +
+              ((ev && ev.email) || "") +
+              " · " +
+              ((ev && ev.event_name) || "Event") +
+              "</p>";
+
+            html +=
+              '<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px;">';
+
             for (var i = 0; i < data.messages.length; i++) {
               var m = data.messages[i];
-              html += '<div class="msg-bubble">';
-              html += '<span class="from">' + (m.name || "") + "</span>";
-              html += '<span class="when">' + (m.email || "") + "</span>";
-              html += '<div class="body">' + (m.message || "") + "</div>";
+              var align =
+                m.sender === "Vision Realized"
+                  ? "margin-left:auto;background:#4a2772;color:white;"
+                  : "margin-right:auto;background:#fffdf9;color:#1A1208;";
+
+              html +=
+                '<div style="max-width:70%;padding:12px 16px;border:1px solid rgba(74,39,114,0.15);border-radius:4px;' +
+                align +
+                '">';
+              html +=
+                '<div style="font-size:0.72rem;opacity:0.75;margin-bottom:4px;">' +
+                (m.sender || "") +
+                "</div>";
+              html +=
+                '<div style="font-size:0.9rem;line-height:1.5;">' +
+                (m.text || "") +
+                "</div>";
               html += "</div>";
             }
+
+            html += "</div>";
+
+            html +=
+              '<textarea id="owner-message-text" placeholder="Type your reply..." style="width:100%;box-sizing:border-box;min-height:90px;padding:12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.9rem;margin-bottom:12px;"></textarea>';
+            html +=
+              '<div style="display:flex;justify-content:space-between;gap:12px;">';
+            html +=
+              '<button class="action-btn" onclick="loadInbox()">Back to Inbox</button>';
+            html +=
+              '<button class="action-btn" onclick="sendOwnerEventMessage()">Send Reply</button>';
+            html += "</div>";
+
+            html += "</div>";
             box.innerHTML = html;
+          });
+      }
+
+       var MSG_LIMIT = 2000;
+ 
+      function updateCharCount(inputId, counterId) {
+        var input = document.getElementById(inputId);
+        var counter = document.getElementById(counterId);
+        if (!input || !counter) return;
+        var len = input.value.length;
+        var remaining = MSG_LIMIT - len;
+        counter.textContent = len + " / " + MSG_LIMIT;
+        counter.style.color = remaining < 100 ? "#c0392b" : "#7a6e5e";
+      }
+ 
+      function sendOwnerEventMessage() {
+        if (!activeMessageEventId) return;
+
+        var text = document.getElementById("owner-message-text").value.trim();
+        if (!text) return;
+        if (text.length > MSG_LIMIT) return;
+        
+        fetch(API + "/owner/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            event_id: activeMessageEventId,
+            sender: "Vision Realized",
+            text: text,
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (data.success) openOwnerMessageChat(activeMessageEventId);
+          });
+      }
+
+      function sendOwnerEventMsg(eventId) {
+        var input = document.getElementById("owner-event-msg-input");
+        var text = input ? input.value.trim() : "";
+        if (!text) {
+          if (input) input.focus();
+          return;
+        }
+
+        fetch(API + "/owner/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            event_id: eventId,
+            sender: "Vision Realized",
+            text: text,
+          }),
+        })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data.success) return;
+            var history = document.getElementById("owner-chat-history");
+            var empty = history.querySelector("p");
+            if (empty) empty.remove();
+            var bubble = document.createElement("div");
+            bubble.style.cssText =
+              "max-width:75%;padding:10px 14px;margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;";
+            bubble.innerHTML =
+              '<div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">Vision Realized</div>' +
+              '<div style="font-size:0.88rem;line-height:1.5;">' +
+              text +
+              "</div>";
+            history.appendChild(bubble);
+            history.scrollTop = history.scrollHeight;
+            input.value = "";
           });
       }
 

@@ -29,6 +29,13 @@ def create_tables():
         cur.execute("""CREATE TABLE IF NOT EXISTS documents (
             id SERIAL PRIMARY KEY, event_id INT NOT NULL, name VARCHAR(300),
             file_type VARCHAR(50), status VARCHAR(50) DEFAULT 'Uploaded', created_at TIMESTAMP DEFAULT NOW())""")
+        cur.execute("""CREATE TABLE IF NOT EXISTS contact_messages (
+            id SERIAL PRIMARY KEY, name VARCHAR(200), email VARCHAR(200),
+            message TEXT, sender VARCHAR(100) DEFAULT 'Client',
+            read BOOLEAN DEFAULT FALSE, created_at TIMESTAMP DEFAULT NOW())""")
+        cur.execute("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS sender VARCHAR(100) DEFAULT 'Client'")
+        cur.execute("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS read BOOLEAN DEFAULT FALSE")
+        cur.execute("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()")
         cur.execute("""CREATE TABLE IF NOT EXISTS security_questions (
             id SERIAL PRIMARY KEY, user_id INT NOT NULL UNIQUE, question VARCHAR(300),
             answer VARCHAR(300), created_at TIMESTAMP DEFAULT NOW())""")
