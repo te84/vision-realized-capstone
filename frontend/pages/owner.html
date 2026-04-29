@@ -10,6 +10,11 @@
     />
     <link rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../css/owner.css" />
+    <style>
+      :root { --accent: #4a2772; }
+      /* Route the CSS variable to properties used by external stylesheets */
+      .action-btn, button[style*="background:#4a2772"], button[style*="background: #4a2772"] { background: var(--accent) !important; }
+    </style>  
   </head>
   <body>
     <nav>
@@ -50,6 +55,17 @@
           Contact Inbox
         </div>
         <div style="margin-top: auto; padding-top: 16px">
+          <div style="padding: 8px 16px 12px;">
+            <label style="font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6;display:block;margin-bottom:6px;">Accent Color</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="color" id="accent-color-picker" value="#4a2772"
+                style="width:32px;height:32px;border:none;background:none;cursor:pointer;padding:0;"
+                oninput="applyAccentColor(this.value)"
+                onchange="applyAccentColor(this.value)" />
+              <button onclick="resetAccentColor()"
+                style="font-size:0.72rem;font-family:inherit;background:none;border:none;opacity:0.55;cursor:pointer;padding:0;letter-spacing:0.04em;">Reset</button>
+            </div>
+          </div>          
           <div class="owner-nav-item" onclick="doLogout()">Sign Out</div>
         </div>
       </div>
@@ -186,6 +202,24 @@
       document.getElementById("owner-greeting").textContent =
         timeGreeting + ", " + (user.firstname || "Admin");
 
+      var DEFAULT_ACCENT = "#4a2772";
+ 
+      function applyAccentColor(hex) {
+        document.body.style.setProperty("--accent", hex);
+        localStorage.setItem("ownerAccentColor", hex);
+        var picker = document.getElementById("accent-color-picker");
+        if (picker) picker.value = hex;
+      }
+ 
+      function resetAccentColor() {
+        applyAccentColor(DEFAULT_ACCENT);
+      }
+ 
+      (function initAccentColor() {
+        var saved = localStorage.getItem("ownerAccentColor");
+        if (saved) applyAccentColor(saved);
+      })();
+      
       function showTab(el, id) {
         var tabs = document.querySelectorAll(".tab-content");
         for (var i = 0; i < tabs.length; i++)
@@ -960,12 +994,25 @@
           });
       }
 
+       var MSG_LIMIT = 2000;
+ 
+      function updateCharCount(inputId, counterId) {
+        var input = document.getElementById(inputId);
+        var counter = document.getElementById(counterId);
+        if (!input || !counter) return;
+        var len = input.value.length;
+        var remaining = MSG_LIMIT - len;
+        counter.textContent = len + " / " + MSG_LIMIT;
+        counter.style.color = remaining < 100 ? "#c0392b" : "#7a6e5e";
+      }
+ 
       function sendOwnerEventMessage() {
         if (!activeMessageEventId) return;
 
         var text = document.getElementById("owner-message-text").value.trim();
         if (!text) return;
-
+        if (text.length > MSG_LIMIT) return;
+        
         fetch(API + "/owner/messages", {
           method: "POST",
           headers: {
