@@ -994,6 +994,18 @@
           });
       }
 
+       var MSG_LIMIT = 2000;
+ 
+      function updateCharCount(inputId, counterId) {
+        var input = document.getElementById(inputId);
+        var counter = document.getElementById(counterId);
+        if (!input || !counter) return;
+        var len = input.value.length;
+        var remaining = MSG_LIMIT - len;
+        counter.textContent = len + " / " + MSG_LIMIT;
+        counter.style.color = remaining < 100 ? "#c0392b" : "#7a6e5e";
+      }
+ 
       function sendOwnerEventMessage() {
         if (!activeMessageEventId) return;
 
