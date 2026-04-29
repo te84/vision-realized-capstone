@@ -2,10 +2,10 @@ from flask import request, jsonify
 from db import get_db
 from routes.auth import verify_token
 import psycopg2.extras
- 
- 
+
+
 def register_owner_events_routes(app):
- 
+
     @app.route('/owner/events', methods=['GET'])
     def owner_events():
         tok = verify_token()
@@ -67,6 +67,10 @@ def register_owner_events_routes(app):
             fields.append('event_name = %s')
             values.append(data['event_name'])
 
+        if 'guests' in data:
+            fields.append('guests = %s')
+            values.append(data['guests'])
+
         if not fields:
             return jsonify({'success': False, 'message': 'No fields to update'}), 400
 
@@ -79,6 +83,22 @@ def register_owner_events_routes(app):
                 values
             )
             updated = cur.fetchone()
+
+            if updated and 'event_date' in data:
+                cur.execute("""
+                    UPDATE quotes SET event_date = %s
+                    WHERE id = (
+                        SELECT q.id
+                        FROM quotes q
+                        JOIN client c ON LOWER(q.email) = LOWER(c.email)
+                        JOIN events e ON e.client_id = c.client_id
+                        WHERE e.id = %s
+                          AND LOWER(q.event_type) = LOWER(e.event_type)
+                        ORDER BY q.created_at DESC
+                        LIMIT 1
+                    )
+                """, (data.get('event_date') or None, event_id))
+
             db.commit()
             cur.close()
             db.close()
