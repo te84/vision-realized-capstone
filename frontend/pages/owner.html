@@ -1011,7 +1011,8 @@
 
         var text = document.getElementById("owner-message-text").value.trim();
         if (!text) return;
-
+        if (text.length > MSG_LIMIT) return;
+        
         fetch(API + "/owner/messages", {
           method: "POST",
           headers: {
