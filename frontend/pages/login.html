@@ -18,12 +18,7 @@
         <a href="services.html">Services</a>
         <a href="gallery.html">Gallery</a>
         <a href="testimonials.html">Testimonials</a>
-        <a href="contact.html">Contact</a>
         <a href="login.html" class="nav-portal">Client Login</a>
-        <div class="nav-lang">
-          <button class="active" onclick="setLang('en')">EN</button>
-          <button onclick="setLang('es')">ES</button>
-        </div>
       </div>
       <a href="quote.html" class="nav-cta">START A QUOTE</a>
     </nav>
@@ -31,8 +26,8 @@
     <div class="page-content">
       <div class="login-layout">
         <div class="login-left">
-          <h2 data-i18n="loginWelcome">Welcome back.</h2>
-          <p data-i18n="loginDesc">
+          <h2>Welcome back.</h2>
+          <p>
             Log in to access your client dashboard — track your event, review
             documents, and message your planner.
           </p>
@@ -61,8 +56,8 @@
           </div>
         </div>
         <div class="login-right">
-          <div data-i18n="loginTitle" class="login-form-title">Client Login</div>
-          <p data-i18n="loginSub" class="login-form-sub">
+          <div class="login-form-title">Client Login</div>
+          <p class="login-form-sub">
             Enter your credentials to access your dashboard.
           </p>
           <div class="login-field">
@@ -81,7 +76,7 @@
               placeholder="Enter your password"
             />
           </div>
-          <button data-i18n="loginBtn" class="btn-login" onclick="doLogin()">Log In</button>
+          <button class="btn-login" onclick="doLogin()">Log In</button>
           <div id="login-msg" class="login-msg"></div>
           <a
             href="reset-password.html"
@@ -93,14 +88,13 @@
               color: #4a2772;
               text-decoration: none;
             "
-            data-i18n="loginForgot">Forgot your password?</a
+            >Forgot your password?</a
           >
-          <a data-i18n="loginBack" href="../index.html" class="login-back">← Back to Home</a>
+          <a href="../index.html" class="login-back">← Back to Home</a>
         </div>
       </div>
     </div>
 
-    <script src="../js/translations.js"></script>
     <script>
       var API = "http://localhost:5001";
 
@@ -156,12 +150,29 @@
         if (e.key === "Enter") doLogin();
       });
 
-      var u = JSON.parse(localStorage.getItem("user"));
-      if (u) {
-        var el = document.querySelector(".nav-portal");
-        el.textContent = u.firstname + "'s Portal";
-        el.href = "portal.html";
-      }
+      (function () {
+        var token = localStorage.getItem("token");
+        var u = JSON.parse(localStorage.getItem("user") || "null");
+        if (!token || !u) return;
+
+        var API = "http://localhost:5000";
+        fetch(API + "/dashboard", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) {
+            if (r.status === 401 || r.status === 403) {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              return;
+            }
+            window.location.href =
+              u.role === "Owner" ? "owner.html" : "portal.html";
+          })
+          .catch(function () {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          });
+      })();
     </script>
   </body>
 </html>

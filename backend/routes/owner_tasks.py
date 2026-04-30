@@ -13,10 +13,11 @@ def register_owner_task_routes(app):
         data = request.get_json()
         db = get_db()
         cur = db.cursor()
-        cur.execute("INSERT INTO tasks (event_id, title, due_date) VALUES (%s,%s,%s)",
+        cur.execute("INSERT INTO tasks (event_id, title, due_date) VALUES (%s,%s,%s) RETURNING id",
             (data['event_id'], data['title'], data.get('due_date')))
+        task_id = cur.fetchone()[0]
         db.commit(); cur.close(); db.close()
-        return jsonify({'success': True, 'message': 'Task added'})
+        return jsonify({'success': True, 'task_id': task_id})
 
     @app.route('/owner/tasks/<int:task_id>', methods=['PUT'])
     def toggle_task_owner(task_id):
