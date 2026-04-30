@@ -61,7 +61,7 @@ def register_dashboard_routes(app):
                     'due_date': str(t['due_date']) if t['due_date'] else None,
                     'completed': t['completed']} for t in cur.fetchall()]
 
-                cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at DESC", (eid,))
+                cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at ASC", (eid,))
                 messages = []
                 for m in cur.fetchall():
                     msg_date = m['created_at'].strftime("%b %d, %Y at %I:%M %p") if m['created_at'] else ""

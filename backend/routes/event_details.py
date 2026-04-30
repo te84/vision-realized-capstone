@@ -16,10 +16,14 @@ def register_owner_event_detail_routes(app):
         for t in tasks:
             if t.get('due_date'): t['due_date'] = str(t['due_date'])
             if t.get('created_at'): t['created_at'] = str(t['created_at'])
-        cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at DESC", (event_id,))
+        cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at ASC", (event_id,))
         msgs = [dict(m) for m in cur.fetchall()]
         for m in msgs:
-            if m.get('created_at'): m['created_at'] = str(m['created_at'])
+            if m.get('created_at'):
+                m['date'] = m['created_at'].strftime("%b %d, %Y at %I:%M %p")
+                m['created_at'] = str(m['created_at'])
+            else:
+                m['date'] = ""
         cur.execute("SELECT * FROM documents WHERE event_id = %s ORDER BY created_at DESC", (event_id,))
         docs = [dict(d) for d in cur.fetchall()]
         for d in docs:
