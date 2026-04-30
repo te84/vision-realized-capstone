@@ -144,15 +144,16 @@
 }
 .action-btn {
   padding: 6px 14px;
-  border: 1px solid #4a2772;
-  color: #4a2772;
-  background: transparent;
+  border: 1px solid #555;
+  color: #fff;
+  background: #555;
   font-size: 0.75rem;
   cursor: pointer;
   font-family: "DM Sans", sans-serif;
 }
 .action-btn:hover {
-  background: #4a2772;
+  background: #333;
+  border-color: #333;
   color: white;
 }
 .tab-content {
