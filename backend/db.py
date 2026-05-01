@@ -36,6 +36,14 @@ def create_tables():
         cur.execute("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS sender VARCHAR(100) DEFAULT 'Client'")
         cur.execute("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS read BOOLEAN DEFAULT FALSE")
         cur.execute("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()")
+        cur.execute("""CREATE TABLE IF NOT EXISTS invoices (
+            invoice_id SERIAL PRIMARY KEY,
+            client_id INT NOT NULL,
+            event_id INT NOT NULL,
+            status VARCHAR(50) DEFAULT 'Pending',
+            amount NUMERIC(10,2),
+            due_date DATE,
+            created_at TIMESTAMP DEFAULT NOW())""")
         cur.execute("""CREATE TABLE IF NOT EXISTS security_questions (
             id SERIAL PRIMARY KEY, user_id INT NOT NULL UNIQUE, question VARCHAR(300),
             answer VARCHAR(300), created_at TIMESTAMP DEFAULT NOW())""")
