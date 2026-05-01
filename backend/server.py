@@ -39,6 +39,7 @@ register_owner_event_detail_routes(app)
 register_owner_task_routes(app)
 register_owner_communication_routes(app)
 register_inbox_routes(app)
+register_owner_invoice_routes(app)
 
 create_tables()
 
