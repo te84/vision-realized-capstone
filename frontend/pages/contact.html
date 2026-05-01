@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision Realized | Contact Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="about.html">About Us</a>
+    <a href="services.html">Services</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="testimonials.html">Testimonials</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html" class="nav-portal">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
+  </div>
+  <a href="quote.html" class="nav-cta">START A QUOTE</a>
+</nav>
+
+<div class="page-content">
+  <div style="padding:40px 60px 80px; max-width:1100px; margin:0 auto;">
+    <h2 data-i18n="contactTitle" style="font-family:'Cormorant Garamond',serif; font-size:2.8rem; color:#2E1547; font-style:italic; margin-bottom:8px;">Contact Us</h2>
+    <p data-i18n="contactSub" style="color:#7A6E5E; margin-bottom:16px;">We'd love to hear from you.</p>
+    <div style="width:50px; height:2px; background:#4A2772; margin-bottom:48px;"></div>
+
+    <div style="display:flex; gap:60px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:280px;">
+        <h3 data-i18n="contactGetInTouch" style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:#2E1547; font-style:italic; margin-bottom:24px;">Get In Touch</h3>
+        <div style="margin-bottom:24px;">
+          <p data-i18n="contactPhone" style="font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Phone</p>
+          <p style="font-size:1.1rem;"><a href="tel:+18622150186" style="color:#1A1208; text-decoration:none;">(862) 215-0186</a></p>
+        </div>
+        <div style="margin-bottom:24px;">
+          <p data-i18n="contactEmail" style="font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Email</p>
+          <p style="font-size:1.1rem;"><a href="mailto:info@visionrealizedevents.com" style="color:#1A1208; text-decoration:none;">info@visionrealizedevents.com</a></p>
+        </div>
+        <div style="margin-bottom:24px;">
+          <p data-i18n="contactLocation" style="font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Location</p>
+          <p style="font-size:1.1rem; color:#1A1208;">Newark, NJ</p>
+        </div>
+        <div>
+          <p data-i18n="contactHours" style="font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Hours</p>
+          <p style="font-size:0.95rem; color:#5a4c3a; line-height:1.7;">Monday – Friday: 9am – 6pm<br>Saturday: By appointment<br>Sunday: Closed</p>
+        </div>
+      </div>
+
+      <div style="flex:1; min-width:280px;">
+        <h3 data-i18n="contactSendMsg" style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:#2E1547; font-style:italic; margin-bottom:24px;">Send a Message</h3>
+        <div style="margin-bottom:16px;">
+          <label data-i18n="contactName" style="display:block; font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Name</label>
+          <input id="contact-name" type="text" placeholder="Your name" style="width:100%; padding:12px 14px; border:1.5px solid rgba(74,39,114,0.15); background:#FAF7F2; font-size:0.9rem; font-family:'DM Sans',sans-serif; outline:none;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Email</label>
+          <input id="contact-email" type="email" placeholder="Your email" style="width:100%; padding:12px 14px; border:1.5px solid rgba(74,39,114,0.15); background:#FAF7F2; font-size:0.9rem; font-family:'DM Sans',sans-serif; outline:none;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label data-i18n="contactMessage" style="display:block; font-size:0.72rem; letter-spacing:1.5px; text-transform:uppercase; color:#4A2772; margin-bottom:6px; font-weight:500;">Message</label>
+          <textarea id="contact-message" placeholder="Tell us about your event..." rows="5" style="width:100%; padding:12px 14px; border:1.5px solid rgba(74,39,114,0.15); background:#FAF7F2; font-size:0.9rem; font-family:'DM Sans',sans-serif; outline:none; resize:vertical;"></textarea>
+        </div>
+        <button data-i18n="contactSend" onclick="submitContact()" style="background:#4A2772; color:white; padding:14px 32px; border:none; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:'DM Sans',sans-serif; width:100%;">Send Message</button>
+        <p id="contact-msg" style="text-align:center; margin-top:12px; font-size:0.85rem; min-height:20px;"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-content">
+    <div>
+      <div class="footer-services">
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Fundraising Galas</div></div>
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Birthday Parties</div></div>
+        <div class="footer-svc"><div class="footer-svc-line"></div><div class="footer-svc-name">Corporate Events</div></div>
+      </div>
+      <a href="services.html" class="btn-all-svc">All Services</a>
+    </div>
+    <div>
+      <div class="footer-label">Call or text for a free quote</div>
+      <div class="footer-phone">(862) 215-0186</div>
+      <div class="footer-label">Email Us</div>
+      <div class="footer-email">info@visionrealizedevents.com</div>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/translations.js"></script>
+<script>
+  var API = '';
+
+  function submitContact() {
+    var name = document.getElementById('contact-name').value;
+    var email = document.getElementById('contact-email').value;
+    var msg = document.getElementById('contact-message').value;
+    var msgBox = document.getElementById('contact-msg');
+
+    if (!name || !email || !msg) {
+      msgBox.textContent = 'Please fill out all fields.';
+      msgBox.style.color = '#c0392b';
+      return;
+    }
+
+    msgBox.textContent = 'Sending...';
+    msgBox.style.color = '#7A6E5E';
+
+    fetch(API + '/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, message: msg })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        msgBox.textContent = 'Message sent! We will get back to you soon.';
+        msgBox.style.color = '#27ae60';
+        document.getElementById('contact-name').value = '';
+        document.getElementById('contact-email').value = '';
+        document.getElementById('contact-message').value = '';
+      } else {
+        msgBox.textContent = data.message || 'Something went wrong.';
+        msgBox.style.color = '#c0392b';
+      }
+    })
+    .catch(function() {
+      msgBox.textContent = 'Could not connect to server.';
+      msgBox.style.color = '#c0392b';
+    });
+  }
+
+  var u = JSON.parse(localStorage.getItem('user'));
+  if (u) {
+    var el = document.querySelector('.nav-portal');
+    el.textContent = u.firstname + "'s Portal";
+    el.href = 'portal.html';
+  }
+</script>
+</body>
+</html>

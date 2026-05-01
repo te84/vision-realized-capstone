@@ -32,3 +32,14 @@ def register_client_action_routes(app):
             (data['event_id'], sender, data['text']))
         db.commit(); cur.close(); db.close()
         return jsonify({'success': True})
+
+    @app.route('/client/messages/<int:event_id>/read', methods=['PUT'])
+    def mark_messages_read(event_id):
+        tok = verify_token()
+        if not tok:
+            return jsonify({'message': 'Not authorized'}), 401
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("UPDATE client_messages SET read = TRUE WHERE event_id = %s AND sender = 'Vision Realized'", (event_id,))
+        db.commit(); cur.close(); db.close()
+        return jsonify({'success': True})

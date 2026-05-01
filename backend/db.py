@@ -11,6 +11,9 @@ def get_db():
 def hash_password(pw):
     return hashlib.sha256(pw.encode()).hexdigest()
 
+def check_password(pw, hashed):
+    return hash_password(pw) == hashed
+
 def create_tables():
     try:
         db = get_db()

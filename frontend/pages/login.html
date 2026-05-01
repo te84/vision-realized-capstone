@@ -13,21 +13,26 @@
   <body>
     <nav>
       <div class="nav-links">
-        <a href="../index.html">Home</a>
-        <a href="about.html">About Us</a>
-        <a href="services.html">Services</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="testimonials.html">Testimonials</a>
-        <a href="login.html" class="nav-portal">Client Login</a>
+        <a href="../index.html" data-i18n="navHome">Home</a>
+        <a href="about.html" data-i18n="navAbout">About Us</a>
+        <a href="services.html" data-i18n="navServices">Services</a>
+        <a href="gallery.html" data-i18n="navGallery">Gallery</a>
+        <a href="testimonials.html" data-i18n="navTestimonials">Testimonials</a>
+        <a href="contact.html" data-i18n="navContact">Contact</a>
+        <a href="login.html" class="nav-portal" data-i18n="navLogin">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
       </div>
-      <a href="quote.html" class="nav-cta">START A QUOTE</a>
+      <a href="quote.html" class="nav-cta" data-i18n="navCta">START A QUOTE</a>
     </nav>
 
     <div class="page-content">
       <div class="login-layout">
         <div class="login-left">
-          <h2>Welcome back.</h2>
-          <p>
+          <h2 data-i18n="loginWelcome">Welcome back.</h2>
+          <p data-i18n="loginDesc">
             Log in to access your client dashboard — track your event, review
             documents, and message your planner.
           </p>
@@ -56,12 +61,12 @@
           </div>
         </div>
         <div class="login-right">
-          <div class="login-form-title">Client Login</div>
-          <p class="login-form-sub">
+          <div class="login-form-title" data-i18n="loginTitle">Client Login</div>
+          <p class="login-form-sub" data-i18n="loginSub">
             Enter your credentials to access your dashboard.
           </p>
           <div class="login-field">
-            <label>Username</label>
+            <label data-i18n="loginUser">Username</label>
             <input
               type="text"
               id="login-user"
@@ -69,14 +74,14 @@
             />
           </div>
           <div class="login-field">
-            <label>Password</label>
+            <label data-i18n="loginPass">Password</label>
             <input
               type="password"
               id="login-pass"
               placeholder="Enter your password"
             />
           </div>
-          <button class="btn-login" onclick="doLogin()">Log In</button>
+          <button class="btn-login" onclick="doLogin()" data-i18n="loginBtn">Log In</button>
           <div id="login-msg" class="login-msg"></div>
           <a
             href="reset-password.html"
@@ -88,9 +93,9 @@
               color: #4a2772;
               text-decoration: none;
             "
-            >Forgot your password?</a
+            data-i18n="loginForgot">Forgot your password?</a
           >
-          <a href="../index.html" class="login-back">← Back to Home</a>
+          <a href="../index.html" class="login-back" data-i18n="loginBack">← Back to Home</a>
         </div>
       </div>
     </div>
@@ -174,5 +179,6 @@
           });
       })();
     </script>
+    <script src="../js/translations.js"></script>
   </body>
 </html>
