@@ -71,6 +71,10 @@ def register_owner_events_routes(app):
             fields.append('guests = %s')
             values.append(data['guests'])
 
+        if 'event_type' in data:
+            fields.append('event_type = %s')
+            values.append(data['event_type'])
+
         if not fields:
             return jsonify({'success': False, 'message': 'No fields to update'}), 400
 

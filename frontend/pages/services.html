@@ -11,14 +11,19 @@
 
 <nav>
   <div class="nav-links">
-    <a href="../index.html">Home</a>
-    <a href="about.html">About Us</a>
-    <a href="services.html">Services</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="testimonials.html">Testimonials</a>
-    <a href="login.html" class="nav-portal">Client Login</a>
+    <a href="../index.html" data-i18n="navHome">Home</a>
+    <a href="about.html" data-i18n="navAbout">About Us</a>
+    <a href="services.html" data-i18n="navServices">Services</a>
+    <a href="gallery.html" data-i18n="navGallery">Gallery</a>
+    <a href="testimonials.html" data-i18n="navTestimonials">Testimonials</a>
+    <a href="contact.html" data-i18n="navContact">Contact</a>
+    <a href="login.html" class="nav-portal" data-i18n="navLogin">Client Login</a>
+    <div class="nav-lang">
+      <button class="active" onclick="setLang('en')">EN</button>
+      <button onclick="setLang('es')">ES</button>
+    </div>
   </div>
-  <a href="quote.html" class="nav-cta">START A QUOTE</a>
+  <a href="quote.html" class="nav-cta" data-i18n="navCta">START A QUOTE</a>
 </nav>
 
 <div class="page-content">
@@ -29,9 +34,9 @@
 
     <div style="display:flex; gap:0; margin-bottom:48px; flex-wrap:wrap;">
       <div style="background:#4A2772; padding:40px; color:white; flex:1; min-width:300px;">
-        <p style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 1</p>
-        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Event Manager</h3>
-        <p style="font-size:0.9rem; line-height:1.7; color:rgba(255,255,255,0.8); margin-bottom:20px;">You've done the planning — we run the day. Perfect if you already have your vendors and venue set up but need someone to manage while you enjoy the event.</p>
+        <p data-i18n="svcOpt1" style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 1</p>
+        <h3 data-i18n="eventManager" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Event Management & On-Site Coordination</h3>
+        <p style="font-size:0.9rem; line-height:1.7; color:rgba(255,255,255,0.8); margin-bottom:20px;">Every detail from setup to breakdown is professionally managed. Our team oversees vendors, timelines, and the guest experience on-site — allowing you to enjoy a smooth, stress-free event from start to finish.</p>
         <ul style="font-size:0.85rem; line-height:2; color:rgba(255,255,255,0.7); padding-left:18px;">
           <li>Day-of timeline management</li>
           <li>Vendor coordination on site</li>
@@ -40,15 +45,15 @@
         </ul>
       </div>
       <div style="background:#2E1547; padding:40px; color:white; flex:1; min-width:300px;">
-        <p style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 2</p>
-        <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Full Event Planner</h3>
-        <p style="font-size:0.9rem; line-height:1.7; color:rgba(255,255,255,0.8); margin-bottom:20px;">We handle planning everything from start to finish. Concept, vendors, budget, venue — you just show up and enjoy.</p>
+        <p data-i18n="svcOpt2" style="font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:12px;">Option 2</p>
+        <h3 data-i18n="fullPlanner" style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-style:italic; margin-bottom:16px;">Full Event Planning</h3>
+        <p style="font-size:0.9rem; line-height:1.7; color:rgba(255,255,255,0.8); margin-bottom:20px;">We design and organize unforgettable events from concept to completion — managing theme development, vendor coordination, budgeting, and logistics with creativity and precision so you can focus on what matters most: your guests.</p>
         <ul style="font-size:0.85rem; line-height:2; color:rgba(255,255,255,0.7); padding-left:18px;">
-          <li>Concept development</li>
-          <li>Vendor sourcing (DJ, catering, decor, photo)</li>
+          <li>Concept and theme development</li>
+          <li>Vendor sourcing (DJ, catering, decor, photography)</li>
           <li>Venue scouting and site visits</li>
-          <li>Budget planning</li>
-          <li>Onsite management</li>
+          <li>Budget planning and tracking</li>
+          <li>On-site coordination and management</li>
         </ul>
       </div>
     </div>
@@ -67,41 +72,90 @@
     scrollbar-color:#4A2772 #efe6dc;
   ">
 
-    <!-- Service Cards -->
-    <div style="
-      min-width:220px; max-width:220px;
-      border:1px solid #efe6dc;
-      padding:32px 24px;
-      scroll-snap-align:start;
-      flex-shrink:0;
-      background:#fff;
-    ">
-      <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.15rem; color:#2E1547; font-style:italic; margin-bottom:10px;">Corporate Workshops</h4>
-      <p style="font-size:0.82rem; line-height:1.7; color:#5a4c3a;">Projector, speaker neccessities, and music</p>
+    <!-- Corporate -->
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#4A2772;margin-bottom:8px;">Corporate</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Corporate Event Planning</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Conferences, launches, and branded experiences</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#4A2772;margin-bottom:8px;">Corporate</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Team Building Events</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">T-shirts, catering, and games with fun twists</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#4A2772;margin-bottom:8px;">Corporate</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Product Launch</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Venue, A/V, branding, and vendor coordination for launches that make an impact</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#4A2772;margin-bottom:8px;">Corporate</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Executive Retreats</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Curated off-site experiences for leadership teams</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#4A2772;margin-bottom:8px;">Corporate</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Holiday Parties</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">End-of-year celebrations your team will actually look forward to</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#4A2772;margin-bottom:8px;">Corporate</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Charity & Fundraising Galas</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Elegant events that inspire giving and leave lasting impressions</p>
     </div>
 
-    <div style="
-      min-width:220px; max-width:220px;
-      border:1px solid #efe6dc;
-      padding:32px 24px;
-      scroll-snap-align:start;
-      flex-shrink:0;
-      background:#fff;
-    ">
-      <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.15rem; color:#2E1547; font-style:italic; margin-bottom:10px;">Team Building</h4>
-      <p style="font-size:0.82rem; line-height:1.7; color:#5a4c3a;">T-shirts, catering, and games with fun twists</p>
+    <!-- Social -->
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#b8860b;margin-bottom:8px;">Social</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Cocktail Parties</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Intimate gatherings with curated drinks, ambiance, and style</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#b8860b;margin-bottom:8px;">Social</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Black Tie Galas</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Sophisticated formal events with every detail perfected</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#b8860b;margin-bottom:8px;">Social</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Wine Tasting</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Themed tastings with curated pairings and elegant setups</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#b8860b;margin-bottom:8px;">Social</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Casino Nights</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Roaring Twenties, Casino Royale, and other themed party experiences</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#b8860b;margin-bottom:8px;">Social</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Milestone Parties</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Birthdays, sweet sixteens, quinceañeras, and anniversary celebrations</p>
     </div>
 
-    <div style="
-      min-width:220px; max-width:220px;
-      border:1px solid #efe6dc;
-      padding:32px 24px;
-      scroll-snap-align:start;
-      flex-shrink:0;
-      background:#fff;
-    ">
-      <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.15rem; color:#2E1547; font-style:italic; margin-bottom:10px;">Parties</h4>
-      <p style="font-size:0.82rem; line-height:1.7; color:#5a4c3a;">Themed concepts for milestone parties and galas. Past examples include - Roaring Twenties, 60s, Soul Train, Casino Royale</p>
+    <!-- Destination & Specialty -->
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#1a6fa0;margin-bottom:8px;">Specialty</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Destination Event Management</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Full coordination for events beyond your city</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#1a6fa0;margin-bottom:8px;">Specialty</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Wellness Retreats</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Relaxation-focused group experiences with curated vendors</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#1a6fa0;margin-bottom:8px;">Specialty</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Girlfriend Getaways</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Planned trips and experiences for your crew</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#1a6fa0;margin-bottom:8px;">Specialty</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Surprise Proposals</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">We plan the perfect moment so you can focus on the question</p>
+    </div>
+    <div style="min-width:220px;max-width:220px;border:1px solid #efe6dc;padding:32px 24px;scroll-snap-align:start;flex-shrink:0;background:#fff;">
+      <p style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:#1a6fa0;margin-bottom:8px;">Specialty</p>
+      <h4 style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:#2E1547;font-style:italic;margin-bottom:10px;">Family Reunions</h4>
+      <p style="font-size:0.82rem;line-height:1.7;color:#5a4c3a;">Bringing families together with coordinated venues, catering, and activities</p>
     </div>
 
      </div>
@@ -112,35 +166,37 @@
     <div style="display:flex; flex-wrap:wrap; gap:24px;">
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">Event Conceptualization & Design</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Theme development, hiring the right decorators, and layout planning to match your vision.</p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We work with you to develop a theme and creative direction that brings your vision to life — from color palettes and layout planning to hiring the right decorators and designers.</p>
       </div>
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">Logistics & Vendor Management</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Finding the right vendors based on your needs and budget, negotiating contracts, and coordinating deliveries and schedules.</p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We source and coordinate vendors based on your needs and budget — negotiating contracts, managing deliveries, and keeping every moving piece on schedule so you don't have to.</p>
       </div>
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">Budget Planning & Financial Management</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Transparent budget tracking so you know exactly where every dollar goes. Give us your budget, and we accomodate your planned event accordingly.</p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Transparent budget tracking so you know exactly where every dollar goes. Share your budget with us and we'll tailor every aspect of your event to fit — no surprises, no overspending.</p>
       </div>
       <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">On-Site Coordination & Execution</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We're there on the day to manage everything. Enjoy your event!</p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">On the day of your event, our team manages setup, vendor arrivals, timelines, and breakdown — handling every detail so you can be fully present with your guests.</p>
       </div>
     </div>
     <!-- Event Process -->
     <br>
     <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:32px;">The Process</h3>
+    <div><img src="../images/services_process_graphic.png" style="max-width: 100%; height: auto; display: block;" alt="The event planning process. Check below for more details"></div>
+    <br>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">1. Submit your Quote</h4>
         <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Complete our online quote form and create an account to access your client dashboard.</p>
       </div>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">2. Initial Meeting</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Define event type and scope with you. We also discuss potential caterers, materials needed, renting event furniture, centerpieces, and other people to hire (photographers, DJs, live  music, etc.) </p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We sit down with you to define the event type and scope. Together, we discuss potential caterers, materials, furniture rentals, centerpieces, and other vendors to hire — photographers, DJs, live music, and more.</p>
       </div>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">3. You Choose your Options</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We recieve quotes from potential venues, vendors, rental companies, and live music, and provide you 3 options for each event feature based on your budget. You choose what best fits your vision</p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">We gather quotes from venues, vendors, rental companies, and entertainment, then present you with three options for each feature based on your budget. You choose what best fits your vision.</p>
       </div>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">4. We Book for You</h4>
@@ -152,10 +208,34 @@
       </div>
     <div style="border:1px solid #efe6dc; padding:32px; flex:1; min-width:280px;background: #fff;">
         <h4 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:12px;">6. Payment</h4>
-        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Your total bill will include our service as event planners, venue and vendor costs, and any external services</p>
+        <p style="font-size:0.88rem; line-height:1.7; color:#5a4c3a;">Your total bill includes our event planning service, venue and vendor costs, and any external services — all clearly outlined with no hidden fees.</p>
       </div>
 
     <!-- Event Process End -->
+
+    <!-- Se habla Español -->
+    <div style="background:#4A2772; padding:32px 40px; margin-top:48px; text-align:center;">
+      <p style="font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:white; font-style:italic; margin-bottom:6px;">Se habla Español</p>
+      <p style="font-size:0.88rem; color:rgba(255,255,255,0.7);">We proudly serve our Spanish-speaking community. Use the EN/ES toggle to switch languages.</p>
+    </div>
+
+    <!-- Inspirational Quotes -->
+    <div style="margin-top:48px; padding:32px 0; border-top:1px solid #efe6dc;">
+      <div style="display:flex; flex-wrap:wrap; gap:24px; justify-content:center;">
+        <div style="flex:1; min-width:260px; max-width:340px; text-align:center; padding:20px;">
+          <p style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-style:italic; color:#2E1547; line-height:1.6;">"Great things are done by a series of small things brought together"</p>
+          <p style="font-size:0.78rem; color:#7A6E5E; margin-top:10px; letter-spacing:1px; text-transform:uppercase;">Vincent Van Gogh</p>
+        </div>
+        <div style="flex:1; min-width:260px; max-width:340px; text-align:center; padding:20px;">
+          <p style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-style:italic; color:#2E1547; line-height:1.6;">"People will forget what you said, people will forget what you did, but people will never forget how you made them feel"</p>
+          <p style="font-size:0.78rem; color:#7A6E5E; margin-top:10px; letter-spacing:1px; text-transform:uppercase;">Maya Angelou</p>
+        </div>
+        <div style="flex:1; min-width:260px; max-width:340px; text-align:center; padding:20px;">
+          <p style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-style:italic; color:#2E1547; line-height:1.6;">"People don't buy what you do; they buy why you do it"</p>
+          <p style="font-size:0.78rem; color:#7A6E5E; margin-top:10px; letter-spacing:1px; text-transform:uppercase;">Simon Sinek</p>
+        </div>
+      </div>
+    </div>
 
     <div style="text-align:center; margin-top:48px;">
       <a href="quote.html" style="background:#4A2772; color:white; padding:16px 36px; border:none; font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:none; display:inline-block;">Get Started — Request a Quote</a>
@@ -171,5 +251,6 @@
     el.href = 'portal.html';
   }
 </script>
+<script src="../js/translations.js"></script>
 </body>
 </html>

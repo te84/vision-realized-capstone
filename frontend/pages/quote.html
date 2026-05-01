@@ -13,14 +13,19 @@
   <body style="background: #fffdf9">
     <nav>
       <div class="nav-links">
-        <a href="../index.html">Home</a>
-        <a href="about.html">About Us</a>
-        <a href="services.html">Services</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="testimonials.html">Testimonials</a>
-        <a href="login.html" class="nav-portal">Client Login</a>
+        <a href="../index.html" data-i18n="navHome">Home</a>
+        <a href="about.html" data-i18n="navAbout">About Us</a>
+        <a href="services.html" data-i18n="navServices">Services</a>
+        <a href="gallery.html" data-i18n="navGallery">Gallery</a>
+        <a href="testimonials.html" data-i18n="navTestimonials">Testimonials</a>
+        <a href="contact.html" data-i18n="navContact">Contact</a>
+        <a href="login.html" class="nav-portal" data-i18n="navLogin">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
       </div>
-      <a href="quote.html" class="nav-cta">START A QUOTE</a>
+      <a href="quote.html" class="nav-cta" data-i18n="navCta">START A QUOTE</a>
     </nav>
 
     <div class="page-content">
@@ -188,6 +193,23 @@
                   <span class="etb-name">Other</span>
                 </div>
               </div>
+              <div class="field" style="margin-top:24px;">
+                <label>What service do you need?</label>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
+                  <div class="event-type-btn" onclick="pickService(this)" style="flex:1;min-width:200px;">
+                    <span class="etb-name">Event Management</span>
+                    <div style="font-size:0.75rem;color:#7a6e5e;margin-top:4px;">Day-of coordination — you plan, we run it</div>
+                  </div>
+                  <div class="event-type-btn" onclick="pickService(this)" style="flex:1;min-width:200px;">
+                    <span class="etb-name">Full Event Planning</span>
+                    <div style="font-size:0.75rem;color:#7a6e5e;margin-top:4px;">We handle everything from concept to completion</div>
+                  </div>
+                  <div class="event-type-btn" onclick="pickService(this)" style="flex:1;min-width:200px;">
+                    <span class="etb-name">Not Sure Yet</span>
+                    <div style="font-size:0.75rem;color:#7a6e5e;margin-top:4px;">We'll help you figure it out during consultation</div>
+                  </div>
+                </div>
+              </div>
               <div class="form-nav">
                 <button class="btn-back" onclick="goToStep(0)">← Back</button
                 ><button class="btn-next" onclick="goToStep(2)">
@@ -346,6 +368,15 @@
                 </div>
               </div>
               <div class="field" style="margin-top: 24px">
+                <label>Upload Inspiration Photos (optional)</label>
+                <div id="inspo-upload-area" style="border:2px dashed rgba(74,39,114,0.25);border-radius:4px;padding:24px;text-align:center;cursor:pointer;background:#fffdf9;" onclick="document.getElementById('inspo-files').click()">
+                  <input type="file" id="inspo-files" multiple accept="image/*" style="display:none;" onchange="handleInspoFiles(this.files)" />
+                  <div style="font-size:0.85rem;color:#7a6e5e;">Click to browse or drag photos here</div>
+                  <div style="font-size:0.75rem;color:#9a8fb5;margin-top:4px;">JPG, PNG up to 5MB each</div>
+                </div>
+                <div id="inspo-preview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
+              </div>
+              <div class="field" style="margin-top: 24px">
                 <label>Anything else before you submit?</label
                 ><textarea
                   placeholder="Final notes, questions, or anything we should know..."
@@ -418,11 +449,47 @@
         el.classList.add("selected");
       }
 
+      function pickService(el) {
+        var parent = el.parentElement;
+        var btns = parent.querySelectorAll(".event-type-btn");
+        for (var i = 0; i < btns.length; i++) btns[i].classList.remove("selected");
+        el.classList.add("selected");
+      }
+
       function pickBudget(el) {
         var btns = document.querySelectorAll(".budget-btn");
         for (var i = 0; i < btns.length; i++)
           btns[i].classList.remove("selected");
         el.classList.add("selected");
+      }
+
+      var inspoFiles = [];
+
+      function handleInspoFiles(files) {
+        var preview = document.getElementById("inspo-preview");
+        for (var i = 0; i < files.length; i++) {
+          if (files[i].size > 5 * 1024 * 1024) continue;
+          inspoFiles.push(files[i]);
+          var reader = new FileReader();
+          reader.onload = (function(file) {
+            return function(e) {
+              var div = document.createElement("div");
+              div.style.cssText = "position:relative;width:80px;height:80px;border-radius:4px;overflow:hidden;border:1px solid #efe6dc;";
+              div.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">' +
+                '<div onclick="removeInspo(this)" style="position:absolute;top:2px;right:4px;color:#c0392b;cursor:pointer;font-size:0.9rem;background:rgba(255,255,255,0.8);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;">x</div>';
+              preview.appendChild(div);
+            };
+          })(files[i]);
+          reader.readAsDataURL(files[i]);
+        }
+      }
+
+      function removeInspo(el) {
+        var parent = el.parentElement;
+        var preview = document.getElementById("inspo-preview");
+        var idx = Array.prototype.indexOf.call(preview.children, parent);
+        if (idx >= 0) inspoFiles.splice(idx, 1);
+        parent.remove();
       }
 
       var curStep = 0;
@@ -442,11 +509,23 @@
       function submitQuote() {
         var inputs0 = document.querySelectorAll("#step-0 input");
         var selects0 = document.querySelectorAll("#step-0 select");
-        var fname = inputs0[0] ? inputs0[0].value : "";
-        var lname = inputs0[1] ? inputs0[1].value : "";
-        var email = inputs0[2] ? inputs0[2].value : "";
-        var phone = inputs0[3] ? inputs0[3].value : "";
+        var fname = inputs0[0] ? inputs0[0].value.trim() : "";
+        var lname = inputs0[1] ? inputs0[1].value.trim() : "";
+        var email = inputs0[2] ? inputs0[2].value.trim() : "";
+        var phone = inputs0[3] ? inputs0[3].value.trim() : "";
         var pw = inputs0[4] ? inputs0[4].value : "";
+
+        // validate required fields
+        if (!fname || !lname || !email || !pw) {
+          alert("Please fill in your name, email, and password before submitting.");
+          goToStep(0);
+          return;
+        }
+        if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+          alert("Please enter a valid email address.");
+          goToStep(0);
+          return;
+        }
         var secQ = document.getElementById("security-q")
           ? document.getElementById("security-q").value
           : "";
@@ -457,21 +536,39 @@
           ? selects0[selects0.length - 1].value
           : "";
 
-        var typeSel = document.querySelector(
-          ".event-type-btn.selected .etb-name",
-        );
+        // step 1 - event type + service type
+        var typeGrid = document.querySelector("#step-1 .event-type-grid");
+        var typeSel = typeGrid ? typeGrid.querySelector(".event-type-btn.selected .etb-name") : null;
         var evType = typeSel ? typeSel.textContent : "";
 
+        var svcSel = document.querySelector("#step-1 .field .event-type-btn.selected .etb-name");
+        var serviceType = svcSel ? svcSel.textContent : "";
+
+        // step 2 - event details
         var inputs2 = document.querySelectorAll("#step-2 input");
         var selects2 = document.querySelectorAll("#step-2 select");
         var evDate = inputs2[0] ? inputs2[0].value : "";
         var guests = selects2[0] ? selects2[0].value : "";
         var loc = inputs2[1] ? inputs2[1].value : "";
+        var venueStatus = selects2[1] ? selects2[1].value : "";
+        var visionText = document.querySelector("#step-2 textarea");
+        var vision = visionText ? visionText.value : "";
 
+        // step 3 - budget
         var budgetSel = document.querySelector(
           ".budget-btn.selected .budget-range",
         );
         var budget = budgetSel ? budgetSel.textContent : "";
+        var budgetNotesEl = document.querySelector("#step-3 textarea");
+        var budgetNotes = budgetNotesEl ? budgetNotesEl.value : "";
+
+        // step 4 - vibes + final notes
+        var vibeEls = document.querySelectorAll(".vibe-btn.selected p");
+        var vibes = [];
+        for (var v = 0; v < vibeEls.length; v++) vibes.push(vibeEls[v].textContent);
+        var vibesStr = vibes.join(", ");
+        var finalNotesEl = document.querySelectorAll("#step-4 textarea");
+        var finalNotes = finalNotesEl[finalNotesEl.length - 1] ? finalNotesEl[finalNotesEl.length - 1].value : "";
 
         document.getElementById("conf-name").textContent = fname + " " + lname;
         document.getElementById("conf-email").textContent =
@@ -496,6 +593,12 @@
             guests: guests,
             location: loc,
             budget: budget,
+            venue_status: venueStatus,
+            vision: vision,
+            budget_notes: budgetNotes,
+            vibes: vibesStr,
+            final_notes: finalNotes,
+            service_type: serviceType,
           }),
         })
           .then(function (r) {
@@ -503,6 +606,20 @@
           })
           .then(function (d) {
             console.log("saved", d);
+            // upload inspo photos if any
+            for (var p = 0; p < inspoFiles.length; p++) {
+              (function(file) {
+                var r = new FileReader();
+                r.onload = function(e) {
+                  fetch(API + "/quote/photos", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, filename: file.name, image_data: e.target.result }),
+                  });
+                };
+                r.readAsDataURL(file);
+              })(inspoFiles[p]);
+            }
           })
           .catch(function (err) {
             console.log("error saving quote", err);
@@ -520,5 +637,6 @@
         el.href = "portal.html";
       }
     </script>
+    <script src="../js/translations.js"></script>
   </body>
 </html>

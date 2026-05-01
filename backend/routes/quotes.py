@@ -17,9 +17,14 @@ def register_quote_routes(app):
             db = get_db()
             cur = db.cursor()
 
-            cur.execute("INSERT INTO quotes (first_name, last_name, email, phone, source, event_type, event_date, guests, location, budget) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+            cur.execute("""INSERT INTO quotes (first_name, last_name, email, phone, source, event_type,
+                event_date, guests, location, venue_status, vision, budget, budget_notes, vibes, final_notes, service_type)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                 (fname, lname, email, phone, data.get('source',''), data.get('event_type',''),
-                 data.get('event_date',''), data.get('guests',''), data.get('location',''), data.get('budget','')))
+                 data.get('event_date',''), data.get('guests',''), data.get('location',''),
+                 data.get('venue_status',''), data.get('vision',''), data.get('budget',''),
+                 data.get('budget_notes',''), data.get('vibes',''), data.get('final_notes',''),
+                 data.get('service_type','')))
 
             user_id = None
             if email and pw:
@@ -64,4 +69,26 @@ def register_quote_routes(app):
             return jsonify({'success': True, 'message': 'Quote submitted and account created'})
         except Exception as e:
             print('quote error:', e)
+            return jsonify({'success': False, 'message': 'Server error'}), 500
+
+    @app.route('/quote/photos', methods=['POST'])
+    def upload_quote_photo():
+        data = request.get_json()
+        email = data.get('email', '').strip()
+        filename = data.get('filename', '')
+        image_data = data.get('image_data', '')
+
+        if not email or not image_data:
+            return jsonify({'success': False, 'message': 'Email and image are required'}), 400
+
+        try:
+            db = get_db()
+            cur = db.cursor()
+            cur.execute("INSERT INTO quote_photos (email, filename, image_data) VALUES (%s, %s, %s)",
+                (email, filename, image_data))
+            db.commit()
+            cur.close(); db.close()
+            return jsonify({'success': True})
+        except Exception as e:
+            print('photo upload error:', e)
             return jsonify({'success': False, 'message': 'Server error'}), 500

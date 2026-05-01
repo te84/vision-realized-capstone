@@ -9,8 +9,14 @@ def register_inbox_routes(app):
         cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("SELECT * FROM quotes ORDER BY created_at DESC")
         rows = cur.fetchall()
+        quotes = []
+        for r in rows:
+            q = dict(r)
+            if q.get('event_date'): q['event_date'] = str(q['event_date'])
+            if q.get('created_at'): q['created_at'] = str(q['created_at'])
+            quotes.append(q)
         cur.close(); db.close()
-        return jsonify({'success': True, 'quotes': [dict(r) for r in rows]})
+        return jsonify({'success': True, 'quotes': quotes})
 
     @app.route('/messages', methods=['GET'])
     def get_messages():

@@ -159,6 +159,11 @@
               <div class="journey-title">Event Journey</div>
               <div class="journey-steps" id="journey-steps"></div>
             </div>
+            <div id="next-steps-card" style="display:none;background:#fffdf9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:24px 28px;margin-bottom:24px;">
+              <div style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:#4a2772;margin-bottom:8px;">What's Next</div>
+              <div id="next-steps-text" style="font-size:0.92rem;line-height:1.7;color:#2e1547;"></div>
+              <div id="next-steps-action" style="margin-top:14px;"></div>
+            </div>
             <div class="dash-grid">
               <div class="dash-card">
                 <div class="dash-card-title">My Tasks</div>
@@ -223,7 +228,6 @@
                 background: #fffdf9;
                 border: 1px solid rgba(74, 39, 114, 0.15);
                 padding: 16px;
-                display: flex;
                 gap: 12px;
                 align-items: center;
               "
@@ -269,15 +273,21 @@
                 Your feedback helps us grow and helps future clients find us. It
                 only takes a minute.
               </p>
-              <div class="star-row">
-                &#11088;&#11088;&#11088;&#11088;&#11088;
+              <div class="star-row" id="star-row" style="cursor:pointer;">
+                <span onclick="setRating(1)">&#11088;</span>
+                <span onclick="setRating(2)">&#11088;</span>
+                <span onclick="setRating(3)">&#11088;</span>
+                <span onclick="setRating(4)">&#11088;</span>
+                <span onclick="setRating(5)">&#11088;</span>
               </div>
-              <button class="btn-primary">Leave a Review</button>
+              <textarea id="review-text" placeholder="Tell us about your experience..." style="width:100%;box-sizing:border-box;min-height:80px;padding:12px;border:1.5px solid rgba(74,39,114,0.15);background:#faf7f2;font-family:'DM Sans',sans-serif;font-size:0.88rem;margin-bottom:12px;resize:vertical;outline:none;"></textarea>
+              <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+              <div id="review-msg" style="display:none;margin-top:10px;font-size:0.88rem;color:#3a7d44;"></div>
             </div>
             <div class="after-grid">
-              <div class="after-mini"><p>Download event photos</p></div>
-              <div class="after-mini"><p>Refer a friend</p></div>
-              <div class="after-mini"><p>Book your next event</p></div>
+              <a href="gallery.html" class="after-mini" style="text-decoration:none;color:inherit;"><p>View event gallery</p></a>
+              <a href="quote.html" class="after-mini" style="text-decoration:none;color:inherit;"><p>Book your next event</p></a>
+              <div class="after-mini" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[4], 'tab-messages')" style="cursor:pointer;"><p>Message your planner</p></div>
             </div>
           </div>
         </div>
@@ -306,12 +316,27 @@
         for (var i = 0; i < tabs.length; i++) tabs[i].style.display = "none";
         document.getElementById(id).style.display = "block";
         window.scrollTo(0, 0);
+        // mark messages as read when viewing messages tab
+        if (id === 'tab-messages' && currentEventId) {
+          fetch(API + "/client/messages/" + currentEventId + "/read", {
+            method: "PUT",
+            headers: { Authorization: "Bearer " + token },
+          }).then(function() {
+            var badge = document.getElementById("msg-badge");
+            if (badge) { badge.style.display = "none"; badge.textContent = "0"; }
+          });
+        }
       }
 
       function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "../index.html";
+      }
+
+      function statusLabel(s) {
+        if (s === 'Quote Submitted') return 'Quote Request Received';
+        return s;
       }
 
       function getGreeting() {
@@ -414,7 +439,7 @@
           (ev.event_type || "Event") + (shortDate ? " · " + shortDate : "");
 
         document.getElementById("event-badge").textContent =
-          ev.status || "Pending";
+          statusLabel(ev.status) || "Pending";
         document.getElementById("event-name").textContent =
           ev.name || "Your Event";
         var metaHtml = "";
@@ -452,13 +477,46 @@
               '"><div class="j-dot">' +
               dot +
               '</div><div class="j-name">' +
-              s.name +
+              statusLabel(s.name) +
               "</div></div>";
           }
           jEl.innerHTML = html;
         } else {
           jEl.innerHTML =
             '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
+        }
+
+        // What's Next guidance card
+        var nsCard = document.getElementById("next-steps-card");
+        var nsText = document.getElementById("next-steps-text");
+        var nsAction = document.getElementById("next-steps-action");
+        var curStatus = ev.status || '';
+        nsCard.style.display = 'block';
+        nsCard.style.background = '#fffdf9';
+        nsText.style.color = '#2e1547';
+        nsAction.innerHTML = '';
+
+        if (curStatus === 'Quote Submitted') {
+          nsText.innerHTML = 'We received your quote request! Our team is reviewing your event details and will send you a personalized quote shortly. Keep an eye on your <strong>Messages</strong> tab.';
+          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[4], \'tab-messages\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Check Messages</button>';
+        } else if (curStatus === 'Consultation') {
+          nsText.innerHTML = 'We sent you a quote! Check your <strong>Messages</strong> tab to review pricing details. Reply with any questions or let us know you\'re ready to move forward.';
+          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[4], \'tab-messages\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">View Quote & Reply</button>';
+        } else if (curStatus === 'Planning') {
+          nsText.innerHTML = 'Your event is being planned! Your planner is coordinating vendors, venue, and logistics. Check your <strong>Tasks</strong> for anything that needs your input.';
+          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[2], \'tab-checklist\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">View My Tasks</button>';
+        } else if (curStatus === 'Vendors Set') {
+          nsText.innerHTML = 'All vendors are booked and confirmed! Review your <strong>Documents</strong> for contracts and finalized details.';
+          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[3], \'tab-docs\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">View Documents</button>';
+        } else if (curStatus === 'Event Day') {
+          nsText.innerHTML = 'Today is the day! Our team is handling everything on-site. Relax and enjoy your event.';
+          nsCard.style.background = '#4a2772';
+          nsText.style.color = 'white';
+        } else if (curStatus === 'Completed') {
+          nsText.innerHTML = 'Your event is complete! We\'d love to hear your feedback.';
+          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[5], \'tab-after\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Leave a Review</button>';
+        } else {
+          nsCard.style.display = 'none';
         }
 
         var dashTasks = document.getElementById("dash-tasks");
@@ -717,7 +775,7 @@
 
         if (ev) {
           document.getElementById("event-badge").textContent =
-            ev.status || "Pending";
+            statusLabel(ev.status) || "Pending";
           document.getElementById("event-name").textContent =
             ev.name || "Your Event";
           var metaHtml = "";
@@ -768,7 +826,7 @@
               '"><div class="j-dot">' +
               dot +
               '</div><div class="j-name">' +
-              s.name +
+              statusLabel(s.name) +
               "</div></div>";
           }
           jEl.innerHTML = html;
@@ -1079,7 +1137,36 @@
           });
       }
 
+      var userRating = 5;
+      function setRating(n) {
+        userRating = n;
+        var stars = document.querySelectorAll("#star-row span");
+        for (var i = 0; i < stars.length; i++) {
+          stars[i].style.opacity = i < n ? "1" : "0.3";
+        }
+      }
+
+      function submitReview() {
+        var text = document.getElementById("review-text").value.trim();
+        if (!text) { document.getElementById("review-text").focus(); return; }
+        // send as a message to the event
+        fetch(API + "/client/messages", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+          body: JSON.stringify({ event_id: currentEventId, text: "Review (" + userRating + "/5 stars): " + text }),
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.success) {
+              document.getElementById("review-msg").style.display = "block";
+              document.getElementById("review-msg").textContent = "Thank you for your review!";
+              document.getElementById("review-text").value = "";
+            }
+          });
+      }
+
       loadDashboard();
     </script>
+    <script src="../js/translations.js"></script>
   </body>
 </html>

@@ -304,3 +304,43 @@
   font-weight: 600;
   border-radius: 2px;
 }
+.client-card:hover {
+  box-shadow: 0 2px 12px rgba(74, 39, 114, 0.12);
+  border-color: rgba(74, 39, 114, 0.3);
+}
+.client-subtab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.82rem;
+  color: #7a6e5e;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+.client-subtab:hover {
+  color: #4a2772;
+}
+.client-subtab.active {
+  color: #4a2772;
+  border-bottom-color: #4a2772;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .owner-layout { flex-direction: column; padding-top: 0; }
+  .owner-sidebar { position: relative; top: 0; height: auto; width: 100%; min-width: 100%; flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 4px; }
+  .owner-sidebar-title { padding: 0 8px 8px; width: 100%; margin-bottom: 8px; }
+  .owner-nav-item { padding: 8px 14px; font-size: 0.78rem; }
+  .owner-main { padding: 20px; }
+  .owner-header h1 { font-size: 1.5rem; }
+  .stats-row { flex-direction: column; gap: 8px; }
+  .stat-box { min-width: auto; }
+  .events-table { font-size: 0.78rem; }
+  .events-table th, .events-table td { padding: 10px 8px; }
+  .panel { padding: 16px; }
+  .client-subtabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .client-subtab { white-space: nowrap; font-size: 0.75rem; padding: 8px 14px; }
+}

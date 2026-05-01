@@ -13,27 +13,33 @@
   <body>
     <nav>
       <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="pages/about.html">About Us</a>
-        <a href="pages/services.html">Services</a>
-        <a href="pages/gallery.html">Gallery</a>
-        <a href="pages/testimonials.html">Testimonials</a>
-        <a href="pages/login.html" class="nav-portal">Client Login</a>
+        <a href="index.html" data-i18n="navHome">Home</a>
+        <a href="pages/about.html" data-i18n="navAbout">About Us</a>
+        <a href="pages/services.html" data-i18n="navServices">Services</a>
+        <a href="pages/gallery.html" data-i18n="navGallery">Gallery</a>
+        <a href="pages/testimonials.html" data-i18n="navTestimonials">Testimonials</a>
+        <a href="pages/contact.html" data-i18n="navContact">Contact</a>
+        <a href="pages/login.html" class="nav-portal" data-i18n="navLogin">Client Login</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
       </div>
-      <a href="pages/quote.html" class="nav-cta">START A QUOTE</a>
+      <a href="pages/quote.html" class="nav-cta" data-i18n="navCta">START A QUOTE</a>
     </nav>
 
     <div class="page-content">
       <section class="hero">
         <div class="hero-content">
           <h1 class="hero-h1">Vision<br />Realized LLC</h1>
-          <p class="hero-sub">Turning your ideas into reality</p>
+          <p class="hero-sub" data-i18n="heroSub">Turning your ideas into reality</p>
           <div class="hero-actions">
-            <a href="pages/quote.html" class="btn-gold">Start a Quote</a>
+            <a href="pages/quote.html" class="btn-gold" data-i18n="heroCta">Start a Quote</a>
             <a
               href="pages/gallery.html"
               class="btn-ghost"
               style="text-decoration: none"
+              data-i18n="heroGallery"
               >View Gallery</a
             >
           </div>
@@ -43,30 +49,30 @@
       <div class="event-cards">
         <div class="ev-card purple">
           <div class="ev-card-icon">⚜</div>
-          <h3>Parties</h3>
-          <p>
+          <h3 data-i18n="partiesTitle">Parties</h3>
+          <p data-i18n="partiesDesc">
             Book your celebration with us and let our expert team create a
             vibrant and unforgettable party experience that matches your style
             and vision.
           </p>
-          <a href="pages/services.html" class="ev-learn light">Learn More</a>
+          <a href="pages/services.html" class="ev-learn light" data-i18n="learnMore">Learn More</a>
         </div>
         <div class="ev-card cream">
           <div class="ev-card-icon">⚜</div>
-          <h3>Corporate Events</h3>
-          <p>
+          <h3 data-i18n="corpTitle">Corporate Events</h3>
+          <p data-i18n="corpDesc">
             Book your corporate event with confidence, knowing our dedicated
             professionals will handle every detail, ensuring a seamless and
             productive gathering.
           </p>
-          <a href="pages/services.html" class="ev-learn dark">Learn More</a>
+          <a href="pages/services.html" class="ev-learn dark" data-i18n="learnMore">Learn More</a>
         </div>
       </div>
 
       <section class="services-section">
         <div class="services-header">
-          <h2>Our Services</h2>
-          <p>
+          <h2 data-i18n="ourServices">Our Services</h2>
+          <p data-i18n="servicesIntro">
             Experience stress-free event planning with Vision Realized. Let us
             handle the details while you enjoy a seamless, unforgettable event.
             Explore our services today and make your vision a reality.
@@ -75,84 +81,61 @@
         <div class="services-grid">
           <div class="svc-card">
             <div class="svc-img"></div>
-            <h4>Event Conceptualization and Design</h4>
-            <p>
-              Let us bring your dream event to life! Our team will craft a
-              unique and unforgettable experience that matches your vision.
+            <h4 data-i18n="svcDesign">Event Conceptualization & Design</h4>
+            <p data-i18n="svcDesignDesc">
+              We develop a theme and creative direction that brings your vision to life — from color palettes to hiring the right decorators.
             </p>
           </div>
           <div class="svc-card">
             <div class="svc-img"></div>
-            <h4>Logistics and Vendor Management</h4>
-            <p>
-              Simplify your event planning. We'll handle the details, from
-              finding the best vendors to coordinating logistics. Save time and
-              stress!
+            <h4 data-i18n="svcLogistics">Logistics & Vendor Management</h4>
+            <p data-i18n="svcLogisticsDesc">
+              We source and coordinate vendors based on your needs — negotiating contracts and keeping every moving piece on schedule.
             </p>
           </div>
           <div class="svc-card">
             <div class="svc-img"></div>
-            <h4>Budget Planning and Financial Management</h4>
-            <p>
-              Stay on track with your budget while creating an amazing event.
-              Our experts will help you manage your finances efficiently.
+            <h4 data-i18n="svcBudget">Budget Planning & Financial Management</h4>
+            <p data-i18n="svcBudgetDesc">
+              Transparent budget tracking so you know where every dollar goes. We tailor every aspect to fit your budget — no surprises.
             </p>
           </div>
           <div class="svc-card">
             <div class="svc-img"></div>
-            <h4>On-Site Coordination and Execution</h4>
-            <p>
-              Enjoy your event without worry. We'll be there to ensure
-              everything runs smoothly on the big day.
+            <h4 data-i18n="svcOnsite">On-Site Coordination & Execution</h4>
+            <p data-i18n="svcOnsiteDesc">
+              On the day of your event, our team manages setup, vendors, timelines, and breakdown so you can be fully present with your guests.
             </p>
           </div>
         </div>
       </section>
 
       <section class="testi-section">
-        <h2>From Our Clients</h2>
+        <h2 style="margin-bottom:48px;">Words We Live By</h2>
         <div class="testi-grid">
-          <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
-            <p class="testi-text">
-              "I recently hired Vision Realized to coordinate my mothers 60th
-              birthday celebration, and I couldn't be happier with the results.
-              They took my vision and turned it into reality, handling every
-              detail flawlessly. The team's professionalism and attention to
-              detail made her special day truly memorable. I highly recommend
-              Vision Realized for any event planning needs."
+          <div class="testi-card" style="text-align:center;">
+            <p class="testi-text" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
+              "Great things are done by a series of small things brought together"
             </p>
-            <div class="testi-name">Melvin Thornton</div>
+            <div class="testi-name">Vincent Van Gogh</div>
           </div>
-          <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
-            <p class="testi-text">
-              "Vision Realized made our company's annual conference a huge
-              success. From the initial planning stages to the execution of the
-              event, they were on top of every detail. The team's ability to
-              bring our vision to life was impressive. They are reliable,
-              efficient, and a pleasure to work with. We will definitely work
-              with them again for future events."
+          <div class="testi-card" style="text-align:center;">
+            <p class="testi-text" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
+              "People will forget what you said, people will forget what you did, but people will never forget how you made them feel"
             </p>
-            <div class="testi-name">Nicholas Vasquez</div>
+            <div class="testi-name">Maya Angelou</div>
           </div>
-          <div class="testi-card">
-            <div class="testi-stars">★★★★★</div>
-            <p class="testi-text">
-              "I had the pleasure of working with Vision Realized for my
-              daughter's sweet sixteen party. They transformed our backyard into
-              a magical wonderland that left all our guests in awe. The team's
-              creativity and organization skills exceeded my expectations. They
-              made the entire process stress-free and enjoyable. Vision Realized
-              is the go-to choice for event planning!"
+          <div class="testi-card" style="text-align:center;">
+            <p class="testi-text" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
+              "People don't buy what you do; they buy why you do it"
             </p>
-            <div class="testi-name">Mattie Casey</div>
+            <div class="testi-name">Simon Sinek</div>
           </div>
         </div>
       </section>
 
       <div class="cta-band">
-        <h2>Let's Start Planning!</h2>
+        <h2 data-i18n="ctaBand">Let's Start Planning!</h2>
         <a href="pages/quote.html" class="btn-cta-quote">Start a Quote</a>
       </div>
 
@@ -162,23 +145,23 @@
             <div class="footer-services">
               <div class="footer-svc">
                 <div class="footer-svc-line"></div>
-                <div class="footer-svc-name">Fundraising Galas</div>
-              </div>
-              <div class="footer-svc">
-                <div class="footer-svc-line"></div>
-                <div class="footer-svc-name">Birthday Parties</div>
-              </div>
-              <div class="footer-svc">
-                <div class="footer-svc-line"></div>
                 <div class="footer-svc-name">Corporate Events</div>
               </div>
+              <div class="footer-svc">
+                <div class="footer-svc-line"></div>
+                <div class="footer-svc-name">Social Events & Galas</div>
+              </div>
+              <div class="footer-svc">
+                <div class="footer-svc-line"></div>
+                <div class="footer-svc-name">Destination Events</div>
+              </div>
             </div>
-            <a href="pages/services.html" class="btn-all-svc">All Services</a>
+            <a href="pages/services.html" class="btn-all-svc" data-i18n="footerAllSvc">All Services</a>
           </div>
           <div>
-            <div class="footer-label">Call or text for a free quote</div>
+            <div class="footer-label" data-i18n="footerCall">Call or text for a free quote</div>
             <div class="footer-phone">(862) 215-0186</div>
-            <div class="footer-label">Email Us</div>
+            <div class="footer-label" data-i18n="footerEmail">Email Us</div>
             <div class="footer-email">info@visionrealizedevents.com</div>
           </div>
         </div>
@@ -214,5 +197,6 @@
           });
       })();
     </script>
+    <script src="js/translations.js"></script>
   </body>
 </html>
