@@ -12,6 +12,8 @@ from routes.event_details import register_owner_event_detail_routes
 from routes.owner_tasks import register_owner_task_routes
 from routes.owner_communications import register_owner_communication_routes
 from routes.inbox import register_inbox_routes
+from routes.owner_invoices import register_owner_invoice_routes
+
 
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend')
 
