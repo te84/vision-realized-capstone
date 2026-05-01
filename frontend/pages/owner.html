@@ -524,14 +524,12 @@
               }
             }
 
-            html += "</div>"; // close owner-task-list
+            html += "</div>";
 
-            // ── Message Client ──────────────────────────────────────
             html += '<h4 style="margin-top:28px;">Message Client</h4>';
             html +=
               '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:16px 20px;margin-bottom:24px;">';
 
-            // Chat history
             html +=
               '<div id="owner-chat-history" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:280px;overflow-y:auto;">';
             if (!data.messages || data.messages.length === 0) {
@@ -561,7 +559,6 @@
             }
             html += "</div>";
 
-            // Input row
             html += '<div style="display:flex;gap:8px;align-items:flex-end;">';
             html +=
               '<textarea id="owner-event-msg-input" placeholder="Type a message to the client…" rows="2" style="flex:1;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:none;outline:none;border-radius:2px;"></textarea>';
@@ -570,34 +567,30 @@
               eventId +
               ')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;border-radius:2px;">Send</button>';
             html += "</div>";
-            html += "</div>"; // end message panel
+            html += "</div>";
             // ────────────────────────────────────────────────────────
+            html += '</div>';
 
-            html += "<h4>Documents</h4>";
-            if (data.documents.length === 0) {
-              html += '<p style="color:#7A6E5E;">No documents yet.</p>';
-            } else {
-              for (var i = 0; i < data.documents.length; i++) {
-                var d = data.documents[i];
-                html += '<div class="doc-row">';
-                html +=
-                  '<span class="doc-type">' +
-                  (d.file_type || "FILE") +
-                  "</span>";
-                html += "<span>" + d.name + "</span>";
-                if (d.status) {
-                  html +=
-                    '<span style="color:#7A6E5E;font-size:0.8rem;margin-left:auto;">' +
-                    d.status +
-                    "</span>";
-                }
-                html += "</div>";
-              }
-            }
+            // ── Invoices ─────────────────────────────────────────────
+            html += '<h4 style="margin-top:28px;">Invoices</h4>';
+            html += '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:16px 20px;margin-bottom:24px;">';
+            html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:16px;align-items:end;">';
+            html += '<div><label style="font-size:0.75rem;color:#7a6e5e;display:block;margin-bottom:3px;">Status</label>';
+            html += '<select id="new-invoice-status" style="width:100%;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;"><option value="Pending">Pending</option><option value="Sent">Sent</option><option value="Paid">Paid</option><option value="Overdue">Overdue</option><option value="Cancelled">Cancelled</option></select></div>';
+            html += '<div><label style="font-size:0.75rem;color:#7a6e5e;display:block;margin-bottom:3px;">Amount ($)</label>';
+            html += '<input id="new-invoice-amount" type="number" min="0" step="0.01" placeholder="0.00" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;"></div>';
+            html += '<div><label style="font-size:0.75rem;color:#7a6e5e;display:block;margin-bottom:3px;">Due Date</label>';
+            html += '<input id="new-invoice-due" type="date" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;"></div>';
+            html += '<button onclick="ownerAddInvoice(' + eventId + ',' + (ev ? ev.client_id : 0) + ')" style="padding:8px 18px;background:#555;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;white-space:nowrap;align-self:end;">+ Assign</button>';
+            html += '</div>';
+            html += '<div id="owner-invoice-list"><p style="color:#7A6E5E;font-size:0.85rem;">Loading invoices...</p></div>';
+            html += '</div>';
+            // ─────────────────────────────────────────────────────────
 
             html += "</div>";
 
             eventBox.innerHTML = html;
+            loadInvoices(eventId);
           });
       }
 
@@ -789,6 +782,107 @@
           });
       }
 
+
+      var invoiceStatusColors = {
+        "Pending":   { bg: "#fff8e1", color: "#b8860b", border: "#f9c84e" },
+        "Sent":      { bg: "#e3f0fb", color: "#1565c0", border: "#90caf9" },
+        "Paid":      { bg: "#e8f5e9", color: "#2e7d32", border: "#81c784" },
+        "Overdue":   { bg: "#fdecea", color: "#c62828", border: "#ef9a9a" },
+        "Cancelled": { bg: "#f5f5f5", color: "#616161", border: "#bdbdbd" }
+      };
+
+      function invoiceStatusBadge(status) {
+        var c = invoiceStatusColors[status] || { bg:"#f5f5f5", color:"#555", border:"#ccc" };
+        return '<span style="display:inline-block;padding:2px 10px;border-radius:999px;font-size:0.72rem;font-family:DM Sans,sans-serif;' +
+               'background:' + c.bg + ';color:' + c.color + ';border:1px solid ' + c.border + ';">' + status + '</span>';
+      }
+
+      function loadInvoices(eventId) {
+        fetch(API + "/owner/invoices/" + eventId, {
+          headers: { Authorization: "Bearer " + token }
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          var box = document.getElementById("owner-invoice-list");
+          if (!box) return;
+          if (!data.success || data.invoices.length === 0) {
+            box.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No invoices assigned yet.</p>';
+            return;
+          }
+          var html = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">';
+          html += '<thead><tr style="border-bottom:1px solid rgba(74,39,114,0.15);">';
+          html += '<th style="text-align:left;padding:6px 8px;color:#7a6e5e;font-weight:500;">#</th>';
+          html += '<th style="text-align:left;padding:6px 8px;color:#7a6e5e;font-weight:500;">Amount</th>';
+          html += '<th style="text-align:left;padding:6px 8px;color:#7a6e5e;font-weight:500;">Due Date</th>';
+          html += '<th style="text-align:left;padding:6px 8px;color:#7a6e5e;font-weight:500;">Status</th>';
+          html += '<th style="text-align:left;padding:6px 8px;color:#7a6e5e;font-weight:500;">Change Status</th>';
+          html += '<th style="padding:6px 8px;"></th>';
+          html += '</tr></thead><tbody>';
+          for (var i = 0; i < data.invoices.length; i++) {
+            var inv = data.invoices[i];
+            var amountDisplay = inv.amount != null ? "$" + parseFloat(inv.amount).toFixed(2) : "<span style=\"color:#bbb;\">—</span>";
+            var dueDateDisplay = inv.due_date ? inv.due_date : "<span style=\"color:#bbb;\">—</span>";
+            html += '<tr style="border-bottom:1px solid rgba(74,39,114,0.08);">';
+            html += '<td style="padding:8px;color:#7a6e5e;">#' + inv.invoice_id + '</td>';
+            html += '<td style="padding:8px;font-weight:500;">' + amountDisplay + '</td>';
+            html += '<td style="padding:8px;">' + dueDateDisplay + '</td>';
+            html += '<td style="padding:8px;">' + invoiceStatusBadge(inv.status) + '</td>';
+            html += '<td style="padding:8px;"><select onchange="ownerUpdateInvoiceStatus(' + inv.invoice_id + ',this.value,' + eventId + ')" style="padding:5px 8px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.82rem;outline:none;">';
+            var statuses = ["Pending","Sent","Paid","Overdue","Cancelled"];
+            for (var s = 0; s < statuses.length; s++) {
+              html += '<option value="' + statuses[s] + '"' + (statuses[s] === inv.status ? ' selected' : '') + '>' + statuses[s] + '</option>';
+            }
+            html += '</select></td>';
+            html += '<td style="padding:8px;text-align:right;"><button onclick="ownerDeleteInvoice(' + inv.invoice_id + ',' + eventId + ')" style="background:none;border:none;color:#c0392b;font-size:1rem;cursor:pointer;padding:2px 6px;" title="Delete">✕</button></td>';
+            html += '</tr>';
+          }
+          html += '</tbody></table>';
+          box.innerHTML = html;
+        });
+      }
+
+      function ownerAddInvoice(eventId, clientId) {
+        var status  = document.getElementById("new-invoice-status").value;
+        var amount  = document.getElementById("new-invoice-amount").value || null;
+        var dueDate = document.getElementById("new-invoice-due").value || null;
+        fetch(API + "/owner/invoices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ event_id: eventId, client_id: clientId, status: status, amount: amount, due_date: dueDate })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          if (data.success) {
+            document.getElementById("new-invoice-amount").value = "";
+            document.getElementById("new-invoice-due").value = "";
+            loadInvoices(eventId);
+          }
+        });
+      }
+
+      function ownerUpdateInvoiceStatus(invoiceId, status, eventId) {
+        fetch(API + "/owner/invoices/" + invoiceId + "/status", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ status: status })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          if (data.success) loadInvoices(eventId);
+        });
+      }
+
+      function ownerDeleteInvoice(invoiceId, eventId) {
+        if (!confirm("Delete this invoice?")) return;
+        fetch(API + "/owner/invoices/" + invoiceId, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + token }
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          if (data.success) loadInvoices(eventId);
+        });
+      }
       function loadQuotes() {
         fetch(API + "/quotes")
           .then(function (r) {
