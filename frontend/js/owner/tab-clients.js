@@ -7,6 +7,23 @@ function clientsTabInit(container) {
     _listViewHTML() + _detailViewHTML();
   updateStatsBar();
   _filterClientCards();
+
+  // Restore previously open client + subtab after bulk data is ready
+  _loadBulk(function() {
+    var savedClient = localStorage.getItem('owner_active_client');
+    var savedSubtab = localStorage.getItem('owner_active_subtab');
+    if (savedClient && clientsMap[savedClient]) {
+      _openClient(parseInt(savedClient));
+      if (savedSubtab) {
+        var buttons = document.querySelectorAll('.client-subtab');
+        buttons.forEach(function(b) {
+          if ((b.getAttribute('onclick') || '').indexOf("'" + savedSubtab + "'") !== -1) {
+            _switchSubtab(b, savedSubtab);
+          }
+        });
+      }
+    }
+  });
 }
 
 /* ── HTML shells ─────────────────────────────────────────────────── */
@@ -107,6 +124,8 @@ function _filterClientCards() {
 function _backToClients() {
   document.getElementById('clients-list-view').style.display = '';
   document.getElementById('client-detail-view').style.display = 'none';
+  localStorage.removeItem('owner_active_client');
+  localStorage.removeItem('owner_active_subtab');
 }
 
 function _switchSubtab(el, tabId) {
@@ -114,6 +133,7 @@ function _switchSubtab(el, tabId) {
   document.getElementById(tabId).style.display = '';
   document.querySelectorAll('.client-subtab').forEach(function (b) { b.classList.remove('active'); });
   el.classList.add('active');
+  localStorage.setItem('owner_active_subtab', tabId);
 }
 
 /* ── Open client — reads from cache, no fetch ────────────────────── */
@@ -121,6 +141,7 @@ function _openClient(clientId) {
   var c = clientsMap[clientId];
   if (!c) return;
   _activeClientId = clientId;
+  localStorage.setItem('owner_active_client', clientId);
   document.getElementById('clients-list-view').style.display = 'none';
   document.getElementById('client-detail-view').style.display = '';
   document.querySelectorAll('.client-subtab').forEach(function (b,i) { b.classList.toggle('active',i===0); });
