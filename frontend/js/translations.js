@@ -17,7 +17,6 @@
         }
       }
     }
-    // Update active state on lang buttons
     var btns = document.querySelectorAll('.nav-lang button');
     for (var i = 0; i < btns.length; i++) {
       btns[i].classList.remove('active');
@@ -52,7 +51,6 @@
     });
   };
 
-  // Apply saved language on page load
   if (currentLang !== 'en') {
     loadTranslations(function () {
       applyTranslations(currentLang);

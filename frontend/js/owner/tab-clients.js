@@ -8,7 +8,6 @@ function clientsTabInit(container) {
   updateStatsBar();
   _filterClientCards();
 
-  // Restore previously open client + subtab after bulk data is ready
   _loadBulk(function() {
     var savedClient = localStorage.getItem('owner_active_client');
     var savedSubtab = localStorage.getItem('owner_active_subtab');
@@ -26,7 +25,6 @@ function clientsTabInit(container) {
   });
 }
 
-/* ── HTML shells ─────────────────────────────────────────────────── */
 function _listViewHTML() {
   return '<div id="clients-list-view">' +
     '<h2 style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;color:#2e1547;font-style:italic;margin-bottom:16px;">Clients</h2>' +
@@ -55,7 +53,6 @@ function _detailViewHTML() {
   '</div>';
 }
 
-/* ── Client helpers ──────────────────────────────────────────────── */
 function _clientStage(c) {
   var order = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed'];
   var best = 5;
@@ -136,7 +133,6 @@ function _switchSubtab(el, tabId) {
   localStorage.setItem('owner_active_subtab', tabId);
 }
 
-/* ── Open client — reads from cache, no fetch ────────────────────── */
 function _openClient(clientId) {
   var c = clientsMap[clientId];
   if (!c) return;
@@ -150,7 +146,6 @@ function _openClient(clientId) {
     '<div style="margin-bottom:8px;"><h2 style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:#2e1547;font-style:italic;margin-bottom:4px;">' + c.firstname + ' ' + c.lastname + '</h2>' +
     '<div style="font-size:0.88rem;color:#7a6e5e;">' + (c.email||'') + (c.phone?' &middot; '+c.phone:'') + '</div></div>';
 
-  // All data already in _cache.details — render immediately
   _renderOverview(c);
   _renderEvents(c);
   _renderTasks(c);
@@ -160,7 +155,6 @@ function _openClient(clientId) {
   _renderReviews(c);
 }
 
-/* ── Journey bar ─────────────────────────────────────────────────── */
 var _STEPS = ['Quote Submitted','Pending Consultation','Consultation','Planning','Vendors Set','Event Day','Completed'];
 function _journeyBarHTML(status) {
   var idx = Math.max(0, _STEPS.indexOf(status||'Quote Submitted'));
@@ -174,7 +168,6 @@ function _journeyBarHTML(status) {
     }).join('') + '</div>';
 }
 
-/* ── Overview ────────────────────────────────────────────────────── */
 function _renderOverview(c) {
   var active=0,completed=0,doneTasks=0,totalTasks=0,totalMsgs=0;
   c.events.forEach(function (ev) {
@@ -205,7 +198,6 @@ function _renderOverview(c) {
   document.getElementById('ctab-overview').innerHTML = html;
 }
 
-/* ── Events (edit) ───────────────────────────────────────────────── */
 function _renderEvents(c) {
   var html = '';
   if (c.events.length>1) {
@@ -268,15 +260,13 @@ function _saveEvent() {
   }).then(function(r){return r.json();}).then(function(d){
     if (d.success) {
       btn.textContent='Saved!'; btn.style.background='#3a7d44';
-      // Update cache locally
       allEvents.forEach(function(ev){if(ev.id===_currentEditEventId)Object.assign(ev,payload);});
-      _invalidateCache(); // force re-fetch next tab switch so calendar etc. stay consistent
+      _invalidateCache();
       setTimeout(function(){btn.disabled=false;btn.textContent='Save Changes';btn.style.background='';},2000);
     } else { btn.textContent='Error'; btn.disabled=false; }
   }).catch(function(){btn.textContent='Error';btn.disabled=false;});
 }
 
-/* ── Tasks ───────────────────────────────────────────────────────── */
 function _renderTasks(c) {
   document.getElementById('ctab-tasks').innerHTML = c.events.map(function(ev){
     var d = _cache.details[ev.id]; if(!d) return '';
@@ -306,7 +296,6 @@ function _addTask(eventId) {
       if(!d.success)return;
       titleEl.value='';dateEl.value='';
       var tid = d.task_id||Date.now();
-      // Update cache
       (_cache.details[eventId]=_cache.details[eventId]||{});
       (_cache.details[eventId].tasks=_cache.details[eventId].tasks||[]).push({id:tid,title:title,due_date:due,completed:false});
       var list = document.getElementById('owner-task-list-'+eventId);
@@ -319,7 +308,6 @@ function _addTask(eventId) {
     });
 }
 
-/* ── Notes (private, localStorage — sticky bullets) ─────────────── */
 function _renderNotes(c) {
   document.getElementById('ctab-notes').innerHTML = c.events.map(function(ev){
     return '<div style="background:#fffde6;border:1px solid #e6d88a;border-radius:6px;padding:20px 24px;margin-bottom:16px;box-shadow:2px 2px 8px rgba(0,0,0,0.06);">' +
@@ -373,7 +361,6 @@ function _clearTabStickyNotes(eventId) {
   _renderTabStickyNotes(eventId);
 }
 
-/* ── Messages ────────────────────────────────────────────────────── */
 function _renderMessages(c) {
   document.getElementById('ctab-messages').innerHTML = c.events.map(function(ev){
     var d=_cache.details[ev.id];if(!d)return'';
@@ -412,7 +399,6 @@ function _sendMsg(eventId) {
     });
 }
 
-/* ── Quote Details ───────────────────────────────────────────────── */
 function _renderQuotes(c) {
   var hasAny=false;
   var html=c.events.map(function(ev){
@@ -513,10 +499,8 @@ function _scheduleConsult(eventId,clientName){
   var msgData=JSON.stringify({date:date,times:times,note:note});
   var msgText='[CONSULTATION_REQUEST]'+msgData;
 
-  // Update status to Pending Consultation
   fetch(API+'/owner/events/'+eventId,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({status:'Pending Consultation'})})
     .then(function(r){return r.json();}).then(function(){
-      // Send message to client
       return fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:msgText})});
     }).then(function(){
       dateEl.value='';t1.value='';t2.value='';t3.value='';if(noteEl)noteEl.value='';
@@ -528,7 +512,6 @@ function _scheduleConsult(eventId,clientName){
     });
 }
 
-/* ── Reviews ─────────────────────────────────────────────────────── */
 function _renderReviews(c) {
   var reviews=c.events.reduce(function(acc,ev){
     var d=_cache.details[ev.id];

@@ -42,7 +42,6 @@ def register_owner_event_detail_routes(app):
             if quote_data.get('event_date'): quote_data['event_date'] = str(quote_data['event_date'])
             if quote_data.get('created_at'): quote_data['created_at'] = str(quote_data['created_at'])
 
-        # Fetch rating for this event
         cur.execute("SELECT stars, comment, created_at FROM event_ratings WHERE event_id = %s", (event_id,))
         rating_row = cur.fetchone()
         rating_data = None
@@ -53,7 +52,6 @@ def register_owner_event_detail_routes(app):
                 'created_at': str(rating_row['created_at'])
             }
 
-        # Fetch inspo photos by client email
         inspo_photos = []
         cur.execute("SELECT c.email FROM client c JOIN events e ON e.client_id = c.client_id WHERE e.id = %s", (event_id,))
         client_row = cur.fetchone()

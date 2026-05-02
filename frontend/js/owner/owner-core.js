@@ -1,4 +1,3 @@
-// ── Config & auth ─────────────────────────────────────────────────
 var API   = 'http://localhost:5001';
 var token = localStorage.getItem('token');
 var user  = JSON.parse(localStorage.getItem('user') || 'null');
@@ -7,18 +6,15 @@ if (!user || !token || user.role !== 'Owner') {
   window.location.href = 'login.html';
 }
 
-// ── Global data (populated once by _loadBulk) ────────────────────
 var allEvents  = [];
 var clientsMap = {};
 var _cache     = { details: {}, loaded: false };
 
-// ── Accent colour ─────────────────────────────────────────────────
 (function () {
   var saved = localStorage.getItem('ownerAccentColor');
   if (saved) document.body.style.setProperty('--accent', saved);
 }());
 
-// ── Greeting / logout ─────────────────────────────────────────────
 function buildGreeting() {
   var h = new Date().getHours();
   return (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') +
@@ -31,7 +27,6 @@ function doLogout() {
   window.location.href = '../index.html';
 }
 
-// ── Badge / label helpers ─────────────────────────────────────────
 function badgeClass(status) {
   return { 'Quote Submitted':'badge-qs', 'Consultation':'badge-co', 'Planning':'badge-pl',
            'Vendors Set':'badge-vs', 'Event Day':'badge-ed', 'Completed':'badge-cm' }[status] || 'badge-qs';
@@ -43,7 +38,6 @@ function formatTime12(t) {
   return (h % 12 || 12) + ':' + m + ' ' + (h >= 12 ? 'PM' : 'AM');
 }
 
-// ── Stats bar ─────────────────────────────────────────────────────
 function statsHeaderHTML(subtitle) {
   return '<div class="owner-header"><h1>' + buildGreeting() + '</h1><p>' + subtitle + '</p></div>' +
     '<div class="stats-row">' +
@@ -64,7 +58,6 @@ function updateStatsBar() {
   if (badge) badge.textContent = count;
 }
 
-// ── Bulk data loader — ONE fetch, then cached ─────────────────────
 function _loadBulk(cb) {
   if (_cache.loaded) { cb(); return; }
 
@@ -94,7 +87,6 @@ function _reload(cb) {
   _loadBulk(cb || function () {});
 }
 
-// ── Invoice helpers ───────────────────────────────────────────────
 var _INV_COLORS = {
   Pending:   { bg:'#fff8e1', color:'#b8860b', border:'#f9c84e' },
   Sent:      { bg:'#e3f0fb', color:'#1565c0', border:'#90caf9' },
@@ -172,7 +164,6 @@ function ownerDeleteInvoice(invoiceId, eventId) {
   });
 }
 
-// ── Task helpers ──────────────────────────────────────────────────
 function ownerToggleTask(taskId, eventId) {
   fetch(API + '/owner/tasks/' + taskId, { method: 'PUT', headers: { Authorization: 'Bearer ' + token } })
     .then(function (r) { return r.json(); })
@@ -205,7 +196,6 @@ function ownerDeleteTask(taskId, listId, eventId) {
     });
 }
 
-// ── Tab router ────────────────────────────────────────────────────
 var _activeTab = null;
 
 function showTab(name) {
@@ -227,7 +217,6 @@ function showTab(name) {
   var fn = TAB_FNS[name];
   if (!fn) { container.innerHTML = '<p style="color:#c0392b;">Tab not found.</p>'; return; }
 
-  // Gallery manages its own fetch; everything else uses bulk cache
   if (name === 'gallery') { fn(container); return; }
   _loadBulk(function () { fn(container); });
 }

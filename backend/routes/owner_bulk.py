@@ -15,7 +15,6 @@ def register_owner_bulk_routes(app):
         db  = get_db()
         cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # ── 1. All events + client info (single query) ────────────────
         cur.execute("""
             SELECT e.id, e.event_name, e.event_type, e.event_date,
                    e.location, e.guests, e.planner, e.status, e.created_at,
@@ -32,7 +31,6 @@ def register_owner_bulk_routes(app):
             cur.close(); db.close()
             return jsonify({'success': True, 'events': [], 'details': {}})
 
-        # ── 2. All tasks for all events (one query) ───────────────────
         cur.execute("""
             SELECT id, event_id, title, due_date, completed, created_at
             FROM   tasks
@@ -50,7 +48,6 @@ def register_owner_bulk_routes(app):
                 'created_at': str(t['created_at']) if t['created_at'] else None,
             })
 
-        # ── 3. All messages for all events (one query) ────────────────
         cur.execute("""
             SELECT id, event_id, sender, text, created_at
             FROM   client_messages
@@ -67,7 +64,6 @@ def register_owner_bulk_routes(app):
                 'created_at': str(m['created_at']) if m['created_at'] else None,
             })
 
-        # ── 4. All documents for all events (one query) ───────────────
         cur.execute("""
             SELECT id, event_id, name, file_type, status, created_at
             FROM   documents
@@ -85,7 +81,6 @@ def register_owner_bulk_routes(app):
                 'created_at': str(d['created_at']) if d['created_at'] else None,
             })
 
-        # ── 5. All quotes matched to events (one query) ───────────────
         cur.execute("""
             SELECT DISTINCT ON (e.id)
                    e.id AS event_id,
@@ -109,7 +104,6 @@ def register_owner_bulk_routes(app):
             if qd.get('created_at'): qd['created_at'] = str(qd['created_at'])
             quotes_by_event[eid] = qd
 
-        # ── 6. All ratings (one query) ────────────────────────────────
         cur.execute("""
             SELECT event_id, stars, comment, created_at
             FROM   event_ratings
@@ -123,7 +117,6 @@ def register_owner_bulk_routes(app):
                 'created_at': str(r['created_at']) if r['created_at'] else None,
             }
 
-        # ── 7. All invoices (one query) ───────────────────────────────
         cur.execute("""
             SELECT invoice_id, event_id, client_id, status, amount, due_date
             FROM   invoices
@@ -143,7 +136,6 @@ def register_owner_bulk_routes(app):
 
         cur.close(); db.close()
 
-        # ── Assemble response ─────────────────────────────────────────
         events = []
         details = {}
 

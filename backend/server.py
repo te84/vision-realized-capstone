@@ -31,7 +31,6 @@ def home():
 def serve_file(filename):
     return send_from_directory(FRONTEND_DIR, filename)
 
-# Team A routes
 register_auth_routes(app)
 register_quote_routes(app)
 register_dashboard_routes(app)
@@ -40,7 +39,6 @@ register_client_action_routes(app)
 register_reset_routes(app)
 register_gallery_routes(app)
 
-# Team B owner routes
 register_owner_events_routes(app)
 register_owner_event_detail_routes(app)
 register_owner_task_routes(app)

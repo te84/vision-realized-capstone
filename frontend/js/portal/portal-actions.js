@@ -1,12 +1,18 @@
-/* ── Portal Actions — tasks, messages, reviews, invoices ─────────── */
-
 function completeTask(tid) {
+  var allBoxes = document.querySelectorAll('.check-box[onclick*="completeTask(' + tid + ')"]');
+  for (var i = 0; i < allBoxes.length; i++) {
+    var item = allBoxes[i].closest('.check-item');
+    if (item) {
+      var wasDone = item.classList.contains('done');
+      item.classList.toggle('done');
+      allBoxes[i].textContent = wasDone ? '' : '✓';
+    }
+  }
   fetch(API + "/client/tasks/" + tid + "/complete", {
     method: "PUT",
     headers: { Authorization: "Bearer " + token },
   })
-    .then(function (r) { return r.json(); })
-    .then(function () { loadDashboard(); });
+    .then(function (r) { return r.json(); });
 }
 
 function acceptConsultation(eventId, msgId, selectedTime) {
@@ -45,24 +51,32 @@ function sendCounterProposal(eventId) {
     body: JSON.stringify({ event_id: eventId, text: "These times don't work for me. Here's what works better: " + text }),
   })
     .then(function (r) { return r.json(); })
-    .then(function (d) { if (d.success) loadDashboard(); });
+    .then(function (d) {
+      if (d.success) {
+        document.getElementById('consult-request-card').style.display = 'none';
+      }
+    });
 }
 
 function sendReply() {
   var txt = document.getElementById("reply-input").value;
   if (!txt || !currentEventId) return;
+  var input = document.getElementById("reply-input");
+  input.value = "";
+  var msgsFull = document.getElementById("messages-full");
+  if (msgsFull) {
+    var bubble = document.createElement('div');
+    bubble.style.cssText = 'max-width:75%;padding:12px 16px;margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;';
+    bubble.innerHTML = '<div style="font-size:0.68rem;color:rgba(255,255,255,0.7);margin-bottom:4px;">Just now</div><div style="font-size:0.88rem;line-height:1.6;">' + txt.replace(/</g,'&lt;') + '</div>';
+    msgsFull.appendChild(bubble);
+    msgsFull.scrollTop = msgsFull.scrollHeight;
+  }
   fetch(API + "/client/messages", {
     method: "POST",
     headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
     body: JSON.stringify({ event_id: currentEventId, text: txt }),
   })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      if (d.success) {
-        document.getElementById("reply-input").value = "";
-        loadDashboard();
-      }
-    });
+    .then(function (r) { return r.json(); });
 }
 
 var userRating = 5;
@@ -88,10 +102,10 @@ function loadExistingRating() {
         document.getElementById("review-text").value = d.rating.comment || "";
         msg.style.display = "block";
         msg.style.color = "#7a6e5e";
-        msg.textContent = "You previously submitted a review. Edit your stars or comment below and click Update to save changes.";
-        if (btn) btn.textContent = "Update Review";
+        msg.textContent = t('reviewPrevious');
+        if (btn) btn.textContent = t('updateReview');
       } else {
-        if (btn) btn.textContent = "Submit Review";
+        if (btn) btn.textContent = t('submitReview');
         msg.style.display = "none";
         setRating(5);
         document.getElementById("review-text").value = "";
@@ -103,6 +117,7 @@ function loadExistingRating() {
 function submitReview() {
   var text = document.getElementById("review-text").value.trim();
   if (!text) { document.getElementById("review-text").focus(); return; }
+  if (!currentEventId) return;
   var btn = document.querySelector("#tab-after .btn-primary");
   if (btn) { btn.disabled = true; btn.textContent = "Saving..."; }
   fetch(API + "/client/ratings", {
@@ -116,21 +131,20 @@ function submitReview() {
       msg.style.display = "block";
       if (d.success) {
         msg.style.color = "#3a7d44";
-        msg.textContent = "Your review has been saved!";
-        if (btn) { btn.disabled = false; btn.textContent = "Update Review"; }
-        // Reload rating state so message and button stay correct
+        msg.textContent = t('reviewSaved');
+        if (btn) { btn.disabled = false; btn.textContent = t('updateReview'); }
         setTimeout(function() {
           msg.style.color = "#7a6e5e";
-          msg.textContent = "You previously submitted a review. Edit your stars or comment below and click Update to save changes.";
+          msg.textContent = t('reviewPrevious');
         }, 2500);
       } else {
         msg.style.color = "#c0392b";
-        msg.textContent = d.message || "Something went wrong.";
-        if (btn) { btn.disabled = false; btn.textContent = "Update Review"; }
+        msg.textContent = d.message || t('reviewError');
+        if (btn) { btn.disabled = false; btn.textContent = t('updateReview'); }
       }
     })
     .catch(function() {
-      if (btn) { btn.disabled = false; btn.textContent = "Update Review"; }
+      if (btn) { btn.disabled = false; btn.textContent = t('updateReview'); }
     });
 }
 

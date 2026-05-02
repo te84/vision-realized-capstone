@@ -1,16 +1,15 @@
-/* ── Portal Dashboard — data loading and rendering ───────────────── */
-
 function loadDashboard() {
   fetch(API + "/client/dashboard", {
     headers: { Authorization: "Bearer " + token },
   })
     .then(function (res) {
-      if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "login.html";
         throw new Error("bad token");
       }
+      if (!res.ok) throw new Error("server error");
       return res.json();
     })
     .then(function (data) {
@@ -62,12 +61,10 @@ function renderEventBundle(bundle) {
 
   currentEventId = ev.id;
 
-  // Sidebar event info
   var shortDate = ev.date ? fmtDate(ev.date) : "";
   document.getElementById("portal-user-event").textContent =
     (ev.event_type || "Event") + (shortDate ? " · " + shortDate : "");
 
-  // Event status card
   document.getElementById("event-badge").textContent =
     statusLabel(ev.status) || "Pending";
   document.getElementById("event-name").textContent =
@@ -82,7 +79,6 @@ function renderEventBundle(bundle) {
   document.getElementById("countdown-num").textContent =
     days !== null ? (days >= 0 ? days : "Past") : "--";
 
-  // Journey steps
   var jEl = document.getElementById("journey-steps");
   var stepTabs = ['tab-overview','tab-overview','tab-overview','tab-checklist','tab-messages','tab-progress','tab-after'];
   var stepNavIdx = [0,0,0,2,3,1,5];
@@ -109,7 +105,6 @@ function renderEventBundle(bundle) {
     jEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
   }
 
-  // What's Next
   var nsCard = document.getElementById("next-steps-card");
   var nsText = document.getElementById("next-steps-text");
   var nsAction = document.getElementById("next-steps-action");
@@ -130,28 +125,27 @@ function renderEventBundle(bundle) {
   if (curStatus === 'Quote Submitted') {
     nsText.innerHTML = t('whatsNextQuote');
   } else if (curStatus === 'Pending Consultation') {
-    nsText.innerHTML = 'We\'d like to schedule a consultation with you! Please pick a time that works from the options above.';
+    nsText.innerHTML = t('whatsNextPending');
   } else if (curStatus === 'Consultation') {
     nsText.innerHTML = t('whatsNextConsult');
-    nsBtn('View My Tasks', 2, 'tab-checklist');
+    nsBtn(t('viewTasks'), 2, 'tab-checklist');
   } else if (curStatus === 'Planning') {
-    nsText.innerHTML = 'Your event is being planned! Your planner is coordinating vendors, venue, and logistics. Check your <strong>Tasks</strong> for anything that needs your input.';
-    nsBtn('View My Tasks', 2, 'tab-checklist');
+    nsText.innerHTML = t('whatsNextPlanning');
+    nsBtn(t('viewTasks'), 2, 'tab-checklist');
   } else if (curStatus === 'Vendors Set') {
-    nsText.innerHTML = 'All vendors are booked and confirmed! Reach out to your planner with any questions.';
-    nsBtn('Message Planner', 4, 'tab-messages');
+    nsText.innerHTML = t('whatsNextVendors');
+    nsBtn(t('msgPlanner'), 4, 'tab-messages');
   } else if (curStatus === 'Event Day') {
-    nsText.innerHTML = 'Today is the day! Our team is handling everything on-site. Relax and enjoy your event.';
+    nsText.innerHTML = t('whatsNextEventDay');
     nsCard.style.background = '#4a2772';
     nsText.style.color = 'white';
   } else if (curStatus === 'Completed') {
-    nsText.innerHTML = 'Your event is complete! We\'d love to hear your feedback.';
-    nsBtn('Leave a Review', 6, 'tab-after');
+    nsText.innerHTML = t('whatsNextCompleted');
+    nsBtn(t('leaveReview'), 6, 'tab-after');
   } else {
     nsCard.style.display = 'none';
   }
 
-  // Dashboard tasks
   var dashTasks = document.getElementById("dash-tasks");
   if (tasks.length > 0) {
     var html = "";
@@ -165,10 +159,9 @@ function renderEventBundle(bundle) {
     }
     dashTasks.innerHTML = html;
   } else {
-    dashTasks.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
+    dashTasks.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">' + t('noTasks') + '</p>';
   }
 
-  // Consultation request card
   var consultCard = document.getElementById("consult-request-card");
   var pendingConsult = null;
   for (var i = 0; i < msgs.length; i++) {
@@ -187,19 +180,18 @@ function renderEventBundle(bundle) {
         return '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ',\'' + tm.replace(/'/g,"\\'") + '\')" style="padding:14px 28px;background:white;border:1.5px solid rgba(74,39,114,0.2);color:#2e1547;font-family:inherit;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:4px;min-width:130px;transition:all 0.15s;" onmouseover="this.style.background=\'#4a2772\';this.style.color=\'white\';this.style.borderColor=\'#4a2772\';" onmouseout="this.style.background=\'white\';this.style.color=\'#2e1547\';this.style.borderColor=\'rgba(74,39,114,0.2)\';">' + tm + '</button>';
       }).join('');
       consultCard.innerHTML =
-        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.4rem;color:#2e1547;font-style:italic;margin-bottom:16px;">Consultation Request</div>' +
-        '<div style="margin-bottom:16px;font-size:0.92rem;color:#2e1547;"><span style="color:#7a6e5e;">Proposed date:</span> <strong>' + formattedDate + '</strong></div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.4rem;color:#2e1547;font-style:italic;margin-bottom:16px;">' + t('consultRequest') + '</div>' +
+        '<div style="margin-bottom:16px;font-size:0.92rem;color:#2e1547;"><span style="color:#7a6e5e;">' + t('proposedDate') + '</span> <strong>' + formattedDate + '</strong></div>' +
         (cData.note ? '<div style="background:rgba(74,39,114,0.04);border-left:3px solid #4a2772;padding:12px 16px;margin-bottom:20px;font-size:0.88rem;color:#2e1547;line-height:1.6;font-style:italic;">' + cData.note + '</div>' : '') +
-        '<div style="font-size:0.82rem;color:#7a6e5e;margin-bottom:12px;">Select a time that works best:</div>' +
+        '<div style="font-size:0.82rem;color:#7a6e5e;margin-bottom:12px;">' + t('pickTime') + '</div>' +
         '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;">' + timeButtons + '</div>' +
         '<div style="border-top:1px solid rgba(74,39,114,0.1);padding-top:14px;">' +
-          '<button onclick="showCounterPropose(' + currentEventId + ')" style="padding:8px 20px;background:none;border:none;color:#7a6e5e;font-family:inherit;font-size:0.82rem;cursor:pointer;text-decoration:underline;">None of these work for me</button>' +
+          '<button onclick="showCounterPropose(' + currentEventId + ')" style="padding:8px 20px;background:none;border:none;color:#7a6e5e;font-family:inherit;font-size:0.82rem;cursor:pointer;text-decoration:underline;">' + t('noneWork') + '</button>' +
         '</div>';
     } catch(e) { consultCard.style.display = 'none'; }
   } else { consultCard.style.display = 'none'; }
 
-  // Recent messages (planner only)
-  var regularMsgs = msgs.filter(function(m) { return m.sender === 'Vision Realized' && (!m.text || m.text.indexOf('[CONSULTATION_REQUEST]') !== 0); });
+  var regularMsgs = msgs.filter(function(m) { return m.sender === 'Vision Realized' && (!m.text || (m.text.indexOf('[CONSULTATION_REQUEST]') !== 0 && m.text.indexOf('Review (') !== 0)); });
   var dashMsgs = document.getElementById("dash-messages");
   if (regularMsgs.length > 0) {
     var html = "";
@@ -220,13 +212,12 @@ function renderEventBundle(bundle) {
       });
     }
   } else {
-    dashMsgs.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
+    dashMsgs.innerHTML = '<p style="color:#7A6E5E;font-size:0.85rem;">' + t('noMessages') + '</p>';
   }
 
-  // Unread badge
   var unreadCount = 0;
   for (var i = 0; i < msgs.length; i++) {
-    if (!msgs[i].read && msgs[i].sender === 'Vision Realized' && (!msgs[i].text || msgs[i].text.indexOf('[CONSULTATION_REQUEST]') !== 0)) unreadCount++;
+    if (!msgs[i].read && msgs[i].sender === 'Vision Realized' && (!msgs[i].text || (msgs[i].text.indexOf('[CONSULTATION_REQUEST]') !== 0 && msgs[i].text.indexOf('Review (') !== 0))) unreadCount++;
   }
   var badge = document.getElementById("msg-badge");
   if (unreadCount > 0) {
@@ -236,7 +227,6 @@ function renderEventBundle(bundle) {
     badge.style.display = "none";
   }
 
-  // Event Progress tab
   var progEl = document.getElementById("progress-steps");
   if (progEl) {
     if (journey.length > 0) {
@@ -246,26 +236,25 @@ function renderEventBundle(bundle) {
         if (s.status === "done") {
           html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:rgba(74,39,114,0.06);border:1px solid rgba(74,39,114,0.2);border-radius:4px;">';
           html += '<span style="color:#4A2772;font-weight:500;">✓</span>';
-          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#4A2772;opacity:0.7;">Completed</div>';
-          html += '<div style="font-size:1.05rem;font-weight:500;color:#2E1547;">' + s.name + "</div></div></div>";
+          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#4A2772;opacity:0.7;">' + t('stepCompleted') + '</div>';
+          html += '<div style="font-size:1.05rem;font-weight:500;color:#2E1547;">' + statusLabel(s.name) + "</div></div></div>";
         } else if (s.status === "current") {
           html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#4A2772;border-radius:4px;">';
           html += '<span style="color:white;">→</span>';
-          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">In Progress</div>';
-          html += '<div style="font-size:1.05rem;font-weight:500;color:white;">' + s.name + "</div></div></div>";
+          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">' + t('stepInProgress') + '</div>';
+          html += '<div style="font-size:1.05rem;font-weight:500;color:white;">' + statusLabel(s.name) + "</div></div></div>";
         } else {
           html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:white;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
-          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">Upcoming</div>';
-          html += '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' + s.name + "</div></div></div>";
+          html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">' + t('stepUpcoming') + '</div>';
+          html += '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' + statusLabel(s.name) + "</div></div></div>";
         }
       }
       progEl.innerHTML = html;
     } else {
-      progEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No progress data yet.</p>';
+      progEl.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">' + t('noProgress') + '</p>';
     }
   }
 
-  // Tasks tab
   var tasksFull = document.getElementById("tasks-full");
   if (tasksFull) {
     if (tasks.length > 0) {
@@ -283,18 +272,17 @@ function renderEventBundle(bundle) {
       }
       tasksFull.innerHTML = html;
     } else {
-      tasksFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;">No tasks assigned yet. Your planner will add tasks as your event progresses.</p>';
+      tasksFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;">' + t('noTasks') + '</p>';
     }
   }
 
-  // Messages tab (chat bubbles)
   var msgsFull = document.getElementById("messages-full");
   var sortedMsgs = msgs.slice().reverse();
   if (sortedMsgs.length > 0) {
     var html = "";
     for (var i = 0; i < sortedMsgs.length; i++) {
       var m = sortedMsgs[i];
-      if (m.text && m.text.indexOf('[CONSULTATION_REQUEST]') === 0) continue;
+      if (m.text && (m.text.indexOf('[CONSULTATION_REQUEST]') === 0 || m.text.indexOf('Review (') === 0)) continue;
       var isPlanner = m.sender === 'Vision Realized';
       var bubbleStyle = isPlanner
         ? 'margin-right:auto;background:#fff;color:#1A1208;border:1px solid rgba(74,39,114,0.15);border-radius:12px 12px 12px 2px;'
@@ -307,13 +295,12 @@ function renderEventBundle(bundle) {
     msgsFull.innerHTML = html;
     msgsFull.scrollTop = msgsFull.scrollHeight;
   } else {
-    msgsFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No messages yet. Your planner will reach out here once your event is being planned.</p>';
+    msgsFull.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">' + t('noMsgsYet') + '</p>';
   }
 
   var replyBox = document.getElementById("reply-box");
   if (replyBox && currentEventId) replyBox.style.display = "flex";
 
-  // Always reload existing rating so tab-after reflects saved stars/comment on every render
   loadExistingRating();
 }
 

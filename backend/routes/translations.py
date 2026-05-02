@@ -80,7 +80,11 @@ def register_translation_routes(app):
             'stepOf': 'Step {n} of 5',
             'confTitle': "You're all set!",
             'confDesc': "Your quote request has been submitted and your client portal account has been created. We'll reach out within 24 hours.",
-            'confDash': 'Access Client Dashboard →', 'confHome': 'Back to Home'
+            'confDash': 'Access Client Dashboard →', 'confHome': 'Back to Home',
+            'afterGreeting': 'Relive your event', 'afterTitle': 'After Your Event',
+            'afterHow': 'How did we do?', 'afterDesc': 'Your feedback helps us grow and helps future clients find us. It only takes a minute.',
+            'afterPlaceholder': 'Tell us about your experience...', 'afterSubmit': 'Submit Review',
+            'afterGallery': 'View event gallery', 'afterBook': 'Book your next event', 'afterMessage': 'Message your planner'
         }
 
         es = {
@@ -158,7 +162,11 @@ def register_translation_routes(app):
             'stepOf': 'Paso {n} de 5',
             'confTitle': '¡Todo listo!',
             'confDesc': 'Tu solicitud ha sido enviada y tu cuenta ha sido creada. Nos comunicaremos dentro de 24 horas.',
-            'confDash': 'Acceder al Portal →', 'confHome': 'Volver al Inicio'
+            'confDash': 'Acceder al Portal →', 'confHome': 'Volver al Inicio',
+            'afterGreeting': 'Revive tu evento', 'afterTitle': 'Después del Evento',
+            'afterHow': '¿Cómo lo hicimos?', 'afterDesc': 'Tu opinión nos ayuda a crecer y ayuda a futuros clientes a encontrarnos. Solo toma un minuto.',
+            'afterPlaceholder': 'Cuéntanos sobre tu experiencia...', 'afterSubmit': 'Enviar Reseña',
+            'afterGallery': 'Ver galería de eventos', 'afterBook': 'Reservar tu próximo evento', 'afterMessage': 'Mensaje a tu planificador'
         }
 
         return jsonify({'success': True, 'translations': {'en': en, 'es': es}})

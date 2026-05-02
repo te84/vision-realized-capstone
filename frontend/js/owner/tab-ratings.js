@@ -5,7 +5,6 @@ function ratingsTabInit(container) {
     '<div id="ratings-summary-bar" style="display:none;"></div>' +
     '<div id="ratings-list"></div>';
 
-  // Pull ratings straight from cache — no fetch
   var rated = [];
   allEvents.forEach(function (ev) {
     var d = _cache.details[ev.id];

@@ -1,12 +1,10 @@
 var _galleryPhotoData = '';
 
-/* ── Entry point ─────────────────────────────────────────────────── */
 function galleryTabInit(container) {
   container.innerHTML =
     '<div class="owner-header"><h1>' + buildGreeting() + '</h1><p>Add and manage your event gallery photos.</p></div>' +
     '<h2 style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;color:#2e1547;font-style:italic;margin-bottom:16px;">Gallery Management</h2>' +
 
-    // Add photo panel
     '<div class="panel" style="margin-bottom:24px;">' +
       '<h3 style="margin-bottom:14px;">Add New Photo</h3>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;">' +
@@ -35,7 +33,6 @@ function galleryTabInit(container) {
       '</div>' +
     '</div>' +
 
-    // Bulk upload panel
     '<div class="panel" style="margin-bottom:24px;">' +
       '<h3 style="margin-bottom:14px;">Bulk Upload Photos</h3>' +
       '<p style="font-size:0.82rem;color:#7a6e5e;margin-bottom:10px;">Select multiple photos at once. They will share the same category.</p>' +
@@ -64,7 +61,6 @@ function galleryTabInit(container) {
   _loadCarouselAdmin();
 }
 
-/* ── Preview ─────────────────────────────────────────────────────── */
 function _previewGalleryPhoto(input) {
   if (!input.files || !input.files[0]) return;
   var reader = new FileReader();
@@ -77,7 +73,6 @@ function _previewGalleryPhoto(input) {
   reader.readAsDataURL(input.files[0]);
 }
 
-/* ── Category toggle ─────────────────────────────────────────────── */
 function _galleryCategChange() {
   var sel = document.getElementById('gallery-category');
   var custom = document.getElementById('gallery-category-custom');
@@ -85,7 +80,6 @@ function _galleryCategChange() {
   else { custom.style.display = 'none'; custom.value = ''; }
 }
 
-/* ── Add ─────────────────────────────────────────────────────────── */
 function _addGalleryItem() {
   var title    = document.getElementById('gallery-title').value.trim();
   var sel      = document.getElementById('gallery-category');
@@ -117,7 +111,6 @@ function _addGalleryItem() {
   }).catch(function () { btn.textContent = 'Error'; btn.disabled = false; });
 }
 
-/* ── Delete ──────────────────────────────────────────────────────── */
 function _deleteGalleryItem(id) {
   if (!confirm('Remove this photo from the gallery?')) return;
   fetch(API + '/owner/gallery/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } })
@@ -125,7 +118,6 @@ function _deleteGalleryItem(id) {
     .then(function (data) { if (data.success) _loadGalleryAdmin(); });
 }
 
-/* ── Bulk upload ─────────────────────────────────────────────────── */
 var _bulkFiles = [];
 
 function _bulkPreview(input) {
@@ -192,7 +184,6 @@ function _loadCarouselAdmin() {
   }).join('');
 }
 
-/* ── Load & render ───────────────────────────────────────────────── */
 function _loadGalleryAdmin() {
   fetch(API + '/gallery')
     .then(function (r) { return r.json(); })

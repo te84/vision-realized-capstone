@@ -72,7 +72,6 @@ def seed():
         cur.execute("INSERT INTO documents (event_id, name, file_type, status) VALUES (%s, %s, %s, %s)",
             (event_id, name, ftype, status))
 
-    # Gallery items
     cur.execute("SELECT COUNT(*) FROM gallery_items")
     gallery_count = cur.fetchone()[0]
     if gallery_count == 0:

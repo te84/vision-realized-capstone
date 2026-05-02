@@ -1,4 +1,3 @@
-/* ── Portal Core — globals, utilities, tab switching ─────────────── */
 var API = "http://localhost:5001";
 var user = JSON.parse(localStorage.getItem("user"));
 var token = localStorage.getItem("token");
@@ -25,7 +24,12 @@ var _t = {
     viewTasks: 'View My Tasks', msgPlanner: 'Message Planner', leaveReview: 'Leave a Review',
     consultRequest: 'Consultation Request', proposedDate: 'Proposed date:',
     pickTime: 'Select a time that works best:', noneWork: 'None of these work for me',
-    send: 'Send', due: 'Due', guests: 'Guests', daysAway: 'DAYS AWAY'
+    send: 'Send', due: 'Due', guests: 'Guests', daysAway: 'DAYS AWAY',
+    stepCompleted: 'Completed', stepInProgress: 'In Progress', stepUpcoming: 'Upcoming',
+    noProgress: 'No progress data yet.',
+    updateReview: 'Update Review', submitReview: 'Submit Review',
+    reviewSaved: 'Your review has been saved!', reviewPrevious: 'You previously submitted a review. Edit your stars or comment below and click Update to save changes.',
+    reviewThank: 'Thank you for your review!', reviewError: 'Something went wrong.'
   },
   es: {
     quoteSubmitted: 'Solicitud Enviada', pendingConsult: 'Consulta Pendiente',
@@ -45,7 +49,12 @@ var _t = {
     viewTasks: 'Ver Mis Tareas', msgPlanner: 'Mensaje al Planificador', leaveReview: 'Dejar Reseña',
     consultRequest: 'Solicitud de Consulta', proposedDate: 'Fecha propuesta:',
     pickTime: 'Seleccione un horario:', noneWork: 'Ninguno me funciona',
-    send: 'Enviar', due: 'Vence', guests: 'Invitados', daysAway: 'DÍAS RESTANTES'
+    send: 'Enviar', due: 'Vence', guests: 'Invitados', daysAway: 'DÍAS RESTANTES',
+    stepCompleted: 'Completado', stepInProgress: 'En Progreso', stepUpcoming: 'Próximo',
+    noProgress: 'No hay datos de progreso aún.',
+    updateReview: 'Actualizar Reseña', submitReview: 'Enviar Reseña',
+    reviewSaved: '¡Tu reseña ha sido guardada!', reviewPrevious: 'Ya enviaste una reseña. Edita las estrellas o comentario y haz clic en Actualizar para guardar.',
+    reviewThank: '¡Gracias por tu reseña!', reviewError: 'Algo salió mal.'
   }
 };
 

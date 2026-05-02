@@ -61,7 +61,6 @@ def register_client_action_routes(app):
         msg += '. Looking forward to meeting!'
         cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
             (event_id, sender, msg))
-        # Create task for the consultation
         if selected_time:
             cur.execute("INSERT INTO tasks (event_id, title, due_date) VALUES (%s, %s, (SELECT event_date FROM events WHERE id = %s))",
                 (event_id, 'Consultation at ' + selected_time, event_id))
@@ -99,7 +98,6 @@ def register_client_action_routes(app):
         db = get_db()
         cur = db.cursor()
 
-        # Verify this event belongs to the requesting client
         cur.execute("""
             SELECT e.id FROM events e
             JOIN client c ON e.client_id = c.client_id
@@ -113,7 +111,6 @@ def register_client_action_routes(app):
         client_row = cur.fetchone()
         client_id = client_row[0] if client_row else None
 
-        # Upsert: one rating per event, replace if client re-submits
         cur.execute("""
             INSERT INTO event_ratings (event_id, client_id, stars, comment)
             VALUES (%s, %s, %s, %s)
@@ -136,7 +133,6 @@ def register_client_action_routes(app):
         db = get_db()
         cur = db.cursor()
 
-        # Verify this event belongs to the requesting client
         cur.execute("""
             SELECT e.id FROM events e
             JOIN client c ON e.client_id = c.client_id
@@ -173,7 +169,6 @@ def register_client_action_routes(app):
         db = get_db()
         cur = db.cursor()
 
-        # Verify ownership
         cur.execute("""
             SELECT e.id FROM events e
             JOIN client c ON e.client_id = c.client_id

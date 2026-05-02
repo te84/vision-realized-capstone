@@ -465,7 +465,6 @@
 
       var curStep = 0;
       function goToStep(step) {
-        // Validate current step before advancing
         if (step > curStep) {
           if (curStep === 0) {
             var inputs0 = document.querySelectorAll("#step-0 input");
@@ -526,7 +525,6 @@
         var phone = inputs0[3] ? inputs0[3].value.trim() : "";
         var pw = inputs0[4] ? inputs0[4].value : "";
 
-        // validate required fields
         if (!fname || !lname || !email || !pw) {
           alert("Please fill in your name, email, and password before submitting.");
           goToStep(0);
@@ -547,7 +545,6 @@
           ? selects0[selects0.length - 1].value
           : "";
 
-        // step 1 - event type + service type
         var typeGrid = document.querySelector("#step-1 .event-type-grid");
         var typeSel = typeGrid ? typeGrid.querySelector(".event-type-btn.selected .etb-name") : null;
         var evType = typeSel ? typeSel.textContent : "";
@@ -555,7 +552,6 @@
         var svcSel = document.querySelector("#step-1 .field .event-type-btn.selected .etb-name");
         var serviceType = svcSel ? svcSel.textContent : "";
 
-        // step 2 - event details
         var inputs2 = document.querySelectorAll("#step-2 input");
         var selects2 = document.querySelectorAll("#step-2 select");
         var evDate = inputs2[0] ? inputs2[0].value : "";
@@ -565,7 +561,6 @@
         var visionText = document.querySelector("#step-2 textarea");
         var vision = visionText ? visionText.value : "";
 
-        // step 3 - budget
         var budgetSel = document.querySelector(
           ".budget-btn.selected .budget-range",
         );
@@ -573,7 +568,6 @@
         var budgetNotesEl = document.querySelector("#step-3 textarea");
         var budgetNotes = budgetNotesEl ? budgetNotesEl.value : "";
 
-        // step 4 - vibes + final notes
         var vibeEls = document.querySelectorAll(".vibe-btn.selected p");
         var vibes = [];
         for (var v = 0; v < vibeEls.length; v++) vibes.push(vibeEls[v].textContent);
@@ -617,7 +611,6 @@
           })
           .then(function (d) {
             console.log("saved", d);
-            // upload inspo photos if any
             for (var p = 0; p < inspoFiles.length; p++) {
               (function(file) {
                 var r = new FileReader();

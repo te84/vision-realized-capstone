@@ -130,6 +130,7 @@
             if (result.ok) {
               localStorage.setItem("token", result.data.token);
               localStorage.setItem("user", JSON.stringify(result.data.user));
+              localStorage.removeItem("portal_active_tab");
               msgEl.textContent = "Login successful!";
               msgEl.className = "login-msg success";
               setTimeout(function () {

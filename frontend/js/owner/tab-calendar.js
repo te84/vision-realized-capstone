@@ -26,7 +26,6 @@ function _drawCalGrid() {
   var label = document.getElementById('cal-month-label');
   if (label) label.textContent = MONTHS[month] + ' ' + year;
 
-  // Build items directly from cache — zero extra fetches
   var calEvents = [], calTasks = [];
   allEvents.forEach(function (ev) {
     if (ev.event_date) calEvents.push({ date: ev.event_date, title: ev.event_name||'Event', client: (ev.firstname||'')+' '+(ev.lastname||''), type: 'event', status: ev.status });
@@ -66,12 +65,10 @@ function _drawCalGrid() {
   }
   grid.innerHTML = html;
 
-  // Store for day-detail clicks
   grid._calData = { events: calEvents, tasks: calTasks };
 }
 
 function _showCalDay(dateStr, calData) {
-  // calData passed inline to avoid global — fall back to grid attribute
   var grid = document.getElementById('cal-grid');
   var data = calData || (grid && grid._calData) || { events: [], tasks: [] };
   var detail = document.getElementById('cal-day-detail');

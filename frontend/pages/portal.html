@@ -270,12 +270,12 @@
 
           <div id="tab-after" style="display: none">
             <div class="portal-header">
-              <div class="portal-greeting">Relive your event</div>
-              <div class="portal-title">After Your Event</div>
+              <div class="portal-greeting" data-i18n="afterGreeting">Relive your event</div>
+              <div class="portal-title" data-i18n="afterTitle">After Your Event</div>
             </div>
             <div class="after-card">
-              <h3>How did we do?</h3>
-              <p>
+              <h3 data-i18n="afterHow">How did we do?</h3>
+              <p data-i18n="afterDesc">
                 Your feedback helps us grow and helps future clients find us. It
                 only takes a minute.
               </p>
@@ -286,14 +286,14 @@
                 <span onclick="setRating(4)">&#11088;</span>
                 <span onclick="setRating(5)">&#11088;</span>
               </div>
-              <textarea id="review-text" placeholder="Tell us about your experience..." style="width:100%;box-sizing:border-box;min-height:80px;padding:12px;border:1.5px solid rgba(74,39,114,0.15);background:#faf7f2;font-family:'DM Sans',sans-serif;font-size:0.88rem;margin-bottom:12px;resize:vertical;outline:none;"></textarea>
-              <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+              <textarea id="review-text" placeholder="Tell us about your experience..." data-i18n="afterPlaceholder" style="width:100%;box-sizing:border-box;min-height:80px;padding:12px;border:1.5px solid rgba(74,39,114,0.15);background:#faf7f2;font-family:'DM Sans',sans-serif;font-size:0.88rem;margin-bottom:12px;resize:vertical;outline:none;"></textarea>
+              <button class="btn-primary" onclick="submitReview()" data-i18n="afterSubmit">Submit Review</button>
               <div id="review-msg" style="display:none;margin-top:10px;font-size:0.88rem;color:#3a7d44;"></div>
             </div>
             <div class="after-grid">
-              <a href="gallery.html" class="after-mini" style="text-decoration:none;color:inherit;"><p>View event gallery</p></a>
-              <a href="quote.html" class="after-mini" style="text-decoration:none;color:inherit;"><p>Book your next event</p></a>
-              <div class="after-mini" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[3], 'tab-messages')" style="cursor:pointer;"><p>Message your planner</p></div>
+              <a href="gallery.html" class="after-mini" style="text-decoration:none;color:inherit;"><p data-i18n="afterGallery">View event gallery</p></a>
+              <a href="quote.html" class="after-mini" style="text-decoration:none;color:inherit;"><p data-i18n="afterBook">Book your next event</p></a>
+              <div class="after-mini" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[3], 'tab-messages')" style="cursor:pointer;"><p data-i18n="afterMessage">Message your planner</p></div>
             </div>
           </div>
         </div>
@@ -306,7 +306,6 @@
     <script>
       loadDashboard();
 
-      // Restore last active tab on page load
       var savedTab = localStorage.getItem('portal_active_tab');
       if (savedTab && document.getElementById(savedTab)) {
         var tabMap = {'tab-overview':0,'tab-progress':1,'tab-checklist':2,'tab-messages':3,'tab-invoices':4,'tab-after':5};
