@@ -15,6 +15,7 @@ from routes.owner_tasks import register_owner_task_routes
 from routes.owner_communications import register_owner_communication_routes
 from routes.inbox import register_inbox_routes
 from routes.owner_invoices import register_owner_invoice_routes
+from routes.owner_bulk import register_owner_bulk_routes
 from routes.translations import register_translation_routes
 
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend')
@@ -46,6 +47,7 @@ register_owner_task_routes(app)
 register_owner_communication_routes(app)
 register_inbox_routes(app)
 register_owner_invoice_routes(app)
+register_owner_bulk_routes(app)
 register_translation_routes(app)
 
 create_tables()
