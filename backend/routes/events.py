@@ -38,7 +38,7 @@ def register_owner_events_routes(app):
 
         data = request.get_json()
         allowed_statuses = [
-            'Quote Submitted', 'Consultation', 'Planning',
+            'Quote Submitted', 'Pending Consultation', 'Consultation', 'Planning',
             'Vendors Set', 'Event Day', 'Completed'
         ]
 

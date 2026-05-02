@@ -36,7 +36,7 @@ function badgeClass(status) {
   return { 'Quote Submitted':'badge-qs', 'Consultation':'badge-co', 'Planning':'badge-pl',
            'Vendors Set':'badge-vs', 'Event Day':'badge-ed', 'Completed':'badge-cm' }[status] || 'badge-qs';
 }
-function statusLabel(s) { return s === 'Quote Submitted' ? 'Quote Request Received' : s; }
+function statusLabel(s) { return s === 'Quote Submitted' ? 'Quote Request Received' : s === 'Pending Consultation' ? 'Pending Consultation' : s; }
 function formatTime12(t) {
   if (!t) return '';
   var p = t.split(':'), h = parseInt(p[0], 10), m = p[1] || '00';

@@ -53,8 +53,16 @@ def register_owner_event_detail_routes(app):
                 'created_at': str(rating_row['created_at'])
             }
 
+        # Fetch inspo photos by client email
+        inspo_photos = []
+        cur.execute("SELECT c.email FROM client c JOIN events e ON e.client_id = c.client_id WHERE e.id = %s", (event_id,))
+        client_row = cur.fetchone()
+        if client_row:
+            cur.execute("SELECT filename, image_data FROM quote_photos WHERE LOWER(email) = LOWER(%s)", (client_row['email'],))
+            inspo_photos = [{'filename': p['filename'], 'image_data': p['image_data']} for p in cur.fetchall()]
+
         cur.close(); db.close()
-        return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs, 'quote': quote_data, 'rating': rating_data})
+        return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs, 'quote': quote_data, 'rating': rating_data, 'inspo_photos': inspo_photos})
 
     @app.route('/owner/event-detail/<int:event_id>/quote', methods=['PUT'])
     def update_event_quote(event_id):

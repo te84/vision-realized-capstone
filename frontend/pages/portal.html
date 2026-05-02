@@ -343,6 +343,7 @@
 
       function statusLabel(s) {
         if (s === 'Quote Submitted') return 'Quote Request Received';
+        if (s === 'Pending Consultation') return 'Pending Consultation';
         return s;
       }
 
@@ -484,8 +485,8 @@
           days !== null ? (days >= 0 ? days : "Past") : "--";
 
         var jEl = document.getElementById("journey-steps");
-        var stepTabs = ['tab-dash','tab-dash','tab-checklist','tab-messages','tab-progress','tab-after'];
-        var stepNavIdx = [0,0,2,3,1,5];
+        var stepTabs = ['tab-dash','tab-dash','tab-dash','tab-checklist','tab-messages','tab-progress','tab-after'];
+        var stepNavIdx = [0,0,0,2,3,1,5];
         if (journey.length > 0) {
           var html = "";
           for (var i = 0; i < journey.length; i++) {
@@ -535,9 +536,10 @@
 
         if (curStatus === 'Quote Submitted') {
           nsText.innerHTML = 'We received your quote request! Our team is reviewing your event details and will reach out to schedule a consultation.';
-          nsBtn('Check Messages', 3, 'tab-messages');
+        } else if (curStatus === 'Pending Consultation') {
+          nsText.innerHTML = 'We\'d like to schedule a consultation with you! Please pick a time that works from the options above.';
         } else if (curStatus === 'Consultation') {
-          nsText.innerHTML = 'Your consultation is coming up! Check your <strong>Tasks</strong> for the scheduled date and time.';
+          nsText.innerHTML = 'Your consultation is confirmed! Check your <strong>Tasks</strong> for the scheduled date and time.';
           nsBtn('View My Tasks', 2, 'tab-checklist');
         } else if (curStatus === 'Planning') {
           nsText.innerHTML = 'Your event is being planned! Your planner is coordinating vendors, venue, and logistics. Check your <strong>Tasks</strong> for anything that needs your input.';
@@ -605,16 +607,17 @@
           try {
             var cData = JSON.parse(pendingConsult.text.replace('[CONSULTATION_REQUEST]', ''));
             consultCard.style.display = 'block';
+            var timesArr = cData.times || (cData.time ? [cData.time] : []);
+            var timeButtons = timesArr.map(function(t) {
+              return '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ',\'' + t.replace(/'/g,"\\'") + '\')" style="padding:12px 24px;background:#fffdf9;border:2px solid #4a2772;color:#4a2772;font-family:inherit;font-size:0.92rem;font-weight:500;cursor:pointer;border-radius:4px;min-width:120px;">' + t + '</button>';
+            }).join('');
             consultCard.innerHTML =
               '<div style="font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;font-weight:600;margin-bottom:12px;">Consultation Request</div>' +
-              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
-                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong>' + cData.date + '</strong></div>' +
-                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Time:</span> <strong>' + cData.time + '</strong></div></div>' +
+              '<div style="margin-bottom:14px;"><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong style="font-size:1rem;">' + cData.date + '</strong></div>' +
               (cData.note ? '<p style="font-size:0.88rem;color:#2e1547;line-height:1.6;margin-bottom:14px;font-style:italic;">"' + cData.note + '"</p>' : '') +
-              '<div style="display:flex;gap:10px;">' +
-                '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ')" style="padding:10px 24px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Accept</button>' +
-                '<button onclick="declineConsultation(' + pendingConsult.id + ')" style="padding:10px 24px;background:none;border:1px solid #c0392b;color:#c0392b;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Decline</button>' +
-              '</div>';
+              '<div style="font-size:0.82rem;color:#7a6e5e;margin-bottom:10px;">Pick a time that works for you:</div>' +
+              '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + timeButtons + '</div>' +
+              '<button onclick="showCounterPropose(' + currentEventId + ')" style="padding:8px 20px;background:none;border:1px solid #7a6e5e;color:#7a6e5e;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">None of these work for me</button>';
           } catch(e) { consultCard.style.display = 'none'; }
         } else { consultCard.style.display = 'none'; }
 
@@ -884,8 +887,8 @@
         }
 
         var jEl = document.getElementById("journey-steps");
-        var stepTabs = ['tab-dash','tab-dash','tab-checklist','tab-messages','tab-progress','tab-after'];
-        var stepNavIdx = [0,0,2,3,1,5];
+        var stepTabs = ['tab-dash','tab-dash','tab-dash','tab-checklist','tab-messages','tab-progress','tab-after'];
+        var stepNavIdx = [0,0,0,2,3,1,5];
         if (journey.length > 0) {
           var html = "";
           for (var i = 0; i < journey.length; i++) {
@@ -966,16 +969,17 @@
           try {
             var cData = JSON.parse(pendingConsult.text.replace('[CONSULTATION_REQUEST]', ''));
             consultCard.style.display = 'block';
+            var timesArr = cData.times || (cData.time ? [cData.time] : []);
+            var timeButtons = timesArr.map(function(t) {
+              return '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ',\'' + t.replace(/'/g,"\\'") + '\')" style="padding:12px 24px;background:#fffdf9;border:2px solid #4a2772;color:#4a2772;font-family:inherit;font-size:0.92rem;font-weight:500;cursor:pointer;border-radius:4px;min-width:120px;">' + t + '</button>';
+            }).join('');
             consultCard.innerHTML =
               '<div style="font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;font-weight:600;margin-bottom:12px;">Consultation Request</div>' +
-              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
-                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong>' + cData.date + '</strong></div>' +
-                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Time:</span> <strong>' + cData.time + '</strong></div></div>' +
+              '<div style="margin-bottom:14px;"><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong style="font-size:1rem;">' + cData.date + '</strong></div>' +
               (cData.note ? '<p style="font-size:0.88rem;color:#2e1547;line-height:1.6;margin-bottom:14px;font-style:italic;">"' + cData.note + '"</p>' : '') +
-              '<div style="display:flex;gap:10px;">' +
-                '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ')" style="padding:10px 24px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Accept</button>' +
-                '<button onclick="declineConsultation(' + pendingConsult.id + ')" style="padding:10px 24px;background:none;border:1px solid #c0392b;color:#c0392b;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Decline</button>' +
-              '</div>';
+              '<div style="font-size:0.82rem;color:#7a6e5e;margin-bottom:10px;">Pick a time that works for you:</div>' +
+              '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + timeButtons + '</div>' +
+              '<button onclick="showCounterPropose(' + currentEventId + ')" style="padding:8px 20px;background:none;border:1px solid #7a6e5e;color:#7a6e5e;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">None of these work for me</button>';
           } catch(e) { consultCard.style.display = 'none'; }
         } else { consultCard.style.display = 'none'; }
 
@@ -1210,10 +1214,11 @@
           });
       }
 
-      function acceptConsultation(eventId, msgId) {
+      function acceptConsultation(eventId, msgId, selectedTime) {
         fetch(API + "/client/consultation/" + eventId + "/accept", {
           method: "PUT",
-          headers: { Authorization: "Bearer " + token },
+          headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+          body: JSON.stringify({ time: selectedTime }),
         })
           .then(function (r) { return r.json(); })
           .then(function (d) {
@@ -1224,12 +1229,25 @@
           });
       }
 
-      function declineConsultation(msgId) {
-        if (!confirm('Are you sure you want to decline this consultation?')) return;
+      function showCounterPropose(eventId) {
+        var card = document.getElementById('consult-request-card');
+        card.innerHTML =
+          '<div style="font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;font-weight:600;margin-bottom:12px;">Suggest Your Preferred Times</div>' +
+          '<p style="font-size:0.85rem;color:#7a6e5e;margin-bottom:12px;">Let us know what times work better for you:</p>' +
+          '<textarea id="counter-times" rows="3" placeholder="e.g. Monday after 2pm, Tuesday morning, or Friday anytime..." style="width:100%;box-sizing:border-box;padding:12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:vertical;outline:none;border-radius:2px;margin-bottom:12px;"></textarea>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button onclick="sendCounterProposal(' + eventId + ')" style="padding:10px 24px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Send</button>' +
+            '<button onclick="loadDashboard()" style="padding:10px 24px;background:none;border:1px solid #7a6e5e;color:#7a6e5e;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Cancel</button>' +
+          '</div>';
+      }
+
+      function sendCounterProposal(eventId) {
+        var text = document.getElementById('counter-times').value.trim();
+        if (!text) { document.getElementById('counter-times').focus(); return; }
         fetch(API + "/client/messages", {
           method: "POST",
           headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-          body: JSON.stringify({ event_id: currentEventId, text: "I'd like to reschedule the consultation. Could we find another time?" }),
+          body: JSON.stringify({ event_id: eventId, text: "These times don't work for me. Here's what works better: " + text }),
         })
           .then(function (r) { return r.json(); })
           .then(function (d) { if (d.success) loadDashboard(); });

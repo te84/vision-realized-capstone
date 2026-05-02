@@ -39,6 +39,8 @@ def register_client_action_routes(app):
         if not tok:
             return jsonify({'message': 'Not authorized'}), 401
         uid = tok['user_id']
+        data = request.get_json() or {}
+        selected_time = data.get('time', '')
         db = get_db()
         cur = db.cursor()
         cur.execute("""
@@ -53,8 +55,16 @@ def register_client_action_routes(app):
         cur.execute("SELECT firstname, lastname FROM client WHERE user_id = %s", (uid,))
         row = cur.fetchone()
         sender = row[0] + ' ' + row[1] if row else 'Client'
+        msg = 'I accept the consultation'
+        if selected_time:
+            msg += ' at ' + selected_time
+        msg += '. Looking forward to meeting!'
         cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
-            (event_id, sender, 'I accept the consultation. Looking forward to meeting!'))
+            (event_id, sender, msg))
+        # Create task for the consultation
+        if selected_time:
+            cur.execute("INSERT INTO tasks (event_id, title, due_date) VALUES (%s, %s, (SELECT event_date FROM events WHERE id = %s))",
+                (event_id, 'Consultation at ' + selected_time, event_id))
         db.commit(); cur.close(); db.close()
         return jsonify({'success': True})
 

@@ -28,7 +28,7 @@ def register_dashboard_routes(app):
             cur.execute("SELECT * FROM events WHERE client_id = %s ORDER BY created_at DESC", (cid,))
             all_events = cur.fetchall()
 
-            steps = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed']
+            steps = ['Quote Submitted','Pending Consultation','Consultation','Planning','Vendors Set','Event Day','Completed']
 
             def build_journey(status):
                 cur_status = status or 'Quote Submitted'

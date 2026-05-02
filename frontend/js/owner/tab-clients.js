@@ -27,7 +27,7 @@ function _listViewHTML() {
 }
 
 function _detailViewHTML() {
-  var tabs = [['overview','Overview'],['events','Events'],['tasks','Tasks'],['notes','Notes'],['quotes','Quote Request'],['reviews','Reviews']];
+  var tabs = [['overview','Overview'],['events','Events'],['tasks','Tasks'],['messages','Messages'],['quotes','Quote Request'],['reviews','Reviews']];
   return '<div id="client-detail-view" style="display:none;">' +
     '<button onclick="_backToClients()" style="background:none;border:none;color:#4a2772;font-family:inherit;font-size:0.88rem;cursor:pointer;padding:0;margin-bottom:16px;display:flex;align-items:center;gap:6px;">&larr; Back to Clients</button>' +
     '<div id="client-header"></div>' +
@@ -82,10 +82,17 @@ function _filterClientCards() {
 
   if (stage) { grid.innerHTML = filtered.map(_buildClientCard).join(''); return; }
 
-  var ORDER  = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed'];
-  var LABELS = { 'Quote Submitted':'Needs Quote','Consultation':'In Consultation','Planning':'Planning in Progress','Vendors Set':'Vendors Confirmed','Event Day':'Event Day','Completed':'Completed' };
+  var ORDER  = ['Quote Submitted','Pending Consultation','Consultation','Planning','Vendors Set','Event Day','Completed'];
+  var LABELS = { 'Quote Submitted':'Needs Quote','Pending Consultation':'Pending Consultation','Consultation':'In Consultation','Planning':'Planning in Progress','Vendors Set':'Vendors Confirmed','Event Day':'Event Day','Completed':'Completed' };
   var groups = {}; ORDER.forEach(function (g) { groups[g]=[]; });
   filtered.forEach(function (c) { (groups[_clientStage(c)]||groups['Quote Submitted']).push(c); });
+  ORDER.forEach(function (gk) {
+    groups[gk].sort(function (a, b) {
+      var da = a.events[0] && a.events[0].created_at ? a.events[0].created_at : '';
+      var db = b.events[0] && b.events[0].created_at ? b.events[0].created_at : '';
+      return db > da ? 1 : db < da ? -1 : 0;
+    });
+  });
   var html = '';
   ORDER.forEach(function (gk, gi) {
     if (!groups[gk].length) return;
@@ -126,14 +133,14 @@ function _openClient(clientId) {
   _renderOverview(c);
   _renderEvents(c);
   _renderTasks(c);
-  _renderNotes(c);
+  _renderMessages(c);
   _renderQuotes(c);
   c.events.forEach(function(ev){ _renderStickyNotes(ev.id); });
   _renderReviews(c);
 }
 
 /* ── Journey bar ─────────────────────────────────────────────────── */
-var _STEPS = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed'];
+var _STEPS = ['Quote Submitted','Pending Consultation','Consultation','Planning','Vendors Set','Event Day','Completed'];
 function _journeyBarHTML(status) {
   var idx = Math.max(0, _STEPS.indexOf(status||'Quote Submitted'));
   return '<div style="display:flex;gap:4px;align-items:center;margin:12px 0 4px;">' +
@@ -194,7 +201,7 @@ function _selectEvent(eventId) {
   _currentEditEventId = eventId;
   var ev = allEvents.find(function(e){return e.id===eventId;})||null;
   var curStatus = (ev&&ev.status)||'Quote Submitted';
-  var STATUSES = ['Quote Submitted','Consultation','Planning','Vendors Set','Event Day','Completed'];
+  var STATUSES = ['Quote Submitted','Pending Consultation','Consultation','Planning','Vendors Set','Event Day','Completed'];
   function inp(label,id,type,val,placeholder,full) {
     return '<div'+(full?' style="grid-column:1/-1"':'')+'>'+
       '<label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">'+label+'</label>'+
@@ -345,6 +352,45 @@ function _clearTabStickyNotes(eventId) {
   _renderTabStickyNotes(eventId);
 }
 
+/* ── Messages ────────────────────────────────────────────────────── */
+function _renderMessages(c) {
+  document.getElementById('ctab-messages').innerHTML = c.events.map(function(ev){
+    var d=_cache.details[ev.id];if(!d)return'';
+    var bubbles=(d.messages||[]).map(function(msg){
+      var isOwner=msg.sender==='Vision Realized';
+      var style=isOwner?'margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;':'margin-right:auto;background:#fff;color:#1A1208;border:1px solid rgba(74,39,114,0.15);border-radius:12px 12px 12px 2px;';
+      var text=msg.text||'';
+      if(text.indexOf('[CONSULTATION_REQUEST]')===0) text='[Consultation request sent]';
+      return '<div style="max-width:75%;padding:10px 14px;'+style+'"><div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">'+(msg.sender||'')+(msg.created_at?' — '+msg.created_at:'')+'</div><div style="font-size:0.88rem;line-height:1.5;">'+text+'</div></div>';
+    }).join('')||'<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
+    return '<div class="panel" style="margin-bottom:16px;"><h3 style="margin-bottom:4px;">'+(ev.event_name||'Event')+'</h3>' +
+      '<div style="font-size:0.78rem;color:#7a6e5e;margin-bottom:14px;">'+(ev.event_type||'')+(ev.event_date?' &middot; '+ev.event_date:'')+'</div>' +
+      '<div id="owner-chat-history-'+ev.id+'" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:320px;overflow-y:auto;">'+bubbles+'</div>' +
+      '<div style="display:flex;gap:8px;align-items:flex-end;">' +
+        '<textarea id="owner-msg-input-'+ev.id+'" placeholder="Type a message…" rows="2" style="flex:1;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:none;outline:none;border-radius:2px;"></textarea>' +
+        '<button onclick="_sendMsg('+ev.id+')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;border-radius:2px;">Send</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function _sendMsg(eventId) {
+  var input=document.getElementById('owner-msg-input-'+eventId);
+  var text=input?input.value.trim():'';if(!text){if(input)input.focus();return;}
+  fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:text})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d.success)return;
+      var msg={sender:'Vision Realized',text:text};
+      (_cache.details[eventId]=_cache.details[eventId]||{});
+      (_cache.details[eventId].messages=_cache.details[eventId].messages||[]).push(msg);
+      var history=document.getElementById('owner-chat-history-'+eventId);
+      var empty=history.querySelector('p');if(empty)empty.remove();
+      var bubble=document.createElement('div');
+      bubble.style.cssText='max-width:75%;padding:10px 14px;margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;';
+      bubble.innerHTML='<div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">Vision Realized</div><div style="font-size:0.88rem;line-height:1.5;">'+text+'</div>';
+      history.appendChild(bubble);history.scrollTop=history.scrollHeight;input.value='';
+    });
+}
+
 /* ── Quote Details ───────────────────────────────────────────────── */
 function _renderQuotes(c) {
   var hasAny=false;
@@ -364,6 +410,7 @@ function _renderQuotes(c) {
         (q.vibes?'<div style="margin-top:10px;"><span style="font-size:0.78rem;color:#7a6e5e;">Vibes: </span><span style="font-size:0.85rem;color:#2e1547;">'+q.vibes+'</span></div>':'')+
         (q.budget_notes?'<div style="margin-top:6px;"><span style="font-size:0.78rem;color:#7a6e5e;">Budget Notes: </span><span style="font-size:0.85rem;color:#2e1547;">'+q.budget_notes+'</span></div>':'')+
         (q.final_notes?'<div style="margin-top:6px;"><span style="font-size:0.78rem;color:#7a6e5e;">Additional Notes: </span><span style="font-size:0.85rem;color:#2e1547;">'+q.final_notes+'</span></div>':'')+
+        (d.inspo_photos&&d.inspo_photos.length?'<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(74,39,114,0.1);"><div style="font-size:0.78rem;color:#7a6e5e;margin-bottom:8px;">Inspiration Photos</div><div style="display:flex;flex-wrap:wrap;gap:10px;">'+d.inspo_photos.map(function(p){return'<div style="position:relative;"><img src="'+p.image_data+'" style="width:150px;height:120px;object-fit:cover;border-radius:4px;border:1px solid #efe6dc;cursor:pointer;" onclick="window.open(this.src)" title="'+(p.filename||'')+'"/><div style="font-size:0.7rem;color:#7a6e5e;margin-top:3px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(p.filename||'')+'</div></div>';}).join('')+'</div></div>':'')+
       '</div>'+
       '<h4 style="margin:20px 0 12px;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Before Meeting - Notes</h4>' +
       '<div style="background:#fffde6;border:1px solid #e6d88a;border-radius:6px;padding:20px 24px;box-shadow:2px 2px 8px rgba(0,0,0,0.06);">' +
@@ -375,13 +422,16 @@ function _renderQuotes(c) {
         '</div></div>' +
       '<h4 style="margin:20px 0 12px;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Schedule Consultation</h4>' +
       '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;">' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">' +
-          '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Date</label><input type="date" id="consult-date-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"></div>' +
-          '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Time</label><select id="consult-time-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"><option value="">Select a time</option>'+TIMES.map(function(t){return'<option value="'+t+'">'+formatTime12(t)+'</option>';}).join('')+'</select></div>' +
+        '<p style="font-size:0.82rem;color:#7a6e5e;margin-bottom:12px;">Propose a date and 3 time options for the client to choose from.</p>' +
+        '<div style="margin-bottom:12px;"><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Date</label><input type="date" id="consult-date-'+ev.id+'" style="width:260px;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">' +
+          '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Option 1</label><select id="consult-time1-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"><option value="">Select</option>'+TIMES.map(function(t){return'<option value="'+t+'">'+formatTime12(t)+'</option>';}).join('')+'</select></div>' +
+          '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Option 2</label><select id="consult-time2-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"><option value="">Select</option>'+TIMES.map(function(t){return'<option value="'+t+'">'+formatTime12(t)+'</option>';}).join('')+'</select></div>' +
+          '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Option 3</label><select id="consult-time3-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"><option value="">Select</option>'+TIMES.map(function(t){return'<option value="'+t+'">'+formatTime12(t)+'</option>';}).join('')+'</select></div>' +
         '</div>' +
         '<div style="margin-bottom:12px;"><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Note to client (optional)</label>' +
           '<textarea id="consult-note-'+ev.id+'" rows="2" placeholder="e.g. We\'ll discuss venue options and budget…" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:vertical;outline:none;border-radius:2px;"></textarea></div>' +
-        '<div style="text-align:right;"><button onclick="_scheduleConsult('+ev.id+',\''+(c.firstname||'').replace(/'/g,"\\'")+'\')" style="padding:10px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.88rem;cursor:pointer;white-space:nowrap;border-radius:2px;letter-spacing:0.03em;">Schedule</button></div>' +
+        '<div style="text-align:right;"><button onclick="_scheduleConsult('+ev.id+',\''+(c.firstname||'').replace(/'/g,"\\'")+'\')" style="padding:10px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.88rem;cursor:pointer;white-space:nowrap;border-radius:2px;letter-spacing:0.03em;">Send to Client</button></div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -428,19 +478,31 @@ function _clearStickyNotes(eventId) {
 
 function _scheduleConsult(eventId,clientName){
   var dateEl=document.getElementById('consult-date-'+eventId);
-  var timeEl=document.getElementById('consult-time-'+eventId);
+  var t1=document.getElementById('consult-time1-'+eventId);
+  var t2=document.getElementById('consult-time2-'+eventId);
+  var t3=document.getElementById('consult-time3-'+eventId);
   var noteEl=document.getElementById('consult-note-'+eventId);
-  var date=dateEl.value,time=timeEl.value;if(!date){dateEl.focus();return;}
-  var displayTime=time?formatTime12(time):'';
+  var date=dateEl.value;if(!date){dateEl.focus();return;}
+  var times=[];
+  if(t1.value)times.push(formatTime12(t1.value));
+  if(t2.value)times.push(formatTime12(t2.value));
+  if(t3.value)times.push(formatTime12(t3.value));
+  if(!times.length){alert('Please select at least one time option.');return;}
   var note=noteEl?noteEl.value.trim():'';
-  var title='Consultation with '+(clientName||'client')+(displayTime?' at '+displayTime:'');
-  var msgText='[CONSULTATION_REQUEST]{\"date\":\"'+date+'\",\"time\":\"'+(displayTime||'TBD')+'\",\"note\":\"'+(note.replace(/"/g,'\\"'))+'\"}';
-  fetch(API+'/owner/tasks',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,title:title,due_date:date})})
-    .then(function(r){return r.json();}).then(function(d){
-      if(!d.success)return;
-      dateEl.value='';timeEl.value='';if(noteEl)noteEl.value='';
-      fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:msgText})});
-      alert('Consultation request sent! The client will see it in their portal and can accept.');
+  var msgData=JSON.stringify({date:date,times:times,note:note});
+  var msgText='[CONSULTATION_REQUEST]'+msgData;
+
+  // Update status to Pending Consultation
+  fetch(API+'/owner/events/'+eventId,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({status:'Pending Consultation'})})
+    .then(function(r){return r.json();}).then(function(){
+      // Send message to client
+      return fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:msgText})});
+    }).then(function(){
+      dateEl.value='';t1.value='';t2.value='';t3.value='';if(noteEl)noteEl.value='';
+      alert('Consultation options sent! The client will pick a time.');
+      var ev=allEvents.find(function(e){return e.id===eventId;});
+      if(ev)ev.status='Pending Consultation';
+      updateStatsBar();
       if(_activeClientId)_openClient(_activeClientId);
     });
 }
