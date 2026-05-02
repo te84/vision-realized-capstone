@@ -12,7 +12,7 @@ def register_client_action_routes(app):
             return jsonify({'message': 'Not authorized'}), 401
         db = get_db()
         cur = db.cursor()
-        cur.execute("UPDATE tasks SET completed = TRUE WHERE id = %s", (task_id,))
+        cur.execute("UPDATE tasks SET completed = NOT completed WHERE id = %s", (task_id,))
         db.commit(); cur.close(); db.close()
         return jsonify({'success': True})
 

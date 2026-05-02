@@ -70,27 +70,27 @@ function setRating(n) {
   userRating = n;
   var stars = document.querySelectorAll("#star-row span");
   for (var i = 0; i < stars.length; i++) {
-    stars[i].style.color = i < n ? "#c49a2a" : "#ddd";
+    stars[i].style.opacity = i < n ? "1" : "0.3";
   }
 }
 
 function loadExistingRating() {
   if (!currentEventId) return;
   fetch(API + "/client/ratings/" + currentEventId, {
-    headers: { Authorization: "Bearer " + token },
+    headers: { Authorization: "Bearer " + token }
   })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
       if (d.success && d.rating) {
         setRating(d.rating.stars);
         document.getElementById("review-text").value = d.rating.comment || "";
         var msg = document.getElementById("review-msg");
-        if (msg) {
-          msg.textContent = "You already submitted a review. You can update it below.";
-          msg.style.display = "block";
-        }
+        msg.style.display = "block";
+        msg.style.color = "#7a6e5e";
+        msg.textContent = "You already submitted a review. You can update it below.";
       }
-    });
+    })
+    .catch(function() {});
 }
 
 function submitReview() {
@@ -101,12 +101,16 @@ function submitReview() {
     headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
     body: JSON.stringify({ event_id: currentEventId, stars: userRating, comment: text }),
   })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var msg = document.getElementById("review-msg");
+      msg.style.display = "block";
       if (d.success) {
-        var msg = document.getElementById("review-msg");
+        msg.style.color = "#3a7d44";
         msg.textContent = "Thank you for your review!";
-        msg.style.display = "block";
+      } else {
+        msg.style.color = "#c0392b";
+        msg.textContent = d.message || "Something went wrong.";
       }
     });
 }

@@ -13,14 +13,18 @@
   <body>
     <nav>
       <div class="nav-links">
-        <a href="../index.html">Home</a>
-        <a href="about.html">About Us</a>
-        <a href="services.html">Services</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="testimonials.html">Testimonials</a>
+        <a href="../index.html" data-i18n="navHome">Home</a>
+        <a href="about.html" data-i18n="navAbout">About Us</a>
+        <a href="services.html" data-i18n="navServices">Services</a>
+        <a href="gallery.html" data-i18n="navGallery">Gallery</a>
+        <a href="testimonials.html" data-i18n="navTestimonials">Testimonials</a>
         <a href="portal.html" class="nav-portal">Client Portal</a>
+        <div class="nav-lang">
+          <button class="active" onclick="setLang('en')">EN</button>
+          <button onclick="setLang('es')">ES</button>
+        </div>
       </div>
-      <a href="quote.html" class="nav-cta">Start a Quote</a>
+      <a href="quote.html" class="nav-cta" data-i18n="navCta">Start a Quote</a>
     </nav>
 
     <div class="page-content">
@@ -39,25 +43,25 @@
             class="portal-nav-item active"
             onclick="switchTab(this, 'tab-overview')"
           >
-            <span class="portal-nav-icon">--</span> Dashboard
+            <span class="portal-nav-icon">--</span> <span data-i18n="portalDashboard">Dashboard</span>
           </div>
           <div
             class="portal-nav-item"
             onclick="switchTab(this, 'tab-progress')"
           >
-            <span class="portal-nav-icon">--</span> Event Progress
+            <span class="portal-nav-icon">--</span> <span data-i18n="portalProgress">Event Progress</span>
           </div>
           <div
             class="portal-nav-item"
             onclick="switchTab(this, 'tab-checklist')"
           >
-            <span class="portal-nav-icon">--</span> My Tasks
+            <span class="portal-nav-icon">--</span> <span data-i18n="portalTasks">My Tasks</span>
           </div>
           <div
             class="portal-nav-item"
             onclick="switchTab(this, 'tab-messages')"
           >
-            <span class="portal-nav-icon">--</span> Messages
+            <span class="portal-nav-icon">--</span> <span data-i18n="portalMessages">Messages</span>
             <span
               id="msg-badge"
               style="
@@ -74,17 +78,17 @@
             >
           </div>
           <div class="portal-nav-item" onclick="switchTab(this, 'tab-invoices')">
-            <span class="portal-nav-icon">--</span> Invoices
+            <span class="portal-nav-icon">--</span> <span data-i18n="portalInvoices">Invoices</span>
           </div>
           <div class="portal-nav-item" onclick="switchTab(this, 'tab-after')">
-            <span class="portal-nav-icon">--</span> After Event
+            <span class="portal-nav-icon">--</span> <span data-i18n="portalAfter">After Event</span>
           </div>
           <div style="margin-top: auto; padding-bottom: 16px">
             <a href="../index.html" class="portal-nav-item"
-              ><span class="portal-nav-icon">&larr;</span> Back to Site</a
+              ><span class="portal-nav-icon">&larr;</span> <span data-i18n="portalBackToSite">Back to Site</span></a
             >
             <div class="portal-nav-item" onclick="logout()">
-              <span class="portal-nav-icon">&times;</span> Sign Out
+              <span class="portal-nav-icon">&times;</span> <span data-i18n="portalSignOut">Sign Out</span>
             </div>
           </div>
         </div>
@@ -92,7 +96,7 @@
         <div class="portal-content">
           <div id="tab-overview">
             <div class="portal-header">
-              <div class="portal-greeting">Welcome back</div>
+              <div class="portal-greeting" data-i18n="portalWelcome">Welcome back</div>
               <div class="portal-title" id="portal-greeting-name">
                 Loading...
               </div>
@@ -164,7 +168,7 @@
               <div id="next-steps-text" style="font-size:0.92rem;line-height:1.7;color:#2e1547;"></div>
               <div id="next-steps-action" style="margin-top:14px;"></div>
             </div>
-            <div id="consult-request-card" style="display:none;background:#F3EEF9;border:2px solid #4A2772;border-radius:8px;padding:24px;margin-bottom:24px;"></div>
+            <div id="consult-request-card" style="display:none;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:28px 32px;margin-bottom:24px;"></div>
             <div class="dash-grid">
               <div class="dash-card">
                 <div class="dash-card-title">My Tasks</div>
@@ -179,8 +183,8 @@
 
           <div id="tab-progress" style="display: none">
             <div class="portal-header">
-              <div class="portal-greeting">Current status</div>
-              <div class="portal-title">Event Progress</div>
+              <div class="portal-greeting" data-i18n="portalCurrentStatus">Current status</div>
+              <div class="portal-title" data-i18n="portalProgressTitle">Event Progress</div>
             </div>
             <div
               id="progress-steps"
@@ -190,8 +194,8 @@
 
           <div id="tab-checklist" style="display: none">
             <div class="portal-header">
-              <div class="portal-greeting">Stay on track</div>
-              <div class="portal-title">My Tasks</div>
+              <div class="portal-greeting" data-i18n="portalStayOnTrack">Stay on track</div>
+              <div class="portal-title" data-i18n="portalMyTasks">My Tasks</div>
             </div>
             <div
               id="tasks-full"
@@ -206,8 +210,8 @@
 
           <div id="tab-messages" style="display: none">
             <div class="portal-header">
-              <div class="portal-greeting">Stay in touch</div>
-              <div class="portal-title">Messages</div>
+              <div class="portal-greeting" data-i18n="portalStayInTouch">Stay in touch</div>
+              <div class="portal-title" data-i18n="portalMessagesTitle">Messages</div>
             </div>
             <div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:24px;">
               <div
@@ -225,6 +229,7 @@
                 <input
                   id="reply-input"
                   placeholder="Reply..."
+                  data-i18n="portalReplyPh"
                   onkeydown="if(event.key==='Enter'){sendReply();}"
                   style="
                     flex: 1;
@@ -257,8 +262,8 @@
 
           <div id="tab-invoices" style="display: none">
             <div class="portal-header">
-              <div class="portal-greeting">Your billing summary</div>
-              <div class="portal-title">Invoices</div>
+              <div class="portal-greeting" data-i18n="portalBilling">Your billing summary</div>
+              <div class="portal-title" data-i18n="portalInvoicesTitle">Invoices</div>
             </div>
             <div id="invoices-list"></div>
           </div>

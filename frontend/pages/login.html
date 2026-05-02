@@ -40,22 +40,19 @@
             <div class="login-feat">
               <div class="login-feat-dot"></div>
               <div class="login-feat-text">
-                <strong>Event Dashboard</strong>See your event timeline, status,
-                and countdown in one place.
+                <strong data-i18n="loginFeat1Title">Event Dashboard</strong><span data-i18n="loginFeat1Desc">See your event timeline, status, and countdown in one place.</span>
               </div>
             </div>
             <div class="login-feat">
               <div class="login-feat-dot"></div>
               <div class="login-feat-text">
-                <strong>Documents & Contracts</strong>Review and sign contracts
-                uploaded by your planner.
+                <strong data-i18n="loginFeat2Title">Messages</strong><span data-i18n="loginFeat2Desc">Communicate with your planner directly through your portal.</span>
               </div>
             </div>
             <div class="login-feat">
               <div class="login-feat-dot"></div>
               <div class="login-feat-text">
-                <strong>Direct Messaging</strong>Communicate with Debora
-                directly through your portal.
+                <strong data-i18n="loginFeat3Title">Event Tracking</strong><span data-i18n="loginFeat3Desc">Track tasks, invoices, and your event journey in real time.</span>
               </div>
             </div>
           </div>
@@ -71,6 +68,7 @@
               type="text"
               id="login-user"
               placeholder="Enter your username"
+              data-i18n="loginUserPh"
             />
           </div>
           <div class="login-field">
@@ -79,6 +77,7 @@
               type="password"
               id="login-pass"
               placeholder="Enter your password"
+              data-i18n="loginPassPh"
             />
           </div>
           <button class="btn-login" onclick="doLogin()" data-i18n="loginBtn">Log In</button>
@@ -160,8 +159,8 @@
         var u = JSON.parse(localStorage.getItem("user") || "null");
         if (!token || !u) return;
 
-        var API = "http://localhost:5000";
-        fetch(API + "/dashboard", {
+        var API = "http://localhost:5001";
+        fetch(API + "/client/dashboard", {
           headers: { Authorization: "Bearer " + token },
         })
           .then(function (r) {

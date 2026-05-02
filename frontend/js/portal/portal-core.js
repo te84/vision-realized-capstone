@@ -4,6 +4,52 @@ var user = JSON.parse(localStorage.getItem("user"));
 var token = localStorage.getItem("token");
 var currentEventId = null;
 var allEventsData = [];
+var _lang = localStorage.getItem('lang') || 'en';
+
+var _t = {
+  en: {
+    quoteSubmitted: 'Quote Request Submitted', pendingConsult: 'Pending Consultation',
+    consultation: 'Consultation', planning: 'Planning', vendorsSet: 'Vendors Set',
+    eventDay: 'Event Day', completed: 'Completed',
+    eventJourney: 'EVENT JOURNEY', whatsNext: "WHAT'S NEXT",
+    myTasks: 'MY TASKS', recentMessages: 'RECENT MESSAGES',
+    noTasks: 'No tasks assigned yet.', noMessages: 'No messages yet.',
+    noMsgsYet: 'No messages yet. Your planner will reach out here once your event is being planned.',
+    whatsNextQuote: 'We received your quote request! Our team is reviewing your event details and will reach out to schedule a consultation.',
+    whatsNextPending: "We'd like to schedule a consultation with you! Please pick a time that works from the options above.",
+    whatsNextConsult: 'Your consultation is confirmed! Check your <strong>Tasks</strong> for the scheduled date and time.',
+    whatsNextPlanning: 'Your event is being planned! Your planner is coordinating vendors, venue, and logistics. Check your <strong>Tasks</strong> for anything that needs your input.',
+    whatsNextVendors: 'All vendors are booked and confirmed! Reach out to your planner with any questions.',
+    whatsNextEventDay: 'Today is the day! Our team is handling everything on-site. Relax and enjoy your event.',
+    whatsNextCompleted: "Your event is complete! We'd love to hear your feedback.",
+    viewTasks: 'View My Tasks', msgPlanner: 'Message Planner', leaveReview: 'Leave a Review',
+    consultRequest: 'Consultation Request', proposedDate: 'Proposed date:',
+    pickTime: 'Select a time that works best:', noneWork: 'None of these work for me',
+    send: 'Send', due: 'Due', guests: 'Guests', daysAway: 'DAYS AWAY'
+  },
+  es: {
+    quoteSubmitted: 'Solicitud Enviada', pendingConsult: 'Consulta Pendiente',
+    consultation: 'Consulta', planning: 'Planificación', vendorsSet: 'Proveedores Confirmados',
+    eventDay: 'Día del Evento', completed: 'Completado',
+    eventJourney: 'PROGRESO DEL EVENTO', whatsNext: 'PRÓXIMOS PASOS',
+    myTasks: 'MIS TAREAS', recentMessages: 'MENSAJES RECIENTES',
+    noTasks: 'No hay tareas asignadas aún.', noMessages: 'No hay mensajes aún.',
+    noMsgsYet: 'No hay mensajes aún. Su planificador se comunicará aquí una vez que se esté planificando su evento.',
+    whatsNextQuote: '¡Recibimos su solicitud! Nuestro equipo está revisando los detalles y se comunicará para programar una consulta.',
+    whatsNextPending: '¡Nos gustaría programar una consulta con usted! Elija un horario que le funcione de las opciones de arriba.',
+    whatsNextConsult: '¡Su consulta está confirmada! Revise sus <strong>Tareas</strong> para la fecha y hora programadas.',
+    whatsNextPlanning: '¡Su evento está siendo planificado! Su planificador está coordinando proveedores, lugar y logística.',
+    whatsNextVendors: '¡Todos los proveedores están reservados y confirmados! Comuníquese con su planificador con cualquier pregunta.',
+    whatsNextEventDay: '¡Hoy es el día! Nuestro equipo se encarga de todo en el lugar. Relájese y disfrute.',
+    whatsNextCompleted: '¡Su evento está completo! Nos encantaría escuchar su opinión.',
+    viewTasks: 'Ver Mis Tareas', msgPlanner: 'Mensaje al Planificador', leaveReview: 'Dejar Reseña',
+    consultRequest: 'Solicitud de Consulta', proposedDate: 'Fecha propuesta:',
+    pickTime: 'Seleccione un horario:', noneWork: 'Ninguno me funciona',
+    send: 'Enviar', due: 'Vence', guests: 'Invitados', daysAway: 'DÍAS RESTANTES'
+  }
+};
+
+function t(key) { return (_t[_lang] && _t[_lang][key]) || (_t.en[key]) || key; }
 
 if (!user || !token) window.location.href = "login.html";
 
@@ -50,9 +96,16 @@ function logout() {
 }
 
 function statusLabel(s) {
-  if (s === 'Quote Submitted') return 'Quote Request Received';
-  if (s === 'Pending Consultation') return 'Pending Consultation';
-  return s;
+  var map = {
+    'Quote Submitted': t('quoteSubmitted'),
+    'Pending Consultation': t('pendingConsult'),
+    'Consultation': t('consultation'),
+    'Planning': t('planning'),
+    'Vendors Set': t('vendorsSet'),
+    'Event Day': t('eventDay'),
+    'Completed': t('completed')
+  };
+  return map[s] || s;
 }
 
 function getGreeting() {

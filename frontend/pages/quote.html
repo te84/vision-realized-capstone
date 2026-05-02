@@ -32,8 +32,8 @@
       <div id="quote-form-screen">
         <div class="quote-layout">
           <div class="quote-sidebar">
-            <h2>Tell us about your event.</h2>
-            <p>
+            <h2 data-i18n="sidebarTitle">Tell us about your event.</h2>
+            <p data-i18n="sidebarDesc">
               Fill this out and we'll reach out within 24 hours to schedule a
               free consultation — no commitment required.
             </p>
@@ -41,44 +41,15 @@
               <div class="sidebar-feat">
                 <div class="feat-icon"></div>
                 <div class="feat-text">
-                  <strong>Free Consultation</strong>We'll review your details
-                  and reach out to talk through your vision.
+                  <strong data-i18n="feat1">Free Consultation</strong><span data-i18n="feat1d">We'll review your details and reach out to talk through your vision.</span>
                 </div>
               </div>
               <div class="sidebar-feat">
                 <div class="feat-icon"></div>
                 <div class="feat-text">
-                  <strong>Client Dashboard Access</strong>Track your event and
-                  message us online anytime.
+                  <strong data-i18n="feat2">Client Dashboard Access</strong><span data-i18n="feat2d">Track your event and message us online anytime.</span>
                 </div>
               </div>
-              <div class="sidebar-feat">
-                <div class="feat-icon"></div>
-                <div class="feat-text">
-                  <strong>English & Español</strong>Select your preferred
-                  language below.
-                </div>
-              </div>
-            </div>
-            <div class="lang-toggle">
-              <button
-                class="lang-btn active"
-                onclick="
-                  this.classList.add('active');
-                  this.nextElementSibling.classList.remove('active');
-                "
-              >
-                English
-              </button>
-              <button
-                class="lang-btn"
-                onclick="
-                  this.classList.add('active');
-                  this.previousElementSibling.classList.remove('active');
-                "
-              >
-                Español
-              </button>
             </div>
           </div>
           <div class="quote-form-wrap">
@@ -91,37 +62,37 @@
               <span class="prog-label" id="prog-label">Step 1 of 5</span>
             </div>
             <div class="form-step active" id="step-0">
-              <h2 class="form-step-title">First, about you.</h2>
-              <p class="form-step-sub">
+              <h2 class="form-step-title" data-i18n="step1title">First, about you.</h2>
+              <p class="form-step-sub" data-i18n="step1sub">
                 We'll use this to follow up after your submission.
               </p>
               <div class="field-row">
                 <div class="field">
-                  <label>First Name</label
+                  <label data-i18n="lblFirst">First Name</label
                   ><input type="text" placeholder="Jane" />
                 </div>
                 <div class="field">
-                  <label>Last Name</label
+                  <label data-i18n="lblLast">Last Name</label
                   ><input type="text" placeholder="Smith" />
                 </div>
               </div>
               <div class="field">
-                <label>Email Address</label
+                <label data-i18n="lblEmail">Email Address</label
                 ><input type="email" placeholder="jane@email.com" />
               </div>
               <div class="field">
-                <label>Phone Number</label
+                <label data-i18n="lblPhone">Phone Number</label
                 ><input type="tel" placeholder="(555) 555-5555" />
               </div>
               <div class="field">
-                <label>Create a Password</label
+                <label data-i18n="lblPassword">Create a Password</label
                 ><input
                   type="password"
                   placeholder="For your client portal login"
                 />
               </div>
               <div class="field">
-                <label>Security Question</label
+                <label data-i18n="lblSecQ">Security Question</label
                 ><select id="security-q">
                   <option value="">Select a question</option>
                   <option value="What city were you born in?">
@@ -139,7 +110,7 @@
                 </select>
               </div>
               <div class="field">
-                <label>Security Answer</label
+                <label data-i18n="lblSecA">Security Answer</label
                 ><input
                   type="text"
                   id="security-a"
@@ -147,7 +118,7 @@
                 />
               </div>
               <div class="field">
-                <label>How did you hear about us?</label
+                <label data-i18n="lblHear">How did you hear about us?</label
                 ><select>
                   <option value="">Select one</option>
                   <option>Google</option>
@@ -165,8 +136,8 @@
               </div>
             </div>
             <div class="form-step" id="step-1">
-              <h2 class="form-step-title">What kind of event?</h2>
-              <p class="form-step-sub">Select the type that fits best.</p>
+              <h2 class="form-step-title" data-i18n="step2title">What kind of event?</h2>
+              <p class="form-step-sub" data-i18n="step2sub">Select the type that fits best.</p>
               <div class="event-type-grid">
                 <div class="event-type-btn" onclick="pickType(this)">
                   <span class="etb-name">Corporate Event</span>
@@ -218,16 +189,16 @@
               </div>
             </div>
             <div class="form-step" id="step-2">
-              <h2 class="form-step-title">Event details.</h2>
-              <p class="form-step-sub">
+              <h2 class="form-step-title" data-i18n="step3title">Event details.</h2>
+              <p class="form-step-sub" data-i18n="step3sub">
                 The more you share, the better we can prepare.
               </p>
               <div class="field-row">
                 <div class="field">
-                  <label>Event Date</label><input type="date" />
+                  <label data-i18n="lblDate">Event Date</label><input type="date" />
                 </div>
                 <div class="field">
-                  <label>Estimated Guest Count</label
+                  <label data-i18n="lblGuests">Estimated Guest Count</label
                   ><select>
                     <option>Under 25</option>
                     <option>25–50</option>
@@ -239,7 +210,7 @@
                 </div>
               </div>
               <div class="field">
-                <label>Location / City</label
+                <label data-i18n="lblLocation">Location / City</label
                 ><input
                   type="text"
                   placeholder="Newark, NJ"
@@ -247,7 +218,7 @@
                 />
               </div>
               <div class="field">
-                <label>Venue Status</label
+                <label data-i18n="lblVenue">Venue Status</label
                 ><select>
                   <option>I have a venue</option>
                   <option>I need help finding one</option>
@@ -255,7 +226,7 @@
                 </select>
               </div>
               <div class="field">
-                <label>Tell us about your vision</label
+                <label data-i18n="lblVision">Tell us about your vision</label
                 ><textarea
                   placeholder="Theme, vibe, special requests, anything that matters to you..."
                 ></textarea>
@@ -268,8 +239,8 @@
               </div>
             </div>
             <div class="form-step" id="step-3">
-              <h2 class="form-step-title">Budget range.</h2>
-              <p class="form-step-sub">
+              <h2 class="form-step-title" data-i18n="step4title">Budget range.</h2>
+              <p class="form-step-sub" data-i18n="step4sub">
                 All ranges welcome — this just helps us tailor the conversation.
               </p>
               <div class="budget-grid">
@@ -299,7 +270,7 @@
                 </div>
               </div>
               <div class="field" style="margin-top: 20px">
-                <label>Notes on your budget (optional)</label
+                <label data-i18n="lblBudgetNotes">Notes on your budget (optional)</label
                 ><textarea
                   style="min-height: 80px"
                   placeholder="Flexibility, priorities, anything else..."
@@ -313,8 +284,8 @@
               </div>
             </div>
             <div class="form-step" id="step-4">
-              <h2 class="form-step-title">What's the vibe?</h2>
-              <p class="form-step-sub">
+              <h2 class="form-step-title" data-i18n="step5title">What's the vibe?</h2>
+              <p class="form-step-sub" data-i18n="step5sub">
                 Pick any that feel right — you can choose more than one.
               </p>
               <div class="vibe-grid">
@@ -368,7 +339,7 @@
                 </div>
               </div>
               <div class="field" style="margin-top: 24px">
-                <label>Upload Inspiration Photos (optional)</label>
+                <label data-i18n="lblInspo">Upload Inspiration Photos (optional)</label>
                 <div id="inspo-upload-area" style="border:2px dashed rgba(74,39,114,0.25);border-radius:4px;padding:24px;text-align:center;cursor:pointer;background:#fffdf9;" onclick="document.getElementById('inspo-files').click()">
                   <input type="file" id="inspo-files" multiple accept="image/*" style="display:none;" onchange="handleInspoFiles(this.files)" />
                   <div style="font-size:0.85rem;color:#7a6e5e;">Click to browse or drag photos here</div>
@@ -377,7 +348,7 @@
                 <div id="inspo-preview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;"></div>
               </div>
               <div class="field" style="margin-top: 24px">
-                <label>Anything else before you submit?</label
+                <label data-i18n="lblFinal">Anything else before you submit?</label
                 ><textarea
                   placeholder="Final notes, questions, or anything we should know..."
                 ></textarea>
@@ -494,6 +465,46 @@
 
       var curStep = 0;
       function goToStep(step) {
+        // Validate current step before advancing
+        if (step > curStep) {
+          if (curStep === 0) {
+            var inputs0 = document.querySelectorAll("#step-0 input");
+            var selects0 = document.querySelectorAll("#step-0 select");
+            var fname = inputs0[0] ? inputs0[0].value.trim() : "";
+            var lname = inputs0[1] ? inputs0[1].value.trim() : "";
+            var email = inputs0[2] ? inputs0[2].value.trim() : "";
+            var phone = inputs0[3] ? inputs0[3].value.trim() : "";
+            var pw = inputs0[4] ? inputs0[4].value : "";
+            var secQ = document.getElementById("security-q") ? document.getElementById("security-q").value : "";
+            var secA = document.getElementById("security-a") ? document.getElementById("security-a").value.trim() : "";
+            var source = selects0[selects0.length - 1] ? selects0[selects0.length - 1].value : "";
+            if (!fname || !lname || !email || !phone || !pw || !secQ || !secA || !source) {
+              alert("Please fill in all fields before continuing.");
+              return;
+            }
+            if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+              alert("Please enter a valid email address.");
+              return;
+            }
+          } else if (curStep === 1) {
+            var typeSel = document.querySelector("#step-1 .event-type-grid .event-type-btn.selected");
+            var svcSel = document.querySelector("#step-1 .field .event-type-btn.selected");
+            if (!typeSel) { alert("Please select an event type."); return; }
+            if (!svcSel) { alert("Please select a service type."); return; }
+          } else if (curStep === 2) {
+            var inputs2 = document.querySelectorAll("#step-2 input");
+            var evDate = inputs2[0] ? inputs2[0].value : "";
+            var loc = inputs2[1] ? inputs2[1].value.trim() : "";
+            var visionText = document.querySelector("#step-2 textarea");
+            var vision = visionText ? visionText.value.trim() : "";
+            if (!evDate) { alert("Please select an event date."); return; }
+            if (!loc) { alert("Please enter a location."); return; }
+            if (!vision) { alert("Please describe your vision for the event."); return; }
+          } else if (curStep === 3) {
+            var budgetSel = document.querySelector(".budget-btn.selected");
+            if (!budgetSel) { alert("Please select a budget range."); return; }
+          }
+        }
         document.getElementById("step-" + curStep).classList.remove("active");
         document.getElementById("prog-" + curStep).classList.remove("active");
         if (step > curStep)

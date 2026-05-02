@@ -5,17 +5,23 @@ function loadDashboard() {
     headers: { Authorization: "Bearer " + token },
   })
     .then(function (res) {
-      if (!res.ok) throw new Error("bad token");
+      if (!res.ok) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+        throw new Error("bad token");
+      }
       return res.json();
     })
     .then(function (data) {
-      renderDashboard(data);
+      try {
+        renderDashboard(data);
+      } catch (renderErr) {
+        console.error("render error:", renderErr);
+      }
     })
     .catch(function (err) {
       console.log("dashboard error:", err);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "login.html";
     });
 }
 
@@ -122,11 +128,11 @@ function renderEventBundle(bundle) {
   }
 
   if (curStatus === 'Quote Submitted') {
-    nsText.innerHTML = 'We received your quote request! Our team is reviewing your event details and will reach out to schedule a consultation.';
+    nsText.innerHTML = t('whatsNextQuote');
   } else if (curStatus === 'Pending Consultation') {
     nsText.innerHTML = 'We\'d like to schedule a consultation with you! Please pick a time that works from the options above.';
   } else if (curStatus === 'Consultation') {
-    nsText.innerHTML = 'Your consultation is confirmed! Check your <strong>Tasks</strong> for the scheduled date and time.';
+    nsText.innerHTML = t('whatsNextConsult');
     nsBtn('View My Tasks', 2, 'tab-checklist');
   } else if (curStatus === 'Planning') {
     nsText.innerHTML = 'Your event is being planned! Your planner is coordinating vendors, venue, and logistics. Check your <strong>Tasks</strong> for anything that needs your input.';
@@ -150,12 +156,12 @@ function renderEventBundle(bundle) {
   if (tasks.length > 0) {
     var html = "";
     for (var i = 0; i < tasks.length; i++) {
-      var t = tasks[i];
-      var cls = t.completed ? " done" : "";
-      var chk = t.completed ? "✓" : "";
-      var due = t.due_date && !t.completed ? ' <span style="color:#4A2772;font-size:0.72rem;">Due ' + fmtDate(t.due_date) + "</span>" : "";
-      var click = t.completed ? "" : ' onclick="completeTask(' + t.id + ')" style="cursor:pointer;" title="Click to mark complete"';
-      html += '<div class="check-item' + cls + '"><div class="check-box"' + click + ">" + chk + '</div><span class="check-text">' + t.title + due + "</span></div>";
+      var tk = tasks[i];
+      var cls = tk.completed ? " done" : "";
+      var chk = tk.completed ? "✓" : "";
+      var due = tk.due_date && !tk.completed ? ' <span style="color:#4A2772;font-size:0.72rem;">Due ' + fmtDate(tk.due_date) + "</span>" : "";
+      var click = ' onclick="completeTask(' + tk.id + ')" style="cursor:pointer;" title="' + (tk.completed ? 'Click to unmark' : 'Click to mark complete') + '"';
+      html += '<div class="check-item' + cls + '"><div class="check-box"' + click + ">" + chk + '</div><span class="check-text">' + tk.title + due + "</span></div>";
     }
     dashTasks.innerHTML = html;
   } else {
@@ -176,16 +182,19 @@ function renderEventBundle(bundle) {
       var cData = JSON.parse(pendingConsult.text.replace('[CONSULTATION_REQUEST]', ''));
       consultCard.style.display = 'block';
       var timesArr = cData.times || (cData.time ? [cData.time] : []);
-      var timeButtons = timesArr.map(function(t) {
-        return '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ',\'' + t.replace(/'/g,"\\'") + '\')" style="padding:12px 24px;background:#fffdf9;border:2px solid #4a2772;color:#4a2772;font-family:inherit;font-size:0.92rem;font-weight:500;cursor:pointer;border-radius:4px;min-width:120px;">' + t + '</button>';
+      var formattedDate = fmtDate(cData.date);
+      var timeButtons = timesArr.map(function(tm) {
+        return '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ',\'' + tm.replace(/'/g,"\\'") + '\')" style="padding:14px 28px;background:white;border:1.5px solid rgba(74,39,114,0.2);color:#2e1547;font-family:inherit;font-size:0.9rem;font-weight:500;cursor:pointer;border-radius:4px;min-width:130px;transition:all 0.15s;" onmouseover="this.style.background=\'#4a2772\';this.style.color=\'white\';this.style.borderColor=\'#4a2772\';" onmouseout="this.style.background=\'white\';this.style.color=\'#2e1547\';this.style.borderColor=\'rgba(74,39,114,0.2)\';">' + tm + '</button>';
       }).join('');
       consultCard.innerHTML =
-        '<div style="font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;font-weight:600;margin-bottom:12px;">Consultation Request</div>' +
-        '<div style="margin-bottom:14px;"><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong style="font-size:1rem;">' + cData.date + '</strong></div>' +
-        (cData.note ? '<p style="font-size:0.88rem;color:#2e1547;line-height:1.6;margin-bottom:14px;font-style:italic;">"' + cData.note + '"</p>' : '') +
-        '<div style="font-size:0.82rem;color:#7a6e5e;margin-bottom:10px;">Pick a time that works for you:</div>' +
-        '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + timeButtons + '</div>' +
-        '<button onclick="showCounterPropose(' + currentEventId + ')" style="padding:8px 20px;background:none;border:1px solid #7a6e5e;color:#7a6e5e;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">None of these work for me</button>';
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.4rem;color:#2e1547;font-style:italic;margin-bottom:16px;">Consultation Request</div>' +
+        '<div style="margin-bottom:16px;font-size:0.92rem;color:#2e1547;"><span style="color:#7a6e5e;">Proposed date:</span> <strong>' + formattedDate + '</strong></div>' +
+        (cData.note ? '<div style="background:rgba(74,39,114,0.04);border-left:3px solid #4a2772;padding:12px 16px;margin-bottom:20px;font-size:0.88rem;color:#2e1547;line-height:1.6;font-style:italic;">' + cData.note + '</div>' : '') +
+        '<div style="font-size:0.82rem;color:#7a6e5e;margin-bottom:12px;">Select a time that works best:</div>' +
+        '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;">' + timeButtons + '</div>' +
+        '<div style="border-top:1px solid rgba(74,39,114,0.1);padding-top:14px;">' +
+          '<button onclick="showCounterPropose(' + currentEventId + ')" style="padding:8px 20px;background:none;border:none;color:#7a6e5e;font-family:inherit;font-size:0.82rem;cursor:pointer;text-decoration:underline;">None of these work for me</button>' +
+        '</div>';
     } catch(e) { consultCard.style.display = 'none'; }
   } else { consultCard.style.display = 'none'; }
 
@@ -245,7 +254,7 @@ function renderEventBundle(bundle) {
           html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);">In Progress</div>';
           html += '<div style="font-size:1.05rem;font-weight:500;color:white;">' + s.name + "</div></div></div>";
         } else {
-          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
+          html += '<div style="display:flex;align-items:center;gap:20px;padding:24px 28px;background:white;border:1px solid rgba(74,39,114,0.15);border-radius:4px;opacity:0.55;">';
           html += '<div><div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#7A6E5E;">Upcoming</div>';
           html += '<div style="font-size:1.05rem;font-weight:500;color:#1A1208;">' + s.name + "</div></div></div>";
         }
@@ -260,17 +269,17 @@ function renderEventBundle(bundle) {
   var tasksFull = document.getElementById("tasks-full");
   if (tasksFull) {
     if (tasks.length > 0) {
-      var done = tasks.filter(function(t){return t.completed;}).length;
+      var done = tasks.filter(function(tk){return tk.completed;}).length;
       var html = '<div style="display:flex;gap:10px;margin-bottom:24px;">';
       html += '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' + done + " Completed</div>";
       html += '<div style="background:rgba(74,39,114,0.08);color:#4A2772;padding:8px 16px;border-radius:20px;font-size:0.75rem;border:1px solid rgba(74,39,114,0.15);">' + (tasks.length - done) + " Remaining</div></div>";
       for (var i = 0; i < tasks.length; i++) {
-        var t = tasks[i];
-        var cls = t.completed ? " done" : "";
-        var chk = t.completed ? "✓" : "";
-        var click = t.completed ? "" : ' onclick="completeTask(' + t.id + ')" style="cursor:pointer;"';
-        var dateInfo = t.due_date && !t.completed ? ' <span style="color:#4A2772;font-size:0.72rem;">Due ' + fmtDate(t.due_date) + "</span>" : "";
-        html += '<div class="check-item' + cls + '"><div class="check-box"' + click + ">" + chk + '</div><span class="check-text">' + t.title + dateInfo + "</span></div>";
+        var tk = tasks[i];
+        var cls = tk.completed ? " done" : "";
+        var chk = tk.completed ? "✓" : "";
+        var click = ' onclick="completeTask(' + tk.id + ')" style="cursor:pointer;" title="' + (tk.completed ? 'Click to unmark' : 'Click to mark complete') + '"';
+        var dateInfo = tk.due_date && !tk.completed ? ' <span style="color:#4A2772;font-size:0.72rem;">Due ' + fmtDate(tk.due_date) + "</span>" : "";
+        html += '<div class="check-item' + cls + '"><div class="check-box"' + click + ">" + chk + '</div><span class="check-text">' + tk.title + dateInfo + "</span></div>";
       }
       tasksFull.innerHTML = html;
     } else {
