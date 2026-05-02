@@ -81,13 +81,20 @@ function loadExistingRating() {
   })
     .then(function(r) { return r.json(); })
     .then(function(d) {
+      var btn = document.querySelector("#tab-after .btn-primary");
+      var msg = document.getElementById("review-msg");
       if (d.success && d.rating) {
         setRating(d.rating.stars);
         document.getElementById("review-text").value = d.rating.comment || "";
-        var msg = document.getElementById("review-msg");
         msg.style.display = "block";
         msg.style.color = "#7a6e5e";
-        msg.textContent = "You already submitted a review. You can update it below.";
+        msg.textContent = "You previously submitted a review. Edit your stars or comment below and click Update to save changes.";
+        if (btn) btn.textContent = "Update Review";
+      } else {
+        if (btn) btn.textContent = "Submit Review";
+        msg.style.display = "none";
+        setRating(5);
+        document.getElementById("review-text").value = "";
       }
     })
     .catch(function() {});
@@ -96,6 +103,8 @@ function loadExistingRating() {
 function submitReview() {
   var text = document.getElementById("review-text").value.trim();
   if (!text) { document.getElementById("review-text").focus(); return; }
+  var btn = document.querySelector("#tab-after .btn-primary");
+  if (btn) { btn.disabled = true; btn.textContent = "Saving..."; }
   fetch(API + "/client/ratings", {
     method: "POST",
     headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
@@ -107,11 +116,21 @@ function submitReview() {
       msg.style.display = "block";
       if (d.success) {
         msg.style.color = "#3a7d44";
-        msg.textContent = "Thank you for your review!";
+        msg.textContent = "Your review has been saved!";
+        if (btn) { btn.disabled = false; btn.textContent = "Update Review"; }
+        // Reload rating state so message and button stay correct
+        setTimeout(function() {
+          msg.style.color = "#7a6e5e";
+          msg.textContent = "You previously submitted a review. Edit your stars or comment below and click Update to save changes.";
+        }, 2500);
       } else {
         msg.style.color = "#c0392b";
         msg.textContent = d.message || "Something went wrong.";
+        if (btn) { btn.disabled = false; btn.textContent = "Update Review"; }
       }
+    })
+    .catch(function() {
+      if (btn) { btn.disabled = false; btn.textContent = "Update Review"; }
     });
 }
 

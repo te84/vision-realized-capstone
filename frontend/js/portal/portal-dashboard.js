@@ -312,6 +312,9 @@ function renderEventBundle(bundle) {
 
   var replyBox = document.getElementById("reply-box");
   if (replyBox && currentEventId) replyBox.style.display = "flex";
+
+  // Always reload existing rating so tab-after reflects saved stars/comment on every render
+  loadExistingRating();
 }
 
 function renderDashboard(data) {
