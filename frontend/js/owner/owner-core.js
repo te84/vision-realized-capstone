@@ -209,11 +209,12 @@ function ownerDeleteTask(taskId, listId, eventId) {
 var _activeTab = null;
 
 function showTab(name) {
-  ['clients','calendar','gallery','ratings'].forEach(function (t) {
+  ['clients','calendar','gallery','ratings','accounts'].forEach(function (t) {
     var el = document.getElementById('nav-' + t);
     if (el) el.classList.toggle('active', t === name);
   });
   _activeTab = name;
+  localStorage.setItem('owner_active_tab', name);
   var container = document.getElementById('main-content');
   container.innerHTML = '<div style="color:#7a6e5e;padding:40px 0;">Loading…</div>';
 

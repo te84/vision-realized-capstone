@@ -63,7 +63,7 @@
     <script src="../js/owner/tab-ratings.js"></script>
 
     <script>
-      showTab('clients');
+      showTab(localStorage.getItem('owner_active_tab') || 'clients');
     </script>
 
   </body>
