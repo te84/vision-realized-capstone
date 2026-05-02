@@ -91,6 +91,43 @@ def register_client_action_routes(app):
         db.commit(); cur.close(); db.close()
         return jsonify({'success': True})
 
+    @app.route('/client/invoices/<int:event_id>', methods=['GET'])
+    def client_get_invoices(event_id):
+        tok = verify_token()
+        if not tok:
+            return jsonify({'message': 'Not authorized'}), 401
+
+        uid = tok['user_id']
+        db = get_db()
+        cur = db.cursor()
+
+        # Verify this event belongs to the requesting client
+        cur.execute("""
+            SELECT e.id FROM events e
+            JOIN client c ON e.client_id = c.client_id
+            WHERE e.id = %s AND c.user_id = %s
+        """, (event_id, uid))
+        if not cur.fetchone():
+            cur.close(); db.close()
+            return jsonify({'message': 'Event not found or not authorized'}), 403
+
+        import psycopg2.extras
+        cur.close()
+        cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("""
+            SELECT invoice_id, status, amount, due_date, created_at
+            FROM invoices
+            WHERE event_id = %s
+            ORDER BY invoice_id DESC
+        """, (event_id,))
+        invoices = [dict(row) for row in cur.fetchall()]
+        for inv in invoices:
+            if inv.get('due_date'):   inv['due_date']   = str(inv['due_date'])
+            if inv.get('created_at'): inv['created_at'] = str(inv['created_at'])
+            if inv.get('amount') is not None: inv['amount'] = float(inv['amount'])
+        cur.close(); db.close()
+        return jsonify({'success': True, 'invoices': invoices})
+
     @app.route('/client/ratings/<int:event_id>', methods=['GET'])
     def client_get_rating(event_id):
         tok = verify_token()

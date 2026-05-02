@@ -76,6 +76,9 @@
               >0</span
             >
           </div>
+          <div class="portal-nav-item" onclick="switchTab(this, 'tab-invoices')">
+            <span class="portal-nav-icon">--</span> Invoices
+          </div>
           <div class="portal-nav-item" onclick="switchTab(this, 'tab-after')">
             <span class="portal-nav-icon">--</span> After Event
           </div>
@@ -262,6 +265,14 @@
             </div>
           </div>
 
+          <div id="tab-invoices" style="display: none">
+            <div class="portal-header">
+              <div class="portal-greeting">Your billing summary</div>
+              <div class="portal-title">Invoices</div>
+            </div>
+            <div id="invoices-list"></div>
+          </div>
+
           <div id="tab-after" style="display: none">
             <div class="portal-header">
               <div class="portal-greeting">Relive your event</div>
@@ -328,6 +339,9 @@
         }
         if (id === 'tab-after') {
           loadExistingRating();
+        }
+        if (id === 'tab-invoices' && currentEventId) {
+          loadInvoices(currentEventId);
         }
       }
 
@@ -1188,6 +1202,40 @@
               msg.textContent = d.message || "Something went wrong.";
               msg.style.color = "#c0392b";
             }
+          });
+      }
+
+      function loadInvoices(eventId) {
+        var el = document.getElementById('invoices-list');
+        el.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">Loading...</p>';
+        fetch(API + '/client/invoices/' + eventId, {
+          headers: { Authorization: 'Bearer ' + token }
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (!d.success || !d.invoices.length) {
+              el.innerHTML = '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No invoices have been issued for this event yet.</p>';
+              return;
+            }
+            var html = '';
+            for (var i = 0; i < d.invoices.length; i++) {
+              var inv = d.invoices[i];
+              var statusColor = inv.status === 'Paid' ? '#3a7d44' : inv.status === 'Overdue' ? '#c0392b' : '#4A2772';
+              var amountStr = inv.amount != null ? '$' + inv.amount.toFixed(2) : 'TBD';
+              var dueStr = inv.due_date ? fmtDate(inv.due_date) : 'TBD';
+              html += '<div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;margin-bottom:12px;display:flex;align-items:center;gap:20px;">';
+              html += '<div style="flex:1;">';
+
+              html += '<div style="font-size:1.1rem;font-weight:600;color:#2E1547;">' + amountStr + '</div>';
+              html += '<div style="font-size:0.8rem;color:#7A6E5E;margin-top:4px;">Due: ' + dueStr + '</div>';
+              html += '</div>';
+              html += '<div style="font-size:0.78rem;font-weight:600;color:' + statusColor + ';background:rgba(74,39,114,0.06);padding:6px 14px;border-radius:20px;border:1px solid ' + statusColor + '33;">' + (inv.status || 'Pending') + '</div>';
+              html += '</div>';
+            }
+            el.innerHTML = html;
+          })
+          .catch(function() {
+            el.innerHTML = '<p style="color:#c0392b;font-size:0.9rem;padding:24px;">Could not load invoices.</p>';
           });
       }
 
