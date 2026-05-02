@@ -60,6 +60,9 @@
         <div class="owner-nav-item" onclick="showTab(this, 'tab-gallery')">
           Gallery
         </div>
+        <div class="owner-nav-item" onclick="showTab(this, 'tab-ratings')">
+          Ratings
+        </div>
         <div style="margin-top: auto; padding-top: 16px">
           <div class="owner-nav-item" onclick="doLogout()">Sign Out</div>
         </div>
@@ -137,6 +140,7 @@
               <button class="client-subtab" onclick="switchClientTab(this,'ctab-messages')">Messages</button>
               <button class="client-subtab" onclick="switchClientTab(this,'ctab-documents')">Documents</button>
               <button class="client-subtab" onclick="switchClientTab(this,'ctab-quotes')">Quote Details</button>
+              <button class="client-subtab" onclick="switchClientTab(this,'ctab-reviews')">Reviews</button>
             </div>
             <div id="ctab-overview" class="client-subtab-content"></div>
             <div id="ctab-events" class="client-subtab-content" style="display:none;"></div>
@@ -144,6 +148,7 @@
             <div id="ctab-messages" class="client-subtab-content" style="display:none;"></div>
             <div id="ctab-documents" class="client-subtab-content" style="display:none;"></div>
             <div id="ctab-quotes" class="client-subtab-content" style="display:none;"></div>
+            <div id="ctab-reviews" class="client-subtab-content" style="display:none;"></div>
           </div>
         </div>
 
@@ -252,6 +257,14 @@
           <div id="carousel-admin-grid" style="display:flex;flex-wrap:wrap;gap:8px;">
             <p style="color:#7a6e5e;">Loading...</p>
           </div>
+        </div>
+
+        <div id="tab-ratings" class="tab-content">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#2e1547;font-style:italic;margin-bottom:16px;">
+            Client Ratings
+          </h2>
+          <div id="ratings-summary-bar"></div>
+          <div id="ratings-list"><p style="color:#7a6e5e;">Loading...</p></div>
         </div>
       </div>
     </div>

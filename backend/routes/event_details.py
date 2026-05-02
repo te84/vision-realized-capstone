@@ -43,8 +43,14 @@ def register_owner_event_detail_routes(app):
             if quote_data.get('event_date'): quote_data['event_date'] = str(quote_data['event_date'])
             if quote_data.get('created_at'): quote_data['created_at'] = str(quote_data['created_at'])
 
+        cur.execute("SELECT stars, comment, created_at FROM event_ratings WHERE event_id = %s", (event_id,))
+        rating_row = cur.fetchone()
+        rating_data = None
+        if rating_row:
+            rating_data = {'stars': rating_row['stars'], 'comment': rating_row['comment'], 'created_at': str(rating_row['created_at'])}
+
         cur.close(); db.close()
-        return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs, 'quote': quote_data})
+        return jsonify({'success': True, 'tasks': tasks, 'messages': msgs, 'documents': docs, 'quote': quote_data, 'rating': rating_data})
 
     @app.route('/owner/event-detail/<int:event_id>/quote', methods=['PUT'])
     def update_event_quote(event_id):

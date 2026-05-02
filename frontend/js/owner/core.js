@@ -36,6 +36,7 @@ function showTab(el, id) {
   if (id === "tab-inbox" && !_tabLoaded.inbox) { _tabLoaded.inbox = true; loadInbox(); }
   if (id === "tab-calendar") renderCalendar();
   if (id === "tab-gallery" && !_tabLoaded.gallery) { _tabLoaded.gallery = true; loadGalleryAdmin(); }
+  if (id === "tab-ratings") loadAllRatings();
 }
 
 function formatTime12(t) {
@@ -247,4 +248,3 @@ function switchClientTab(el, tabId) {
   for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
   el.classList.add("active");
 }
-

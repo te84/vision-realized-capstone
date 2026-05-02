@@ -37,6 +37,7 @@ function openClient(clientId) {
     renderClientMessages(c);
     renderClientDocuments(c);
     renderClientQuotes(c);
+    renderClientReviews(c);
   });
 }
 
@@ -636,3 +637,150 @@ function saveEventChanges() {
     });
 }
 
+// ── Reviews subtab (client detail) ──
+function renderClientReviews(c) {
+  var reviews = [];
+  for (var i = 0; i < c.events.length; i++) {
+    var ev = c.events[i];
+    var detail = clientDetailCache[ev.id];
+    if (detail && detail.rating) {
+      reviews.push({
+        stars: detail.rating.stars,
+        comment: detail.rating.comment || '',
+        eventName: ev.event_name || 'Event',
+        eventType: ev.event_type || '',
+        eventDate: ev.event_date || '',
+        createdAt: detail.rating.created_at || ''
+      });
+    }
+  }
+
+  var html = '';
+  if (reviews.length === 0) {
+    html = '<div style="text-align:center;padding:48px 24px;">' +
+      '<div style="font-size:2.5rem;margin-bottom:12px;">&#11088;</div>' +
+      '<p style="color:#7a6e5e;font-size:0.92rem;">No reviews submitted yet for this client.</p>' +
+      '</div>';
+    document.getElementById('ctab-reviews').innerHTML = html;
+    return;
+  }
+
+  var total = 0;
+  for (var r = 0; r < reviews.length; r++) total += reviews[r].stars;
+  var avg = (total / reviews.length).toFixed(1);
+  var avgRounded = Math.round(parseFloat(avg));
+  var sumStars = '';
+  for (var s = 1; s <= 5; s++) {
+    sumStars += '<span style="font-size:1.6rem;color:' + (s <= avgRounded ? '#c49a2a' : '#ddd') + ';">&#9733;</span>';
+  }
+  html += '<div class="panel" style="margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">';
+  html += '<div style="text-align:center;min-width:72px;"><div style="font-size:2.2rem;font-family:\'Cormorant Garamond\',serif;color:#4a2772;font-weight:700;line-height:1;">' + avg + '</div>';
+  html += '<div style="font-size:0.72rem;color:#7a6e5e;margin-top:2px;">avg rating</div></div>';
+  html += '<div>' + sumStars + '<div style="font-size:0.78rem;color:#7a6e5e;margin-top:4px;">' + reviews.length + ' review' + (reviews.length !== 1 ? 's' : '') + '</div></div></div>';
+
+  for (var r = 0; r < reviews.length; r++) {
+    var rev = reviews[r];
+    var cardStars = '';
+    for (var s = 1; s <= 5; s++) {
+      cardStars += '<span style="font-size:1.15rem;color:' + (s <= rev.stars ? '#c49a2a' : '#ddd') + ';">&#9733;</span>';
+    }
+    var dateStr = rev.createdAt ? new Date(rev.createdAt).toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}) : '';
+    html += '<div class="panel" style="margin-bottom:14px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px;">';
+    html += '<div><div style="font-size:0.9rem;font-weight:600;color:#2e1547;margin-bottom:2px;">' + rev.eventName + '</div>';
+    html += '<div style="font-size:0.72rem;color:#7a6e5e;">' + rev.eventType + (rev.eventDate ? ' &middot; ' + rev.eventDate : '') + '</div></div>';
+    html += '<div style="text-align:right;">' + cardStars + '<div style="font-size:0.7rem;color:#9a8e7e;margin-top:2px;">' + rev.stars + ' / 5</div></div>';
+    html += '</div>';
+    if (rev.comment) {
+      html += '<blockquote style="margin:0;padding:12px 16px;background:#faf7f2;border-left:3px solid #4a2772;font-size:0.88rem;color:#3a2e22;line-height:1.6;font-style:italic;">' + rev.comment + '</blockquote>';
+    }
+    if (dateStr) {
+      html += '<div style="font-size:0.68rem;color:#9a8e7e;margin-top:8px;text-align:right;">Submitted ' + dateStr + '</div>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('ctab-reviews').innerHTML = html;
+}
+
+// ── Ratings tab (global, all clients) ──
+function loadAllRatings() {
+  fetch(API + '/owner/events', { headers: { Authorization: 'Bearer ' + token } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success) return;
+      var events = data.events;
+      var fetches = events.map(function(ev) {
+        return fetch(API + '/owner/event-detail/' + ev.id, { headers: { Authorization: 'Bearer ' + token } })
+          .then(function(r) { return r.json(); })
+          .then(function(d) { return { event: ev, rating: d.rating || null }; });
+      });
+      Promise.all(fetches).then(function(results) {
+        var rated = results.filter(function(r) { return r.rating !== null; });
+        renderRatings(rated);
+      });
+    })
+    .catch(function() {
+      document.getElementById('ratings-list').innerHTML = '<p style="color:#c0392b;">Failed to load ratings.</p>';
+    });
+}
+
+function renderRatings(rated) {
+  var summaryBar = document.getElementById('ratings-summary-bar');
+  var list = document.getElementById('ratings-list');
+
+  if (rated.length === 0) {
+    summaryBar.innerHTML = '';
+    list.innerHTML = '<div style="text-align:center;padding:48px 24px;">' +
+      '<div style="font-size:2.5rem;margin-bottom:12px;">&#11088;</div>' +
+      '<p style="color:#7a6e5e;font-size:0.92rem;">No client ratings have been submitted yet.</p>' +
+      '</div>';
+    return;
+  }
+
+  var total = 0;
+  for (var i = 0; i < rated.length; i++) total += rated[i].rating.stars;
+  var avg = (total / rated.length).toFixed(1);
+  var avgRounded = Math.round(parseFloat(avg));
+  var sumStars = '';
+  for (var s = 1; s <= 5; s++) {
+    sumStars += '<span style="font-size:1.8rem;color:' + (s <= avgRounded ? '#c49a2a' : '#ddd') + ';">&#9733;</span>';
+  }
+  summaryBar.style.cssText = 'display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:#fff;border:1px solid rgba(74,39,114,0.12);padding:20px 24px;margin-bottom:24px;';
+  summaryBar.innerHTML =
+    '<div style="text-align:center;min-width:72px;">' +
+      '<div style="font-size:2.6rem;font-family:\'Cormorant Garamond\',serif;color:#4a2772;font-weight:700;line-height:1;">' + avg + '</div>' +
+      '<div style="font-size:0.72rem;color:#7a6e5e;margin-top:2px;">avg rating</div>' +
+    '</div>' +
+    '<div>' + sumStars +
+      '<div style="font-size:0.8rem;color:#7a6e5e;margin-top:4px;">' + rated.length + ' review' + (rated.length !== 1 ? 's' : '') + '</div>' +
+    '</div>';
+
+  rated.sort(function(a, b) {
+    return new Date(b.rating.created_at) - new Date(a.rating.created_at);
+  });
+
+  var html = '';
+  for (var i = 0; i < rated.length; i++) {
+    var ev = rated[i].event;
+    var rt = rated[i].rating;
+    var cardStars = '';
+    for (var s = 1; s <= 5; s++) {
+      cardStars += '<span style="font-size:1.3rem;color:' + (s <= rt.stars ? '#c49a2a' : '#ddd') + ';">&#9733;</span>';
+    }
+    var dateStr = rt.created_at ? new Date(rt.created_at).toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}) : '';
+    html += '<div class="panel" style="margin-bottom:16px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+    html += '<div><div style="font-size:1rem;font-weight:600;color:#2e1547;margin-bottom:2px;">' + (ev.firstname || '') + ' ' + (ev.lastname || '') + '</div>';
+    html += '<div style="font-size:0.78rem;color:#7a6e5e;">' + (ev.event_name || 'Event') + (ev.event_type ? ' &middot; ' + ev.event_type : '') + (ev.event_date ? ' &middot; ' + ev.event_date : '') + '</div></div>';
+    html += '<div style="text-align:right;">' + cardStars + '<div style="font-size:0.7rem;color:#9a8e7e;margin-top:2px;">' + rt.stars + ' / 5</div></div>';
+    html += '</div>';
+    if (rt.comment) {
+      html += '<blockquote style="margin:0;padding:12px 16px;background:#faf7f2;border-left:3px solid #4a2772;font-size:0.88rem;color:#3a2e22;line-height:1.6;font-style:italic;">' + rt.comment + '</blockquote>';
+    }
+    if (dateStr) {
+      html += '<div style="font-size:0.7rem;color:#9a8e7e;margin-top:8px;text-align:right;">Submitted ' + dateStr + '</div>';
+    }
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
