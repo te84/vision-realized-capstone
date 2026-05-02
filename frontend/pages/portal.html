@@ -326,6 +326,9 @@
             if (badge) { badge.style.display = "none"; badge.textContent = "0"; }
           });
         }
+        if (id === 'tab-after') {
+          loadExistingRating();
+        }
       }
 
       function logout() {
@@ -1146,21 +1149,44 @@
         }
       }
 
-      function submitReview() {
-        var text = document.getElementById("review-text").value.trim();
-        if (!text) { document.getElementById("review-text").focus(); return; }
-        // send as a message to the event
-        fetch(API + "/client/messages", {
-          method: "POST",
-          headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-          body: JSON.stringify({ event_id: currentEventId, text: "Review (" + userRating + "/5 stars): " + text }),
+      function loadExistingRating() {
+        if (!currentEventId) return;
+        fetch(API + "/client/ratings/" + currentEventId, {
+          headers: { Authorization: "Bearer " + token }
         })
           .then(function(r) { return r.json(); })
           .then(function(d) {
+            if (d.success && d.rating) {
+              var r = d.rating;
+              setRating(r.stars);
+              document.getElementById("review-text").value = r.comment || "";
+              var msg = document.getElementById("review-msg");
+              msg.style.display = "block";
+              msg.textContent = "You already submitted a review. You can update it below.";
+              msg.style.color = "#7a6e5e";
+            }
+          })
+          .catch(function() {});
+      }
+
+      function submitReview() {
+        var text = document.getElementById("review-text").value.trim();
+        if (!text) { document.getElementById("review-text").focus(); return; }
+        fetch(API + "/client/ratings", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+          body: JSON.stringify({ event_id: currentEventId, stars: userRating, comment: text }),
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            var msg = document.getElementById("review-msg");
+            msg.style.display = "block";
             if (d.success) {
-              document.getElementById("review-msg").style.display = "block";
-              document.getElementById("review-msg").textContent = "Thank you for your review!";
-              document.getElementById("review-text").value = "";
+              msg.textContent = "Thank you for your review!";
+              msg.style.color = "#3a7d44";
+            } else {
+              msg.textContent = d.message || "Something went wrong.";
+              msg.style.color = "#c0392b";
             }
           });
       }

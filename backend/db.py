@@ -50,6 +50,13 @@ def create_tables():
         cur.execute("""CREATE TABLE IF NOT EXISTS security_questions (
             id SERIAL PRIMARY KEY, user_id INT NOT NULL UNIQUE, question VARCHAR(300),
             answer VARCHAR(300), created_at TIMESTAMP DEFAULT NOW())""")
+        cur.execute("""CREATE TABLE IF NOT EXISTS event_ratings (
+            id SERIAL PRIMARY KEY,
+            event_id INT NOT NULL UNIQUE,
+            client_id INT NOT NULL,
+            stars INT NOT NULL CHECK (stars >= 1 AND stars <= 5),
+            comment TEXT,
+            created_at TIMESTAMP DEFAULT NOW())""")
         db.commit()
         cur.close()
         db.close()
