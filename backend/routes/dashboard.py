@@ -64,9 +64,8 @@ def register_dashboard_routes(app):
                 cur.execute("SELECT * FROM client_messages WHERE event_id = %s ORDER BY created_at DESC", (eid,))
                 messages = []
                 for m in cur.fetchall():
-                    msg_date = m['created_at'].strftime("%b %d, %Y at %I:%M %p") if m['created_at'] else ""
                     messages.append({'id': m['id'], 'sender': m['sender'], 'text': m['text'],
-                        'date': msg_date, 'read': m['read']})
+                        'date': str(m['created_at']) if m['created_at'] else '', 'read': m['read']})
 
                 cur.execute("SELECT * FROM documents WHERE event_id = %s ORDER BY created_at DESC", (eid,))
                 docs = [{'id': d['id'], 'name': d['name'], 'type': d['file_type'],

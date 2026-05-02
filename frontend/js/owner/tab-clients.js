@@ -27,7 +27,7 @@ function _listViewHTML() {
 }
 
 function _detailViewHTML() {
-  var tabs = [['overview','Overview'],['events','Events'],['tasks','Tasks'],['messages','Messages'],['documents','Documents'],['quotes','Quote Details'],['reviews','Reviews']];
+  var tabs = [['overview','Overview'],['events','Events'],['tasks','Tasks'],['notes','Notes'],['quotes','Quote Request'],['reviews','Reviews']];
   return '<div id="client-detail-view" style="display:none;">' +
     '<button onclick="_backToClients()" style="background:none;border:none;color:#4a2772;font-family:inherit;font-size:0.88rem;cursor:pointer;padding:0;margin-bottom:16px;display:flex;align-items:center;gap:6px;">&larr; Back to Clients</button>' +
     '<div id="client-header"></div>' +
@@ -126,9 +126,9 @@ function _openClient(clientId) {
   _renderOverview(c);
   _renderEvents(c);
   _renderTasks(c);
-  _renderMessages(c);
-  _renderDocuments(c);
+  _renderNotes(c);
   _renderQuotes(c);
+  c.events.forEach(function(ev){ _renderStickyNotes(ev.id); });
   _renderReviews(c);
 }
 
@@ -170,7 +170,6 @@ function _renderOverview(c) {
       '<div style="display:flex;gap:16px;margin-top:10px;font-size:0.78rem;color:#7a6e5e;align-items:center;">' +
         '<span>Tasks: '+td+'/'+tt+'</span>' +
         (d?'<span>Messages: '+d.messages.length+'</span>':'') +
-        (d?'<span>Documents: '+d.documents.length+'</span>':'') +
         (ev.planner&&ev.planner!=='TBD'?'<span>Planner: '+ev.planner+'</span>':'') +
         (d&&d.rating?'<span>'+[1,2,3,4,5].map(function(s){return'<span style="color:'+(s<=d.rating.stars?'#c49a2a':'#ddd')+';">&#9733;</span>';}).join('')+' ('+d.rating.stars+'/5)</span>':'') +
       '</div></div>';
@@ -292,78 +291,58 @@ function _addTask(eventId) {
     });
 }
 
-/* ── Messages ────────────────────────────────────────────────────── */
-function _renderMessages(c) {
-  document.getElementById('ctab-messages').innerHTML = c.events.map(function(ev){
-    var d=_cache.details[ev.id];if(!d)return'';
-    var bubbles=(d.messages||[]).map(function(msg){
-      var isOwner=msg.sender==='Vision Realized';
-      var style=isOwner?'margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;':'margin-right:auto;background:#fff;color:#1A1208;border:1px solid rgba(74,39,114,0.15);border-radius:12px 12px 12px 2px;';
-      return '<div style="max-width:75%;padding:10px 14px;'+style+'"><div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">'+(msg.sender||'')+'</div><div style="font-size:0.88rem;line-height:1.5;">'+(msg.text||'')+'</div></div>';
-    }).join('')||'<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
-    return '<div class="panel" style="margin-bottom:16px;"><h3 style="margin-bottom:4px;">'+(ev.event_name||'Event')+'</h3>' +
-      '<div style="font-size:0.78rem;color:#7a6e5e;margin-bottom:14px;">'+(ev.event_type||'')+(ev.event_date?' &middot; '+ev.event_date:'')+'</div>' +
-      '<div id="owner-chat-history-'+ev.id+'" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:320px;overflow-y:auto;">'+bubbles+'</div>' +
-      '<div style="display:flex;gap:8px;align-items:flex-end;">' +
-        '<textarea id="owner-msg-input-'+ev.id+'" placeholder="Type a message…" rows="2" style="flex:1;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:none;outline:none;border-radius:2px;"></textarea>' +
-        '<button onclick="_sendMsg('+ev.id+')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;white-space:nowrap;border-radius:2px;">Send</button>' +
+/* ── Notes (private, localStorage — sticky bullets) ─────────────── */
+function _renderNotes(c) {
+  document.getElementById('ctab-notes').innerHTML = c.events.map(function(ev){
+    return '<div style="background:#fffde6;border:1px solid #e6d88a;border-radius:6px;padding:20px 24px;margin-bottom:16px;box-shadow:2px 2px 8px rgba(0,0,0,0.06);">' +
+      '<h3 style="margin-bottom:4px;color:#2e1547;">' + (ev.event_name || 'Event') + '</h3>' +
+      '<div style="font-size:0.78rem;color:#7a6e5e;margin-bottom:14px;">' + (ev.event_type || '') + (ev.event_date ? ' &middot; ' + ev.event_date : '') + '</div>' +
+      '<div id="tab-sticky-notes-' + ev.id + '" style="margin-bottom:12px;"></div>' +
+      '<div style="display:flex;gap:8px;align-items:center;">' +
+        '<input id="tab-sticky-input-' + ev.id + '" placeholder="Add a note…" onkeydown="if(event.key===\'Enter\')_addTabStickyNote(' + ev.id + ')" style="flex:1;padding:8px 12px;border:1.5px solid #e6d88a;background:white;font-family:inherit;font-size:0.85rem;outline:none;border-radius:2px;" />' +
+        '<button onclick="_addTabStickyNote(' + ev.id + ')" style="padding:8px 16px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Add</button>' +
+        '<button onclick="_clearTabStickyNotes(' + ev.id + ')" style="padding:8px 16px;background:none;border:1px solid #c0392b;color:#c0392b;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Clear All</button>' +
       '</div></div>';
   }).join('');
+  c.events.forEach(function(ev){ _renderTabStickyNotes(ev.id); });
 }
 
-function _sendMsg(eventId) {
-  var input=document.getElementById('owner-msg-input-'+eventId);
-  var text=input?input.value.trim():'';if(!text){if(input)input.focus();return;}
-  fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:text})})
-    .then(function(r){return r.json();}).then(function(d){
-      if(!d.success)return;
-      var msg={sender:'Vision Realized',text:text};
-      (_cache.details[eventId]=_cache.details[eventId]||{});
-      (_cache.details[eventId].messages=_cache.details[eventId].messages||[]).push(msg);
-      var history=document.getElementById('owner-chat-history-'+eventId);
-      var empty=history.querySelector('p');if(empty)empty.remove();
-      var bubble=document.createElement('div');
-      bubble.style.cssText='max-width:75%;padding:10px 14px;margin-left:auto;background:#4a2772;color:white;border-radius:12px 12px 2px 12px;';
-      bubble.innerHTML='<div style="font-size:0.7rem;opacity:0.7;margin-bottom:3px;">Vision Realized</div><div style="font-size:0.88rem;line-height:1.5;">'+text+'</div>';
-      history.appendChild(bubble);history.scrollTop=history.scrollHeight;input.value='';
-    });
-}
-
-/* ── Documents ───────────────────────────────────────────────────── */
-function _renderDocuments(c) {
-  document.getElementById('ctab-documents').innerHTML = c.events.map(function(ev){
-    var d=_cache.details[ev.id];if(!d)return'';
-    var docRows=d.documents.length?d.documents.map(function(doc){
-      return '<div class="doc-row"><span class="doc-type">'+(doc.file_type||'FILE')+'</span><span>'+doc.name+'</span>'+(doc.status?'<span style="color:#7A6E5E;font-size:0.8rem;margin-left:auto;">'+doc.status+'</span>':'')+'</div>';
-    }).join(''):'<p style="color:#7A6E5E;">No documents yet.</p>';
-    return '<div class="panel" style="margin-bottom:16px;"><h3 style="margin-bottom:4px;">'+(ev.event_name||'Event')+'</h3>' +
-      '<div style="font-size:0.78rem;color:#7a6e5e;margin-bottom:14px;">'+(ev.event_type||'')+(ev.event_date?' &middot; '+ev.event_date:'')+'</div>' +
-      '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:14px 16px;margin-bottom:14px;"><div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-        '<input id="new-doc-name-'+ev.id+'" placeholder="Document name…" style="flex:2;min-width:140px;padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;">' +
-        '<select id="new-doc-type-'+ev.id+'" style="padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;"><option>PDF</option><option>DOC</option><option>IMG</option><option>XLS</option><option>OTHER</option></select>' +
-        '<select id="new-doc-status-'+ev.id+'" style="padding:8px 10px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.85rem;outline:none;"><option>Uploaded</option><option>Pending Signature</option><option>Signed</option><option>Final</option></select>' +
-        '<button onclick="_addDoc('+ev.id+')" style="padding:8px 18px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;white-space:nowrap;">+ Add</button>' +
-      '</div></div><div id="doc-list-'+ev.id+'">'+docRows+'</div></div>';
+function _renderTabStickyNotes(eventId) {
+  var el = document.getElementById('tab-sticky-notes-' + eventId);
+  if (!el) return;
+  var notes = JSON.parse(localStorage.getItem('tab_sticky_' + eventId) || '[]');
+  if (!notes.length) { el.innerHTML = '<p style="font-size:0.82rem;color:#b8a850;font-style:italic;">No notes yet.</p>'; return; }
+  el.innerHTML = notes.map(function(n, i) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px dashed #e6d88a;">' +
+      '<span style="color:#4a2772;font-size:0.9rem;line-height:1;">&#8226;</span>' +
+      '<span style="flex:1;font-size:0.88rem;color:#2e1547;line-height:1.5;">' + n.replace(/</g,'&lt;') + '</span>' +
+      '<button onclick="_removeTabStickyNote(' + eventId + ',' + i + ')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:0.9rem;padding:0;line-height:1;" title="Remove">&times;</button>' +
+    '</div>';
   }).join('');
 }
 
-function _addDoc(eventId) {
-  var nameEl=document.getElementById('new-doc-name-'+eventId);
-  var typeEl=document.getElementById('new-doc-type-'+eventId);
-  var statEl=document.getElementById('new-doc-status-'+eventId);
-  var name=nameEl.value.trim();if(!name){nameEl.focus();return;}
-  fetch(API+'/owner/documents',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,name:name,file_type:typeEl.value,status:statEl.value})})
-    .then(function(r){return r.json();}).then(function(d){
-      if(!d.success)return;
-      nameEl.value='';
-      (_cache.details[eventId]=_cache.details[eventId]||{});
-      (_cache.details[eventId].documents=_cache.details[eventId].documents||[]).unshift({name:name,file_type:typeEl.value,status:statEl.value});
-      var list=document.getElementById('doc-list-'+eventId);
-      var empty=list.querySelector('p');if(empty)empty.remove();
-      var row=document.createElement('div');row.className='doc-row';
-      row.innerHTML='<span class="doc-type">'+typeEl.value+'</span><span>'+name+'</span><span style="color:#7A6E5E;font-size:0.8rem;margin-left:auto;">'+statEl.value+'</span>';
-      list.prepend(row);
-    });
+function _addTabStickyNote(eventId) {
+  var input = document.getElementById('tab-sticky-input-' + eventId);
+  var text = input ? input.value.trim() : '';
+  if (!text) { if (input) input.focus(); return; }
+  var notes = JSON.parse(localStorage.getItem('tab_sticky_' + eventId) || '[]');
+  notes.push(text);
+  localStorage.setItem('tab_sticky_' + eventId, JSON.stringify(notes));
+  input.value = '';
+  _renderTabStickyNotes(eventId);
+}
+
+function _removeTabStickyNote(eventId, idx) {
+  var notes = JSON.parse(localStorage.getItem('tab_sticky_' + eventId) || '[]');
+  notes.splice(idx, 1);
+  localStorage.setItem('tab_sticky_' + eventId, JSON.stringify(notes));
+  _renderTabStickyNotes(eventId);
+}
+
+function _clearTabStickyNotes(eventId) {
+  if (!confirm('Clear all notes for this event?')) return;
+  localStorage.removeItem('tab_sticky_' + eventId);
+  _renderTabStickyNotes(eventId);
 }
 
 /* ── Quote Details ───────────────────────────────────────────────── */
@@ -372,7 +351,6 @@ function _renderQuotes(c) {
   var html=c.events.map(function(ev){
     var d=_cache.details[ev.id];if(!d||!d.quote)return'';
     hasAny=true;var q=d.quote;
-    var sentMsgs=(d.messages||[]).filter(function(m){return m.sender==='Vision Realized';});
     var TIMES=['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'];
     var fields=[['Event Type',q.event_type],['Service Requested',q.service_type],['Event Date',q.event_date||ev.event_date||'TBD'],['Guest Count',q.guests],['Budget Range',q.budget],['Location',ev.location||q.location],['Venue Status',q.venue_status],['How They Found Us',q.source]];
     return '<div class="panel" style="margin-bottom:16px;"><h3 style="margin-bottom:4px;">'+(ev.event_name||'Event')+'</h3>' +
@@ -387,58 +365,82 @@ function _renderQuotes(c) {
         (q.budget_notes?'<div style="margin-top:6px;"><span style="font-size:0.78rem;color:#7a6e5e;">Budget Notes: </span><span style="font-size:0.85rem;color:#2e1547;">'+q.budget_notes+'</span></div>':'')+
         (q.final_notes?'<div style="margin-top:6px;"><span style="font-size:0.78rem;color:#7a6e5e;">Additional Notes: </span><span style="font-size:0.85rem;color:#2e1547;">'+q.final_notes+'</span></div>':'')+
       '</div>'+
-      (sentMsgs.length?'<h4 style="margin:0 0 12px;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Sent Quotes / Messages</h4>'+sentMsgs.map(function(m){return'<div style="background:#4a2772;color:white;border-radius:8px;padding:14px 18px;margin-bottom:10px;"><div style="font-size:0.7rem;opacity:0.6;margin-bottom:4px;">Vision Realized'+(m.created_at?' — '+m.created_at:'')+'</div><div style="font-size:0.88rem;line-height:1.6;">'+(m.text||'')+'</div></div>';}).join(''):'')+
-      '<h4 style="margin:20px 0 12px;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">'+(sentMsgs.length?'Send Another Message':'Send a Quote')+'</h4>' +
-      '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;">' +
-        '<p style="font-size:0.82rem;color:#7a6e5e;margin-bottom:14px;">Write a quote or response to send to this client.</p>' +
-        '<textarea id="quote-response-'+ev.id+'" rows="5" placeholder="Hi '+(c.firstname||'')+', thank you for your interest!…" style="width:100%;box-sizing:border-box;padding:12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:vertical;outline:none;border-radius:2px;margin-bottom:12px;"></textarea>' +
-        '<div style="text-align:right;"><button onclick="_sendQuoteResponse('+ev.id+')" style="padding:9px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;letter-spacing:0.05em;cursor:pointer;">Send Quote to Client</button></div></div>' +
+      '<h4 style="margin:20px 0 12px;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Before Meeting - Notes</h4>' +
+      '<div style="background:#fffde6;border:1px solid #e6d88a;border-radius:6px;padding:20px 24px;box-shadow:2px 2px 8px rgba(0,0,0,0.06);">' +
+        '<div id="sticky-notes-'+ev.id+'" style="margin-bottom:12px;"></div>' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<input id="sticky-input-'+ev.id+'" placeholder="Add a note…" onkeydown="if(event.key===\'Enter\')_addStickyNote('+ev.id+')" style="flex:1;padding:8px 12px;border:1.5px solid #e6d88a;background:white;font-family:inherit;font-size:0.85rem;outline:none;border-radius:2px;" />' +
+          '<button onclick="_addStickyNote('+ev.id+')" style="padding:8px 16px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Add</button>' +
+          '<button onclick="_clearStickyNotes('+ev.id+')" style="padding:8px 16px;background:none;border:1px solid #c0392b;color:#c0392b;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Clear All</button>' +
+        '</div></div>' +
       '<h4 style="margin:20px 0 12px;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;">Schedule Consultation</h4>' +
       '<div style="background:#faf7f2;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;">' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;">' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">' +
           '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Date</label><input type="date" id="consult-date-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"></div>' +
           '<div><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Time</label><select id="consult-time-'+ev.id+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;outline:none;border-radius:2px;"><option value="">Select a time</option>'+TIMES.map(function(t){return'<option value="'+t+'">'+formatTime12(t)+'</option>';}).join('')+'</select></div>' +
-          '<button onclick="_scheduleConsult('+ev.id+',\''+(c.firstname||'').replace(/'/g,"\\'")+'\')" style="padding:10px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.88rem;cursor:pointer;white-space:nowrap;border-radius:2px;letter-spacing:0.03em;">Schedule</button>' +
-        '</div></div>' +
+        '</div>' +
+        '<div style="margin-bottom:12px;"><label style="font-size:0.78rem;color:#7a6e5e;display:block;margin-bottom:4px;">Note to client (optional)</label>' +
+          '<textarea id="consult-note-'+ev.id+'" rows="2" placeholder="e.g. We\'ll discuss venue options and budget…" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid rgba(74,39,114,0.2);background:#fffdf9;font-family:inherit;font-size:0.88rem;resize:vertical;outline:none;border-radius:2px;"></textarea></div>' +
+        '<div style="text-align:right;"><button onclick="_scheduleConsult('+ev.id+',\''+(c.firstname||'').replace(/'/g,"\\'")+'\')" style="padding:10px 22px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.88rem;cursor:pointer;white-space:nowrap;border-radius:2px;letter-spacing:0.03em;">Schedule</button></div>' +
+      '</div>' +
     '</div>';
   }).join('');
   document.getElementById('ctab-quotes').innerHTML = hasAny?html:'<p style="color:#7A6E5E;">No quote requests found for this client.</p>';
 }
 
-function _sendQuoteResponse(eventId) {
-  var input=document.getElementById('quote-response-'+eventId);
-  var text=input?input.value.trim():'';if(!text){if(input)input.focus();return;}
-  var btn=input.parentElement.querySelector('button');
-  btn.disabled=true;btn.textContent='Sending…';
-  fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:text})})
-    .then(function(r){return r.json();}).then(function(d){
-      if(!d.success){btn.textContent='Error';btn.disabled=false;return;}
-      var msg={sender:'Vision Realized',text:text};
-      (_cache.details[eventId]=_cache.details[eventId]||{});
-      (_cache.details[eventId].messages=_cache.details[eventId].messages||[]).push(msg);
-      var ev=allEvents.find(function(e){return e.id===eventId;});
-      if(ev&&ev.status==='Quote Submitted'){
-        fetch(API+'/owner/events/'+eventId,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({status:'Consultation'})})
-          .then(function(){ev.status='Consultation';updateStatsBar();if(_activeClientId)_openClient(_activeClientId);});
-      } else { if(_activeClientId)_openClient(_activeClientId); }
-      btn.textContent='Sent!';btn.style.background='#3a7d44';input.value='';
-      setTimeout(function(){btn.disabled=false;btn.textContent='Send Quote to Client';btn.style.background='';},2000);
-      setTimeout(function(){var btns=document.querySelectorAll('.client-subtab');if(btns[5])_switchSubtab(btns[5],'ctab-quotes');},300);
-    }).catch(function(){btn.textContent='Error';btn.disabled=false;});
+function _renderStickyNotes(eventId) {
+  var el = document.getElementById('sticky-notes-' + eventId);
+  if (!el) return;
+  var notes = JSON.parse(localStorage.getItem('sticky_notes_' + eventId) || '[]');
+  if (!notes.length) { el.innerHTML = '<p style="font-size:0.82rem;color:#b8a850;font-style:italic;">No notes yet.</p>'; return; }
+  el.innerHTML = notes.map(function(n, i) {
+    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px dashed #e6d88a;">' +
+      '<span style="color:#4a2772;font-size:0.9rem;line-height:1;">&#8226;</span>' +
+      '<span style="flex:1;font-size:0.88rem;color:#2e1547;line-height:1.5;">' + n.replace(/</g,'&lt;') + '</span>' +
+      '<button onclick="_removeStickyNote(' + eventId + ',' + i + ')" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:0.9rem;padding:0;line-height:1;" title="Remove">&times;</button>' +
+    '</div>';
+  }).join('');
+}
+
+function _addStickyNote(eventId) {
+  var input = document.getElementById('sticky-input-' + eventId);
+  var text = input ? input.value.trim() : '';
+  if (!text) { if (input) input.focus(); return; }
+  var notes = JSON.parse(localStorage.getItem('sticky_notes_' + eventId) || '[]');
+  notes.push(text);
+  localStorage.setItem('sticky_notes_' + eventId, JSON.stringify(notes));
+  input.value = '';
+  _renderStickyNotes(eventId);
+}
+
+function _removeStickyNote(eventId, idx) {
+  var notes = JSON.parse(localStorage.getItem('sticky_notes_' + eventId) || '[]');
+  notes.splice(idx, 1);
+  localStorage.setItem('sticky_notes_' + eventId, JSON.stringify(notes));
+  _renderStickyNotes(eventId);
+}
+
+function _clearStickyNotes(eventId) {
+  if (!confirm('Clear all notes for this event?')) return;
+  localStorage.removeItem('sticky_notes_' + eventId);
+  _renderStickyNotes(eventId);
 }
 
 function _scheduleConsult(eventId,clientName){
   var dateEl=document.getElementById('consult-date-'+eventId);
   var timeEl=document.getElementById('consult-time-'+eventId);
+  var noteEl=document.getElementById('consult-note-'+eventId);
   var date=dateEl.value,time=timeEl.value;if(!date){dateEl.focus();return;}
   var displayTime=time?formatTime12(time):'';
+  var note=noteEl?noteEl.value.trim():'';
   var title='Consultation with '+(clientName||'client')+(displayTime?' at '+displayTime:'');
+  var msgText='[CONSULTATION_REQUEST]{\"date\":\"'+date+'\",\"time\":\"'+(displayTime||'TBD')+'\",\"note\":\"'+(note.replace(/"/g,'\\"'))+'\"}';
   fetch(API+'/owner/tasks',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,title:title,due_date:date})})
     .then(function(r){return r.json();}).then(function(d){
       if(!d.success)return;
-      dateEl.value='';timeEl.value='';
-      fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:'Your consultation has been scheduled for '+date+(displayTime?' at '+displayTime:'')+'. We look forward to speaking with you!'})});
-      alert('Consultation scheduled! A task has been created and the client has been notified.');
+      dateEl.value='';timeEl.value='';if(noteEl)noteEl.value='';
+      fetch(API+'/owner/messages',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({event_id:eventId,sender:'Vision Realized',text:msgText})});
+      alert('Consultation request sent! The client will see it in their portal and can accept.');
       if(_activeClientId)_openClient(_activeClientId);
     });
 }

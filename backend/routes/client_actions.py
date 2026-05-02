@@ -33,6 +33,31 @@ def register_client_action_routes(app):
         db.commit(); cur.close(); db.close()
         return jsonify({'success': True})
 
+    @app.route('/client/consultation/<int:event_id>/accept', methods=['PUT'])
+    def client_accept_consultation(event_id):
+        tok = verify_token()
+        if not tok:
+            return jsonify({'message': 'Not authorized'}), 401
+        uid = tok['user_id']
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("""
+            SELECT e.id FROM events e
+            JOIN client c ON e.client_id = c.client_id
+            WHERE e.id = %s AND c.user_id = %s
+        """, (event_id, uid))
+        if not cur.fetchone():
+            cur.close(); db.close()
+            return jsonify({'message': 'Not authorized'}), 403
+        cur.execute("UPDATE events SET status = 'Consultation' WHERE id = %s", (event_id,))
+        cur.execute("SELECT firstname, lastname FROM client WHERE user_id = %s", (uid,))
+        row = cur.fetchone()
+        sender = row[0] + ' ' + row[1] if row else 'Client'
+        cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
+            (event_id, sender, 'I accept the consultation. Looking forward to meeting!'))
+        db.commit(); cur.close(); db.close()
+        return jsonify({'success': True})
+
     @app.route('/client/messages/<int:event_id>/read', methods=['PUT'])
     def mark_messages_read(event_id):
         tok = verify_token()

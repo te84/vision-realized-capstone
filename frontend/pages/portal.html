@@ -53,9 +53,6 @@
           >
             <span class="portal-nav-icon">--</span> My Tasks
           </div>
-          <div class="portal-nav-item" onclick="switchTab(this, 'tab-docs')">
-            <span class="portal-nav-icon">--</span> Documents
-          </div>
           <div
             class="portal-nav-item"
             onclick="switchTab(this, 'tab-messages')"
@@ -167,6 +164,7 @@
               <div id="next-steps-text" style="font-size:0.92rem;line-height:1.7;color:#2e1547;"></div>
               <div id="next-steps-action" style="margin-top:14px;"></div>
             </div>
+            <div id="consult-request-card" style="display:none;background:#F3EEF9;border:2px solid #4A2772;border-radius:8px;padding:24px;margin-bottom:24px;"></div>
             <div class="dash-grid">
               <div class="dash-card">
                 <div class="dash-card-title">My Tasks</div>
@@ -204,14 +202,6 @@
                 padding: 32px;
               "
             ></div>
-          </div>
-
-          <div id="tab-docs" style="display: none">
-            <div class="portal-header">
-              <div class="portal-greeting">Files & contracts</div>
-              <div class="portal-title">Documents</div>
-            </div>
-            <div id="docs-list"></div>
           </div>
 
           <div id="tab-messages" style="display: none">
@@ -298,7 +288,7 @@
             <div class="after-grid">
               <a href="gallery.html" class="after-mini" style="text-decoration:none;color:inherit;"><p>View event gallery</p></a>
               <a href="quote.html" class="after-mini" style="text-decoration:none;color:inherit;"><p>Book your next event</p></a>
-              <div class="after-mini" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[4], 'tab-messages')" style="cursor:pointer;"><p>Message your planner</p></div>
+              <div class="after-mini" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[3], 'tab-messages')" style="cursor:pointer;"><p>Message your planner</p></div>
             </div>
           </div>
         </div>
@@ -393,6 +383,18 @@
         );
       }
 
+      function fmtMsgDate(d) {
+        if (!d) return '';
+        var dt = new Date(d.replace(' ', 'T') + 'Z');
+        if (isNaN(dt.getTime())) return d;
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var h = dt.getHours(); var m = dt.getMinutes();
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12; if (h === 0) h = 12;
+        var min = m < 10 ? '0' + m : m;
+        return months[dt.getMonth()] + ' ' + (dt.getDate() < 10 ? '0' : '') + dt.getDate() + ', ' + dt.getFullYear() + ' at ' + (h < 10 ? '0' : '') + h + ':' + min + ' ' + ampm;
+      }
+
       function loadDashboard() {
         fetch(API + "/client/dashboard", {
           headers: { Authorization: "Bearer " + token },
@@ -482,6 +484,8 @@
           days !== null ? (days >= 0 ? days : "Past") : "--";
 
         var jEl = document.getElementById("journey-steps");
+        var stepTabs = ['tab-dash','tab-dash','tab-checklist','tab-messages','tab-progress','tab-after'];
+        var stepNavIdx = [0,0,2,3,1,5];
         if (journey.length > 0) {
           var html = "";
           for (var i = 0; i < journey.length; i++) {
@@ -491,13 +495,21 @@
             html +=
               '<div class="j-step ' +
               s.status +
-              '"><div class="j-dot">' +
+              '" data-step="' + i + '" style="cursor:pointer;" title="Go to ' + statusLabel(s.name) + '"><div class="j-dot">' +
               dot +
               '</div><div class="j-name">' +
               statusLabel(s.name) +
               "</div></div>";
           }
           jEl.innerHTML = html;
+          var jSteps = jEl.querySelectorAll('.j-step');
+          for (var i = 0; i < jSteps.length; i++) {
+            (function(idx) {
+              jSteps[idx].addEventListener('click', function() {
+                switchTab(document.querySelectorAll('.portal-nav-item')[stepNavIdx[idx]], stepTabs[idx]);
+              });
+            })(i);
+          }
         } else {
           jEl.innerHTML =
             '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
@@ -513,25 +525,33 @@
         nsText.style.color = '#2e1547';
         nsAction.innerHTML = '';
 
+        function nsBtn(label, navIdx, tabId) {
+          var b = document.createElement('button');
+          b.textContent = label;
+          b.style.cssText = 'padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;';
+          b.addEventListener('click', function() { switchTab(document.querySelectorAll('.portal-nav-item')[navIdx], tabId); });
+          nsAction.appendChild(b);
+        }
+
         if (curStatus === 'Quote Submitted') {
-          nsText.innerHTML = 'We received your quote request! Our team is reviewing your event details and will send you a personalized quote shortly. Keep an eye on your <strong>Messages</strong> tab.';
-          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[4], \'tab-messages\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Check Messages</button>';
+          nsText.innerHTML = 'We received your quote request! Our team is reviewing your event details and will reach out to schedule a consultation.';
+          nsBtn('Check Messages', 3, 'tab-messages');
         } else if (curStatus === 'Consultation') {
-          nsText.innerHTML = 'We sent you a quote! Check your <strong>Messages</strong> tab to review pricing details. Reply with any questions or let us know you\'re ready to move forward.';
-          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[4], \'tab-messages\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">View Quote & Reply</button>';
+          nsText.innerHTML = 'Your consultation is coming up! Check your <strong>Tasks</strong> for the scheduled date and time.';
+          nsBtn('View My Tasks', 2, 'tab-checklist');
         } else if (curStatus === 'Planning') {
           nsText.innerHTML = 'Your event is being planned! Your planner is coordinating vendors, venue, and logistics. Check your <strong>Tasks</strong> for anything that needs your input.';
-          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[2], \'tab-checklist\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">View My Tasks</button>';
+          nsBtn('View My Tasks', 2, 'tab-checklist');
         } else if (curStatus === 'Vendors Set') {
-          nsText.innerHTML = 'All vendors are booked and confirmed! Review your <strong>Documents</strong> for contracts and finalized details.';
-          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[3], \'tab-docs\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">View Documents</button>';
+          nsText.innerHTML = 'All vendors are booked and confirmed! Reach out to your planner with any questions.';
+          nsBtn('Message Planner', 3, 'tab-messages');
         } else if (curStatus === 'Event Day') {
           nsText.innerHTML = 'Today is the day! Our team is handling everything on-site. Relax and enjoy your event.';
           nsCard.style.background = '#4a2772';
           nsText.style.color = 'white';
         } else if (curStatus === 'Completed') {
           nsText.innerHTML = 'Your event is complete! We\'d love to hear your feedback.';
-          nsAction.innerHTML = '<button onclick="switchTab(document.querySelectorAll(\'.portal-nav-item\')[5], \'tab-after\')" style="padding:10px 20px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.82rem;cursor:pointer;border-radius:2px;">Leave a Review</button>';
+          nsBtn('Leave a Review', 5, 'tab-after');
         } else {
           nsCard.style.display = 'none';
         }
@@ -572,13 +592,42 @@
             '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
         }
 
+        // Render consultation request card on dashboard
+        var consultCard = document.getElementById("consult-request-card");
+        var pendingConsult = null;
+        for (var i = 0; i < msgs.length; i++) {
+          if (msgs[i].text && msgs[i].text.indexOf('[CONSULTATION_REQUEST]') === 0) {
+            var accepted = localStorage.getItem('consult_accepted_' + currentEventId + '_' + msgs[i].id);
+            if (!accepted) { pendingConsult = msgs[i]; break; }
+          }
+        }
+        if (pendingConsult) {
+          try {
+            var cData = JSON.parse(pendingConsult.text.replace('[CONSULTATION_REQUEST]', ''));
+            consultCard.style.display = 'block';
+            consultCard.innerHTML =
+              '<div style="font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;font-weight:600;margin-bottom:12px;">Consultation Request</div>' +
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong>' + cData.date + '</strong></div>' +
+                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Time:</span> <strong>' + cData.time + '</strong></div></div>' +
+              (cData.note ? '<p style="font-size:0.88rem;color:#2e1547;line-height:1.6;margin-bottom:14px;font-style:italic;">"' + cData.note + '"</p>' : '') +
+              '<div style="display:flex;gap:10px;">' +
+                '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ')" style="padding:10px 24px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Accept</button>' +
+                '<button onclick="declineConsultation(' + pendingConsult.id + ')" style="padding:10px 24px;background:none;border:1px solid #c0392b;color:#c0392b;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Decline</button>' +
+              '</div>';
+          } catch(e) { consultCard.style.display = 'none'; }
+        } else { consultCard.style.display = 'none'; }
+
+        // Filter out consultation requests from recent messages
+        var regularMsgs = msgs.filter(function(m) { return !m.text || m.text.indexOf('[CONSULTATION_REQUEST]') !== 0; });
         var dashMsgs = document.getElementById("dash-messages");
-        if (msgs.length > 0) {
+        if (regularMsgs.length > 0) {
           var html = "";
-          var cnt = Math.min(msgs.length, 3);
+          var cnt = Math.min(regularMsgs.length, 3);
           for (var i = 0; i < cnt; i++) {
-            var m = msgs[i];
-            var unread = !m.read ? " msg-unread" : "";
+            var m = regularMsgs[i];
+            var isUnread = !m.read && m.sender === 'Vision Realized';
+            var unread = isUnread ? " msg-unread" : "";
             var ini = m.sender
               ? m.sender
                   .split(" ")
@@ -594,17 +643,23 @@
             html +=
               '<div class="msg-item' +
               unread +
-              '"><div class="msg-avatar">' +
+              '" style="cursor:pointer;"><div class="msg-avatar">' +
               ini +
               '</div><div><div class="msg-name">' +
               m.sender +
               '</div><div class="msg-preview">' +
               prev +
               '</div></div><div class="msg-time">' +
-              (m.date || "") +
+              fmtMsgDate(m.date) +
               "</div></div>";
           }
           dashMsgs.innerHTML = html;
+          var msgItems = dashMsgs.querySelectorAll('.msg-item');
+          for (var i = 0; i < msgItems.length; i++) {
+            msgItems[i].addEventListener('click', function() {
+              switchTab(document.querySelectorAll('.portal-nav-item')[3], 'tab-messages');
+            });
+          }
         } else {
           dashMsgs.innerHTML =
             '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
@@ -612,7 +667,7 @@
 
         var unreadCount = 0;
         for (var i = 0; i < msgs.length; i++) {
-          if (!msgs[i].read) unreadCount++;
+          if (!msgs[i].read && msgs[i].sender === 'Vision Realized' && (!msgs[i].text || msgs[i].text.indexOf('[CONSULTATION_REQUEST]') !== 0)) unreadCount++;
         }
         var badge = document.getElementById("msg-badge");
         if (unreadCount > 0) {
@@ -693,7 +748,7 @@
                 '</div><div class="msg-preview">' +
                 m.text +
                 '</div></div><div class="msg-time">' +
-                (m.date || "") +
+                fmtMsgDate(m.date) +
                 "</div></div>";
             }
             msgsFull.innerHTML = html;
@@ -829,6 +884,8 @@
         }
 
         var jEl = document.getElementById("journey-steps");
+        var stepTabs = ['tab-dash','tab-dash','tab-checklist','tab-messages','tab-progress','tab-after'];
+        var stepNavIdx = [0,0,2,3,1,5];
         if (journey.length > 0) {
           var html = "";
           for (var i = 0; i < journey.length; i++) {
@@ -840,13 +897,21 @@
             html +=
               '<div class="j-step ' +
               s.status +
-              '"><div class="j-dot">' +
+              '" data-step="' + i + '" style="cursor:pointer;" title="Go to ' + statusLabel(s.name) + '"><div class="j-dot">' +
               dot +
               '</div><div class="j-name">' +
               statusLabel(s.name) +
               "</div></div>";
           }
           jEl.innerHTML = html;
+          var jSteps = jEl.querySelectorAll('.j-step');
+          for (var i = 0; i < jSteps.length; i++) {
+            (function(idx) {
+              jSteps[idx].addEventListener('click', function() {
+                switchTab(document.querySelectorAll('.portal-nav-item')[stepNavIdx[idx]], stepTabs[idx]);
+              });
+            })(i);
+          }
         } else {
           jEl.innerHTML =
             '<p style="color:#7A6E5E;font-size:0.85rem;">No journey data yet.</p>';
@@ -888,13 +953,42 @@
             '<p style="color:#7A6E5E;font-size:0.85rem;">No tasks assigned yet.</p>';
         }
 
+        // Render consultation request card on dashboard
+        var consultCard = document.getElementById("consult-request-card");
+        var pendingConsult = null;
+        for (var i = 0; i < msgs.length; i++) {
+          if (msgs[i].text && msgs[i].text.indexOf('[CONSULTATION_REQUEST]') === 0) {
+            var accepted = localStorage.getItem('consult_accepted_' + currentEventId + '_' + msgs[i].id);
+            if (!accepted) { pendingConsult = msgs[i]; break; }
+          }
+        }
+        if (pendingConsult) {
+          try {
+            var cData = JSON.parse(pendingConsult.text.replace('[CONSULTATION_REQUEST]', ''));
+            consultCard.style.display = 'block';
+            consultCard.innerHTML =
+              '<div style="font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:#4a2772;font-weight:600;margin-bottom:12px;">Consultation Request</div>' +
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Date:</span> <strong>' + cData.date + '</strong></div>' +
+                '<div><span style="font-size:0.78rem;color:#7a6e5e;">Time:</span> <strong>' + cData.time + '</strong></div></div>' +
+              (cData.note ? '<p style="font-size:0.88rem;color:#2e1547;line-height:1.6;margin-bottom:14px;font-style:italic;">"' + cData.note + '"</p>' : '') +
+              '<div style="display:flex;gap:10px;">' +
+                '<button onclick="acceptConsultation(' + currentEventId + ',' + pendingConsult.id + ')" style="padding:10px 24px;background:#4a2772;color:#fff;border:none;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Accept</button>' +
+                '<button onclick="declineConsultation(' + pendingConsult.id + ')" style="padding:10px 24px;background:none;border:1px solid #c0392b;color:#c0392b;font-family:inherit;font-size:0.85rem;cursor:pointer;border-radius:2px;">Decline</button>' +
+              '</div>';
+          } catch(e) { consultCard.style.display = 'none'; }
+        } else { consultCard.style.display = 'none'; }
+
+        // Filter out consultation requests from recent messages
+        var regularMsgs = msgs.filter(function(m) { return !m.text || m.text.indexOf('[CONSULTATION_REQUEST]') !== 0; });
         var dashMsgs = document.getElementById("dash-messages");
-        if (msgs.length > 0) {
+        if (regularMsgs.length > 0) {
           var html = "";
-          var cnt = msgs.length > 3 ? 3 : msgs.length;
+          var cnt = regularMsgs.length > 3 ? 3 : regularMsgs.length;
           for (var i = 0; i < cnt; i++) {
-            var m = msgs[i];
-            var unread = !m.read ? " msg-unread" : "";
+            var m = regularMsgs[i];
+            var isUnread = !m.read && m.sender === 'Vision Realized';
+            var unread = isUnread ? " msg-unread" : "";
             var ini = m.sender
               ? m.sender
                   .split(" ")
@@ -910,17 +1004,23 @@
             html +=
               '<div class="msg-item' +
               unread +
-              '"><div class="msg-avatar">' +
+              '" style="cursor:pointer;"><div class="msg-avatar">' +
               ini +
               '</div><div><div class="msg-name">' +
               m.sender +
               '</div><div class="msg-preview">' +
               prev +
               '</div></div><div class="msg-time">' +
-              (m.date || "") +
+              fmtMsgDate(m.date) +
               "</div></div>";
           }
           dashMsgs.innerHTML = html;
+          var msgItems = dashMsgs.querySelectorAll('.msg-item');
+          for (var i = 0; i < msgItems.length; i++) {
+            msgItems[i].addEventListener('click', function() {
+              switchTab(document.querySelectorAll('.portal-nav-item')[3], 'tab-messages');
+            });
+          }
         } else {
           dashMsgs.innerHTML =
             '<p style="color:#7A6E5E;font-size:0.85rem;">No messages yet.</p>';
@@ -928,11 +1028,13 @@
 
         var unread = 0;
         for (var i = 0; i < msgs.length; i++) {
-          if (!msgs[i].read) unread++;
+          if (!msgs[i].read && msgs[i].sender === 'Vision Realized' && (!msgs[i].text || msgs[i].text.indexOf('[CONSULTATION_REQUEST]') !== 0)) unread++;
         }
         if (unread > 0) {
           document.getElementById("msg-badge").textContent = unread;
           document.getElementById("msg-badge").style.display = "inline";
+        } else {
+          document.getElementById("msg-badge").style.display = "none";
         }
 
         var progEl = document.getElementById("progress-steps");
@@ -1033,42 +1135,18 @@
             '<p style="color:#7A6E5E;font-size:0.9rem;">No tasks assigned yet. Your planner will add tasks as your event progresses.</p>';
         }
 
-        var docsEl = document.getElementById("docs-list");
-        if (docs.length > 0) {
-          var html = "";
-          for (var i = 0; i < docs.length; i++) {
-            var d = docs[i];
-            var ftype = (d.type || "FILE").toUpperCase();
-            html += '<div class="doc-item">';
-            html +=
-              '<div style="width:32px;height:32px;background:#F3EEF9;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:#4A2772;flex-shrink:0;">' +
-              ftype +
-              "</div>";
-            html +=
-              '<div><div class="doc-name">' +
-              d.name +
-              '</div><div class="doc-meta">' +
-              ftype +
-              " · " +
-              fmtDate(d.date) +
-              "</div></div>";
-            html +=
-              '<div style="font-size:0.75rem;color:#4A2772;">' +
-              (d.status || "") +
-              "</div>";
-            html += "</div>";
-          }
-          docsEl.innerHTML = html;
-        } else {
-          docsEl.innerHTML =
-            '<p style="color:#7A6E5E;font-size:0.9rem;padding:24px;">No documents uploaded yet. Your planner will upload contracts and files here.</p>';
-        }
-
         var msgsFull = document.getElementById("messages-full");
-        if (msgs.length > 0) {
+        var sortedMsgs = msgs.slice().reverse();
+        if (sortedMsgs.length > 0) {
           var html = "";
-          for (var i = 0; i < msgs.length; i++) {
-            var m = msgs[i];
+          for (var i = 0; i < sortedMsgs.length; i++) {
+            var m = sortedMsgs[i];
+
+            // Skip consultation requests — they show on the dashboard
+            if (m.text && m.text.indexOf('[CONSULTATION_REQUEST]') === 0) continue;
+
+            var isFromPlanner = m.sender === 'Vision Realized';
+            var isUnread = !m.read && isFromPlanner;
             var ini = m.sender
               ? m.sender
                   .split(" ")
@@ -1079,11 +1157,11 @@
                   .toUpperCase()
                   .slice(0, 2)
               : "??";
-            var bdr = !m.read ? "border-left:4px solid #4A2772;" : "";
-            var badge = !m.read
+            var bdr = isUnread ? "border-left:4px solid #4A2772;" : "";
+            var badge = isUnread
               ? '<div style="margin-left:auto;font-size:0.68rem;background:#6B3FA0;color:white;padding:2px 10px;border-radius:10px;font-weight:600;">New</div>'
               : "";
-            var opa = m.read ? "opacity:0.7;" : "";
+            var opa = !isUnread && isFromPlanner ? "opacity:0.7;" : "";
             html +=
               '<div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);' +
               bdr +
@@ -1099,7 +1177,7 @@
               "</div>";
             html +=
               '<div style="font-size:0.72rem;color:#7A6E5E;">' +
-              (m.date || "") +
+              fmtMsgDate(m.date) +
               "</div></div>";
             html += badge + "</div>";
             html +=
@@ -1130,6 +1208,31 @@
           .then(function () {
             loadDashboard();
           });
+      }
+
+      function acceptConsultation(eventId, msgId) {
+        fetch(API + "/client/consultation/" + eventId + "/accept", {
+          method: "PUT",
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d.success) {
+              localStorage.setItem('consult_accepted_' + eventId + '_' + msgId, 'true');
+              loadDashboard();
+            }
+          });
+      }
+
+      function declineConsultation(msgId) {
+        if (!confirm('Are you sure you want to decline this consultation?')) return;
+        fetch(API + "/client/messages", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
+          body: JSON.stringify({ event_id: currentEventId, text: "I'd like to reschedule the consultation. Could we find another time?" }),
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { if (d.success) loadDashboard(); });
       }
 
       function sendReply() {
