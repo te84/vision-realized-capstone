@@ -23,6 +23,7 @@ def register_gallery_routes(app):
                     'category': item['category'],
                     'description': item['description'],
                     'image_url': item['image_url'],
+                    'is_carousel': item.get('is_carousel', False),
                     'created_at': str(item['created_at'])
                 })
             return jsonify({'success': True, 'items': result})
@@ -56,6 +57,35 @@ def register_gallery_routes(app):
             return jsonify({'success': True, 'id': new_id})
         except Exception as e:
             print('gallery add error:', e)
+            return jsonify({'success': False, 'message': 'Server error'}), 500
+
+    @app.route('/owner/gallery/carousel', methods=['POST'])
+    def add_carousel_items():
+        tok = verify_token()
+        if not tok or tok.get('role') != 'Owner':
+            return jsonify({'message': 'Not authorized'}), 401
+
+        data = request.get_json()
+        images = data.get('images', [])
+        if not images:
+            return jsonify({'success': False, 'message': 'No images provided'}), 400
+
+        try:
+            db = get_db()
+            cur = db.cursor()
+            count = 0
+            for img in images:
+                if not img.get('image_url'):
+                    continue
+                cur.execute(
+                    "INSERT INTO gallery_items (title, category, image_url, is_carousel) VALUES (%s, %s, %s, TRUE)",
+                    (img.get('title', ''), img.get('category', ''), img['image_url']))
+                count += 1
+            db.commit()
+            cur.close(); db.close()
+            return jsonify({'success': True, 'count': count})
+        except Exception as e:
+            print('carousel add error:', e)
             return jsonify({'success': False, 'message': 'Server error'}), 500
 
     @app.route('/owner/gallery/<int:item_id>', methods=['DELETE'])

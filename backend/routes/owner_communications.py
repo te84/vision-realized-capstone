@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from db import get_db
 from routes.auth import verify_token
+from email_service import notify_client_new_message
 
 
 def register_owner_communication_routes(app):
@@ -76,7 +77,14 @@ def register_owner_communication_routes(app):
         cur = db.cursor()
         cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
             (data['event_id'], data.get('sender', 'Vision Realized'), data['text']))
+        # look up client email for notification
+        cur.execute("""SELECT c.email, c.firstname FROM client c
+            JOIN events e ON e.client_id = c.client_id
+            WHERE e.id = %s""", (data['event_id'],))
+        client_row = cur.fetchone()
         db.commit(); cur.close(); db.close()
+        if client_row and client_row[0]:
+            notify_client_new_message(client_row[0], client_row[1] or 'Client', data['text'])
         return jsonify({'success': True, 'message': 'Message sent'})
 
     @app.route('/owner/documents', methods=['POST'])

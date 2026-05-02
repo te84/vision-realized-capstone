@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from db import get_db
 from routes.auth import verify_token
+from email_service import notify_client_new_task
 
 
 def register_owner_task_routes(app):
@@ -16,7 +17,14 @@ def register_owner_task_routes(app):
         cur.execute("INSERT INTO tasks (event_id, title, due_date) VALUES (%s,%s,%s) RETURNING id",
             (data['event_id'], data['title'], data.get('due_date')))
         task_id = cur.fetchone()[0]
+        # notify client
+        cur.execute("""SELECT c.email, c.firstname FROM client c
+            JOIN events e ON e.client_id = c.client_id
+            WHERE e.id = %s""", (data['event_id'],))
+        client_row = cur.fetchone()
         db.commit(); cur.close(); db.close()
+        if client_row and client_row[0]:
+            notify_client_new_task(client_row[0], client_row[1] or 'Client', data['title'], data.get('due_date', ''))
         return jsonify({'success': True, 'task_id': task_id})
 
     @app.route('/owner/tasks/<int:task_id>', methods=['PUT'])

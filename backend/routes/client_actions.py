@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from db import get_db
 from routes.auth import verify_token
+from email_service import notify_owner_new_message
 
 
 def register_client_action_routes(app):
@@ -28,9 +29,17 @@ def register_client_action_routes(app):
         cur.execute("SELECT firstname, lastname FROM client WHERE user_id = %s", (uid,))
         row = cur.fetchone()
         sender = row[0] + ' ' + row[1] if row else 'Client'
+        client_email = ''
+        cur.execute("SELECT email FROM client WHERE user_id = %s", (uid,))
+        email_row = cur.fetchone()
+        if email_row: client_email = email_row[0]
+        cur.execute("SELECT event_name FROM events WHERE id = %s", (data['event_id'],))
+        ev_row = cur.fetchone()
+        event_name = ev_row[0] if ev_row else ''
         cur.execute("INSERT INTO client_messages (event_id, sender, text) VALUES (%s,%s,%s)",
             (data['event_id'], sender, data['text']))
         db.commit(); cur.close(); db.close()
+        notify_owner_new_message(sender, client_email, data['text'], event_name)
         return jsonify({'success': True})
 
     @app.route('/client/messages/<int:event_id>/read', methods=['PUT'])

@@ -68,7 +68,11 @@ def register_translation_routes(app):
             'stepOf': 'Step {n} of 5',
             'confTitle': "You're all set!",
             'confDesc': "Your quote request has been submitted and your client portal account has been created. We'll reach out within 24 hours.",
-            'confDash': 'Access Client Dashboard →', 'confHome': 'Back to Home'
+            'confDash': 'Access Client Dashboard →', 'confHome': 'Back to Home',
+            'quotesTitle': 'Words We Live By',
+            'quote1': 'Greatness is just small things aligned with purpose.',
+            'quote2': "They may forget what you said and did, but they'll always remember the way you made them feel.",
+            'quote3': "They don't buy the product — they buy the purpose behind it."
         }
 
         es = {
@@ -134,7 +138,11 @@ def register_translation_routes(app):
             'stepOf': 'Paso {n} de 5',
             'confTitle': '¡Todo listo!',
             'confDesc': 'Tu solicitud ha sido enviada y tu cuenta ha sido creada. Nos comunicaremos dentro de 24 horas.',
-            'confDash': 'Acceder al Portal →', 'confHome': 'Volver al Inicio'
+            'confDash': 'Acceder al Portal →', 'confHome': 'Volver al Inicio',
+            'quotesTitle': 'Palabras Que Nos Inspiran',
+            'quote1': 'Las grandes cosas nacen cuando pequeñas ideas se unen con propósito.',
+            'quote2': 'Olvidarán lo que dijiste y lo que hiciste, pero jamás cómo los hiciste sentir.',
+            'quote3': 'No vendes un producto, vendes el propósito detrás de él.'
         }
 
         return jsonify({'success': True, 'translations': {'en': en, 'es': es}})

@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from db import get_db
 from routes.auth import verify_token
+from email_service import notify_client_status_change
 import psycopg2.extras
 
 
@@ -102,6 +103,17 @@ def register_owner_events_routes(app):
                         LIMIT 1
                     )
                 """, (data.get('event_date') or None, event_id))
+
+            # notify client if status changed
+            if updated and 'status' in data:
+                cur.execute("""SELECT c.email, c.firstname FROM client c
+                    JOIN events e ON e.client_id = c.client_id
+                    WHERE e.id = %s""", (event_id,))
+                client_row = cur.fetchone()
+                if client_row and client_row[0]:
+                    notify_client_status_change(
+                        client_row[0], client_row[1] or 'Client',
+                        updated.get('event_name', 'Your Event'), data['status'])
 
             db.commit()
             cur.close()

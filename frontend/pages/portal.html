@@ -12,6 +12,7 @@
   </head>
   <body>
     <nav>
+      <button class="nav-hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
       <div class="nav-links">
         <a href="../index.html">Home</a>
         <a href="about.html">About Us</a>
@@ -155,7 +156,7 @@
                 <div class="countdown-label">Days Away</div>
               </div>
             </div>
-            <div class="journey-track">
+            <div class="journey-track" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[1], 'tab-progress')" style="cursor:pointer;">
               <div class="journey-title">Event Journey</div>
               <div class="journey-steps" id="journey-steps"></div>
             </div>
@@ -165,11 +166,11 @@
               <div id="next-steps-action" style="margin-top:14px;"></div>
             </div>
             <div class="dash-grid">
-              <div class="dash-card">
+              <div class="dash-card" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[2], 'tab-checklist')" style="cursor:pointer;">
                 <div class="dash-card-title">My Tasks</div>
                 <div class="checklist" id="dash-tasks"></div>
               </div>
-              <div class="dash-card">
+              <div class="dash-card" onclick="switchTab(document.querySelectorAll('.portal-nav-item')[4], 'tab-messages')" style="cursor:pointer;">
                 <div class="dash-card-title">Recent Messages</div>
                 <div class="msg-list" id="dash-messages"></div>
               </div>
@@ -235,6 +236,7 @@
               <input
                 id="reply-input"
                 placeholder="Reply..."
+                onkeydown="if(event.key==='Enter'){sendReply();}"
                 style="
                   flex: 1;
                   padding: 12px 16px;
@@ -298,6 +300,7 @@
       var API = "http://localhost:5001";
       var user = JSON.parse(localStorage.getItem("user"));
       var token = localStorage.getItem("token");
+      var currentEventId = null;
 
       if (!user || !token) window.location.href = "login.html";
 
@@ -324,6 +327,9 @@
           }).then(function() {
             var badge = document.getElementById("msg-badge");
             if (badge) { badge.style.display = "none"; badge.textContent = "0"; }
+            // Clear unread dots on dashboard message previews
+            var unreadItems = document.querySelectorAll(".msg-unread");
+            for (var u = 0; u < unreadItems.length; u++) unreadItems[u].classList.remove("msg-unread");
           });
         }
       }
@@ -561,7 +567,7 @@
           var cnt = Math.min(msgs.length, 3);
           for (var i = 0; i < cnt; i++) {
             var m = msgs[i];
-            var unread = !m.read ? " msg-unread" : "";
+            var unread = (!m.read && m.sender === "Vision Realized") ? " msg-unread" : "";
             var ini = m.sender
               ? m.sender
                   .split(" ")
@@ -595,7 +601,7 @@
 
         var unreadCount = 0;
         for (var i = 0; i < msgs.length; i++) {
-          if (!msgs[i].read) unreadCount++;
+          if (!msgs[i].read && msgs[i].sender === "Vision Realized") unreadCount++;
         }
         var badge = document.getElementById("msg-badge");
         if (unreadCount > 0) {
@@ -655,7 +661,7 @@
             var html = "";
             for (var i = 0; i < msgs.length; i++) {
               var m = msgs[i];
-              var unread = !m.read ? " msg-unread" : "";
+              var unread = (!m.read && m.sender === "Vision Realized") ? " msg-unread" : "";
               var ini = m.sender
                 ? m.sender
                     .split(" ")
@@ -877,7 +883,7 @@
           var cnt = msgs.length > 3 ? 3 : msgs.length;
           for (var i = 0; i < cnt; i++) {
             var m = msgs[i];
-            var unread = !m.read ? " msg-unread" : "";
+            var unread = (!m.read && m.sender === "Vision Realized") ? " msg-unread" : "";
             var ini = m.sender
               ? m.sender
                   .split(" ")
@@ -1050,8 +1056,9 @@
         var msgsFull = document.getElementById("messages-full");
         if (msgs.length > 0) {
           var html = "";
-          for (var i = 0; i < msgs.length; i++) {
-            var m = msgs[i];
+          var msgsChron = msgs.slice().reverse();
+          for (var i = 0; i < msgsChron.length; i++) {
+            var m = msgsChron[i];
             var ini = m.sender
               ? m.sender
                   .split(" ")
@@ -1062,20 +1069,21 @@
                   .toUpperCase()
                   .slice(0, 2)
               : "??";
-            var bdr = !m.read ? "border-left:4px solid #4A2772;" : "";
-            var badge = !m.read
+            var isPlanner = m.sender === "Vision Realized";
+            var msgBg = isPlanner ? "#f3eef9" : "#FFFDF9";
+            var isUnread = !m.read && isPlanner;
+            var bdr = isUnread ? "border-left:4px solid #4A2772;" : "";
+            var badge = isUnread
               ? '<div style="margin-left:auto;font-size:0.68rem;background:#6B3FA0;color:white;padding:2px 10px;border-radius:10px;font-weight:600;">New</div>'
               : "";
-            var opa = m.read ? "opacity:0.7;" : "";
             html +=
-              '<div style="background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);' +
+              '<div style="background:' + msgBg + ';border:1px solid rgba(74,39,114,0.15);' +
               bdr +
-              "border-radius:4px;padding:20px 24px;" +
-              opa +
-              '">';
+              'border-radius:4px;padding:20px 24px;">';
             html +=
               '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">';
-            html += '<div class="msg-avatar">' + ini + "</div>";
+            var avatarStyle = isPlanner ? 'background:#4A2772;color:white;' : '';
+            html += '<div class="msg-avatar" style="' + avatarStyle + '">' + ini + "</div>";
             html +=
               '<div><div style="font-size:0.9rem;font-weight:500;color:#2E1547;">' +
               m.sender +
@@ -1100,8 +1108,6 @@
         if (currentEventId) replyBox.style.display = "flex";
       }
 
-      var currentEventId = null;
-
       function completeTask(tid) {
         fetch(API + "/client/tasks/" + tid + "/complete", {
           method: "PUT",
@@ -1116,8 +1122,12 @@
       }
 
       function sendReply() {
-        var txt = document.getElementById("reply-input").value;
+        var input = document.getElementById("reply-input");
+        var txt = input.value.trim();
         if (!txt || !currentEventId) return;
+        var btn = document.querySelector("#reply-box button");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
         fetch(API + "/client/messages", {
           method: "POST",
           headers: {
@@ -1130,10 +1140,30 @@
             return r.json();
           })
           .then(function (d) {
+            btn.disabled = false;
+            btn.textContent = "Send";
             if (d.success) {
-              document.getElementById("reply-input").value = "";
-              loadDashboard();
+              input.value = "";
+              // Append message to the messages tab without full reload
+              var msgsFull = document.getElementById("messages-full");
+              var senderName = user.firstname + " " + user.lastname;
+              var ini = senderName.split(" ").map(function(n){ return n[0]; }).join("").toUpperCase().slice(0,2);
+              var now = new Date();
+              var dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + " at " + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+              var div = document.createElement("div");
+              div.style.cssText = "background:#FFFDF9;border:1px solid rgba(74,39,114,0.15);border-radius:4px;padding:20px 24px;";
+              div.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">' +
+                '<div class="msg-avatar">' + ini + '</div>' +
+                '<div><div style="font-size:0.9rem;font-weight:500;color:#2E1547;">' + senderName + '</div>' +
+                '<div style="font-size:0.72rem;color:#7A6E5E;">' + dateStr + '</div></div></div>' +
+                '<p style="font-size:0.88rem;color:#1A1208;line-height:1.7;">' + txt + '</p>';
+              msgsFull.appendChild(div);
+              msgsFull.scrollTop = msgsFull.scrollHeight;
             }
+          })
+          .catch(function() {
+            btn.disabled = false;
+            btn.textContent = "Send";
           });
       }
 

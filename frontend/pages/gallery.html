@@ -10,6 +10,7 @@
 <body>
 
 <nav>
+  <button class="nav-hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
   <div class="nav-links">
     <a href="../index.html" data-i18n="navHome">Home</a>
     <a href="about.html" data-i18n="navAbout">About Us</a>
@@ -37,56 +38,24 @@
 
   <div style="max-width:1100px; margin:0 auto; padding:48px 60px 80px;">
 
-    <div style="display:flex; flex-wrap:wrap; gap:20px;">
+    <div style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+      <button class="gallery-filter active" onclick="filterGallery(this, '')" style="padding:8px 20px;border:1.5px solid rgba(74,39,114,0.2);background:#4A2772;color:white;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;border-radius:2px;">All</button>
+      <button class="gallery-filter" onclick="filterGallery(this, 'Corporate')" style="padding:8px 20px;border:1.5px solid rgba(74,39,114,0.2);background:transparent;color:#4A2772;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;border-radius:2px;">Corporate</button>
+      <button class="gallery-filter" onclick="filterGallery(this, 'Social')" style="padding:8px 20px;border:1.5px solid rgba(74,39,114,0.2);background:transparent;color:#4A2772;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;border-radius:2px;">Social</button>
+      <button class="gallery-filter" onclick="filterGallery(this, 'Gala')" style="padding:8px 20px;border:1.5px solid rgba(74,39,114,0.2);background:transparent;color:#4A2772;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;border-radius:2px;">Gala</button>
+      <button class="gallery-filter" onclick="filterGallery(this, 'Party')" style="padding:8px 20px;border:1.5px solid rgba(74,39,114,0.2);background:transparent;color:#4A2772;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;border-radius:2px;">Party</button>
+    </div>
 
-      <div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">
-        <div style="width:100%; height:220px; background:#e8e0d4;"></div>
-        <div style="padding:20px;">
-          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">Corporate Event</h3>
-          <span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:10px;">Corporate</span>
+    <div id="gallery-grid" style="display:flex; flex-wrap:wrap; gap:20px;">
+      <p style="color:#7A6E5E;">Loading gallery...</p>
+    </div>
+
+    <div id="carousel-section" style="display:none; margin-top:48px;">
+      <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:#2E1547; font-style:italic; margin-bottom:16px;">More Moments</h3>
+      <div style="position:relative;overflow:hidden;">
+        <div id="carousel-track" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:12px;scrollbar-width:thin;scrollbar-color:#4A2772 #efe6dc;">
         </div>
       </div>
-
-      <div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">
-        <div style="width:100%; height:220px; background:#e8e0d4;"></div>
-        <div style="padding:20px;">
-          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">Birthday Celebration</h3>
-          <span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:10px;">Birthday</span>
-        </div>
-      </div>
-
-      <div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">
-        <div style="width:100%; height:220px; background:#e8e0d4;"></div>
-        <div style="padding:20px;">
-          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">Fundraising Gala</h3>
-          <span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:10px;">Gala</span>
-        </div>
-      </div>
-
-      <div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">
-        <div style="width:100%; height:220px; background:#e8e0d4;"></div>
-        <div style="padding:20px;">
-          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">Sweet Sixteen</h3>
-          <span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:10px;">Birthday</span>
-        </div>
-      </div>
-
-      <div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">
-        <div style="width:100%; height:220px; background:#e8e0d4;"></div>
-        <div style="padding:20px;">
-          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">Community Event</h3>
-          <span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:10px;">Community</span>
-        </div>
-      </div>
-
-      <div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">
-        <div style="width:100%; height:220px; background:#e8e0d4;"></div>
-        <div style="padding:20px;">
-          <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">Expo</h3>
-          <span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:10px;">Corporate</span>
-        </div>
-      </div>
-
     </div>
 
     <div style="text-align:center; margin-top:60px; padding:48px; background:#2E1547;">
@@ -99,12 +68,91 @@
 </div>
 
 <script>
+  var API = window.location.origin;
+  var allGalleryItems = [];
+
   var u = JSON.parse(localStorage.getItem('user'));
   if (u) {
     var el = document.querySelector('.nav-portal');
     el.textContent = u.firstname + "'s Portal";
     el.href = 'portal.html';
   }
+
+  function loadGallery() {
+    fetch(API + '/gallery')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.success) return;
+        var all = data.items || [];
+        allGalleryItems = all.filter(function(i) { return !i.is_carousel; });
+        var carouselItems = all.filter(function(i) { return i.is_carousel; });
+        renderGallery(allGalleryItems);
+        renderCarousel(carouselItems);
+      })
+      .catch(function() {
+        document.getElementById('gallery-grid').innerHTML = '<p style="color:#7A6E5E;">Unable to load gallery.</p>';
+      });
+  }
+
+  function renderCarousel(items) {
+    var section = document.getElementById('carousel-section');
+    var track = document.getElementById('carousel-track');
+    if (items.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = '';
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      html += '<div style="min-width:240px;max-width:240px;height:180px;flex-shrink:0;scroll-snap-align:start;border-radius:4px;overflow:hidden;">';
+      html += '<img src="' + items[i].image_url + '" alt="' + (items[i].title || 'Event photo') + '" style="width:100%;height:100%;object-fit:cover;">';
+      html += '</div>';
+    }
+    track.innerHTML = html;
+  }
+
+  function renderGallery(items) {
+    var grid = document.getElementById('gallery-grid');
+    if (items.length === 0) {
+      grid.innerHTML = '<p style="color:#7A6E5E;">No gallery items yet. Check back soon!</p>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      html += '<div style="flex:1; min-width:280px; max-width:340px; background:white; border:1px solid rgba(74,39,114,0.1);">';
+      html += '<div style="width:100%; height:220px; overflow:hidden;">';
+      html += '<img src="' + item.image_url + '" alt="' + (item.title || '') + '" style="width:100%;height:100%;object-fit:cover;">';
+      html += '</div>';
+      html += '<div style="padding:20px;">';
+      html += '<h3 style="font-family:\'Cormorant Garamond\',serif; font-size:1.2rem; color:#2E1547; font-style:italic; margin-bottom:6px;">' + (item.title || '') + '</h3>';
+      if (item.description) html += '<p style="font-size:0.82rem;color:#7a6e5e;line-height:1.5;margin-bottom:8px;">' + item.description + '</p>';
+      if (item.category) html += '<span style="display:inline-block; font-size:0.7rem; padding:3px 10px; background:rgba(74,39,114,0.08); color:#4A2772; margin-top:4px;">' + item.category + '</span>';
+      html += '</div></div>';
+    }
+    grid.innerHTML = html;
+  }
+
+  function filterGallery(btn, category) {
+    var btns = document.querySelectorAll('.gallery-filter');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].style.background = 'transparent';
+      btns[i].style.color = '#4A2772';
+      btns[i].classList.remove('active');
+    }
+    btn.style.background = '#4A2772';
+    btn.style.color = 'white';
+    btn.classList.add('active');
+
+    if (!category) {
+      renderGallery(allGalleryItems);
+    } else {
+      var filtered = allGalleryItems.filter(function(item) { return item.category === category; });
+      renderGallery(filtered);
+    }
+  }
+
+  loadGallery();
 </script>
 <script src="../js/translations.js"></script>
 </body>

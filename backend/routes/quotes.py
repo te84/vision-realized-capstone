@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from db import get_db, hash_password
+from email_service import notify_owner_new_quote
 
 
 def register_quote_routes(app):
@@ -66,6 +67,7 @@ def register_quote_routes(app):
             db.commit()
             cur.close()
             db.close()
+            notify_owner_new_quote(fname, lname, email, data.get('event_type',''), data.get('event_date',''))
             return jsonify({'success': True, 'message': 'Quote submitted and account created'})
         except Exception as e:
             print('quote error:', e)

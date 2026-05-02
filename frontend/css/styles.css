@@ -260,20 +260,26 @@ footer > * { position:relative; z-index:1; }
 .nav-lang button.active { background:#4A2772; color:white; border-color:#4A2772; font-weight:500; }
 .nav-lang button:hover:not(.active) { border-color:#4A2772; color:#4A2772; }
 
+/* ── Hamburger Menu ── */
+.nav-hamburger { display:none; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#3d3530; padding:8px 16px; }
+
 /* ── Mobile Responsive ── */
 @media (max-width: 768px) {
-  nav { flex-wrap:wrap; min-height:auto; padding:10px 0; justify-content:flex-start; }
-  .nav-links { flex-wrap:wrap; gap:8px 16px; padding:10px 16px; width:100%; justify-content:center; }
-  .nav-links a { font-size:0.8rem; }
-  .nav-cta { position:relative !important; width:100%; text-align:center; justify-content:center; padding:12px 16px !important; font-size:0.7rem !important; }
-  .nav-lang { margin-left:auto; }
+  nav { flex-wrap:wrap; min-height:auto; padding:0; justify-content:space-between; align-items:center; }
+  .nav-hamburger { display:block; order:0; }
+  .nav-links { display:none; flex-direction:column; width:100%; padding:0; gap:0; background:#f5f0e8; border-top:1px solid rgba(74,39,114,0.1); }
+  .nav-links.open { display:flex; }
+  .nav-links a { padding:14px 20px; font-size:0.88rem; border-bottom:1px solid rgba(74,39,114,0.06); }
+  .nav-links a:last-of-type { border-bottom:none; }
+  .nav-lang { padding:12px 20px; width:100%; justify-content:flex-start; }
+  .nav-cta { position:relative !important; width:100%; text-align:center; justify-content:center; padding:14px 16px !important; font-size:0.72rem !important; order:3; }
 
   .page-content { padding-top:0; }
-  .hero { min-height:60vh; padding:40px 20px; }
-  .hero-h1 { font-size:2.6rem; }
+  .hero { min-height:70vh; padding:48px 24px; }
+  .hero-h1 { font-size:2.8rem; }
   .hero-sub { font-size:0.7rem; letter-spacing:2px; margin-bottom:32px; }
   .hero-actions { flex-direction:column; gap:12px; }
-  .btn-gold, .btn-ghost { text-align:center; padding:14px 24px; }
+  .btn-gold, .btn-ghost { text-align:center; padding:16px 24px; width:100%; box-sizing:border-box; }
 
   .event-cards { flex-direction:column; padding:20px; }
   .ev-card { padding:40px 24px; min-height:auto; }
@@ -313,7 +319,7 @@ footer > * { position:relative; z-index:1; }
   .vibe-btn { min-width:90px; }
 
   .portal-layout { flex-direction:column; }
-  .portal-sidebar { position:relative; top:0; height:auto; width:100%; min-width:100%; flex-direction:row; flex-wrap:wrap; padding:16px; gap:4px; }
+  .portal-sidebar { position:relative; top:0; height:auto; width:100%; min-width:100%; flex-direction:row; flex-wrap:wrap; padding:12px 16px; gap:4px; }
   .portal-user { padding:0 8px 12px; width:100%; }
   .portal-nav-item { padding:8px 12px; font-size:0.75rem; }
   .portal-content { padding:20px; }

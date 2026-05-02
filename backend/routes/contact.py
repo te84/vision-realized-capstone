@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from db import get_db
+from email_service import notify_owner_new_contact
 
 
 def register_contact_routes(app):
@@ -17,6 +18,7 @@ def register_contact_routes(app):
             cur = db.cursor()
             cur.execute("INSERT INTO contact_messages (name, email, message, sender) VALUES (%s,%s,%s,%s)", (name, email, msg, 'Client'))
             db.commit(); cur.close(); db.close()
+            notify_owner_new_contact(name, email, msg)
             return jsonify({'success': True, 'message': 'Message received'})
         except Exception as e:
             print('contact error:', e)

@@ -12,6 +12,7 @@
   </head>
   <body>
     <nav>
+      <button class="nav-hamburger" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
       <div class="nav-links">
         <a href="index.html" data-i18n="navHome">Home</a>
         <a href="pages/about.html" data-i18n="navAbout">About Us</a>
@@ -111,25 +112,22 @@
       </section>
 
       <section class="testi-section">
-        <h2 style="margin-bottom:48px;">Words We Live By</h2>
+        <h2 data-i18n="quotesTitle" style="margin-bottom:48px;">Words We Live By</h2>
         <div class="testi-grid">
           <div class="testi-card" style="text-align:center;">
-            <p class="testi-text" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
-              "Great things are done by a series of small things brought together"
+            <p class="testi-text" data-i18n="quote1" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
+              Greatness is just small things aligned with purpose.
             </p>
-            <div class="testi-name">Vincent Van Gogh</div>
           </div>
           <div class="testi-card" style="text-align:center;">
-            <p class="testi-text" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
-              "People will forget what you said, people will forget what you did, but people will never forget how you made them feel"
+            <p class="testi-text" data-i18n="quote2" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
+              They may forget what you said and did, but they'll always remember the way you made them feel.
             </p>
-            <div class="testi-name">Maya Angelou</div>
           </div>
           <div class="testi-card" style="text-align:center;">
-            <p class="testi-text" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
-              "People don't buy what you do; they buy why you do it"
+            <p class="testi-text" data-i18n="quote3" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-style:italic; color:#2E1547; line-height:1.6;">
+              They don't buy the product — they buy the purpose behind it.
             </p>
-            <div class="testi-name">Simon Sinek</div>
           </div>
         </div>
       </section>

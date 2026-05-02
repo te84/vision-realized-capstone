@@ -47,6 +47,15 @@ def create_tables():
             amount NUMERIC(10,2),
             due_date DATE,
             created_at TIMESTAMP DEFAULT NOW())""")
+        cur.execute("""CREATE TABLE IF NOT EXISTS gallery_items (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(200),
+            category VARCHAR(100),
+            description TEXT,
+            image_url TEXT,
+            is_carousel BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT NOW())""")
+        cur.execute("ALTER TABLE gallery_items ADD COLUMN IF NOT EXISTS is_carousel BOOLEAN DEFAULT FALSE")
         cur.execute("""CREATE TABLE IF NOT EXISTS security_questions (
             id SERIAL PRIMARY KEY, user_id INT NOT NULL UNIQUE, question VARCHAR(300),
             answer VARCHAR(300), created_at TIMESTAMP DEFAULT NOW())""")
